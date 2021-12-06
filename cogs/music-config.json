@@ -1,0 +1,20 @@
+{
+    "user_id": "760179628122964008",
+    "nodes": [
+        {
+            "host": "lava.link",
+            "port": 80,
+            "password": "anything as a password",
+            "region": "Germany",
+            "resume_key": "Node 1 KEY",
+            "resume_timeout": 120,
+            "name": "Node 1",
+            "reconnect_attempts": -1
+        }],
+    "ignored_commands": [
+        "queue",
+        "nodes",
+        "current",
+        "change_node"
+    ]
+}

@@ -1,0 +1,20 @@
+aiofiles==0.6.0
+asyncdagpi
+asyncpg==0.24.0
+captcha==0.3
+discord.py @ git+https://github.com/iDevision/enhanced-discord.py@e0bf2f9121a684223b3e13554f7b71ede02d3c88
+DiscordUtils
+fuzzywuzzy==0.18.0
+jishaku @ git+https://github.com/Ender2K89/custom_jsk
+lavalink
+owoify-py==1.1.2
+Pillow==8.3.1
+psutil==5.8.0
+pyfiglet==0.8.post1
+pyshorteners==1.0.1
+python-whois==0.7.3
+PyYAML==3.12
+requests==2.18.4
+typing-extensions==3.10.0.2
+Unidecode==1.2.0
+urllib3==1.22
