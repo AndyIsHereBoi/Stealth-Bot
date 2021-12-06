@@ -15,6 +15,7 @@ import inspect
 import discord
 import humanize
 import wikipedia as wiki
+# test lol HELIKOPTER HELIKOPTER
 
 
 from googletrans import Translator
