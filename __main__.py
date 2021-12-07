@@ -153,7 +153,6 @@ class CustomContext(commands.Context):
             commit_tz = datetime.timezone(datetime.timedelta(minutes=commit.commit_time_offset))
             commit_time = datetime.datetime.fromtimestamp(commit.commit_time).astimezone(commit_tz)
 
-            # [`hash`](url) message (offset)
             offset = discord.utils.format_dt(commit_time.astimezone(datetime.timezone.utc), 'R')
             return f'[`{short_sha2}`](https://github.com/Ender2K89/Stealth-Bot/commit/{commit.hex}) {short} ({offset})'
 
@@ -314,7 +313,7 @@ async def create_db_pool():
     return await asyncpg.create_pool(**credentials)
 
 
-class StealthBot(commands.Bot): # commands.AutoShardedBot
+class StealthBot(commands.AutoShardedBot):
     PRE: tuple = ("sb!",)
 
     def guild_only(self, ctx: commands.Context):
@@ -370,7 +369,7 @@ class StealthBot(commands.Bot): # commands.AutoShardedBot
             help_command=None,
             enable_debug_events=True,
             strip_after_prefix=True,
-            # shard_count=1,
+            shard_count=1,
             command_prefix=self.get_pre
         )
 
