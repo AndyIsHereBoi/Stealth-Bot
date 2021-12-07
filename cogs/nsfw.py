@@ -9,7 +9,7 @@ def setup(client):
 
 
 class NSFW(commands.Cog):
-    "NSFW commands, type 'gif' as the type and it'll be animated."
+    """NSFW commands, type 'gif' as the type, and it'll be animated."""
 
     def __init__(self, client):
         self.client = client

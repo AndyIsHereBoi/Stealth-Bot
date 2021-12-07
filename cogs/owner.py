@@ -101,10 +101,6 @@ class Owner(commands.Cog):
         self.select_emoji = "<:owner_crown:845946530452209734>"
         self.select_brief = "Commands that only the developer of this bot can use."
 
-    @Feature.Command(parent="jsk", name="git")
-    async def jsk_git(self, ctx, *, argument: jishaku.codeblock_converter):
-        return await ctx.invoke("jsk shell", argument=jishaku.Codeblock(argument.language, "cd ~/.git\ngit " + argument.content))
-
     @commands.command(
         help="Shows information about the system the bot is hosted on",
         aliases=['sys'])
@@ -309,16 +305,16 @@ Average: {average_latency}
 
         else:
             return await ctx.send("fuck off")
-        
+
     @commands.command(
         help="Loads the specified extension")
     @commands.is_owner()
     async def load(self, ctx, extension: str, mode: typing.Optional[str]):
         extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
-        
+
         successful = []
         failed = []
-        
+
         try:
             self.client.load_extension(f"cogs.{extension}")
             successful.append(f"{ctx.tick(True)} {extension}")
@@ -330,33 +326,34 @@ Average: {average_latency}
 {''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
 ```
                         """
-                        
-            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
-                    
+
+            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:",
+                                  file=io.StringIO(traceback_string))
+
         nl = "\n"
-                    
+
         embed = discord.Embed(title=f":arrow_up: Loaded {extension}", description=f"""
 {nl.join(successful)}
 
 {nl.join(failed)}
 {'I have private messaged you the errors.' if failed else ''}
                             """)
-        
+
         if mode and mode.lower() == "silent":
             await ctx.author.send(embed=embed)
-            
+
         else:
             await ctx.send(embed=embed)
-            
+
     @commands.command(
         help="Unloads the specified extension")
     @commands.is_owner()
     async def unload(self, ctx, extension: str, mode: typing.Optional[str]):
         extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
-        
+
         successful = []
         failed = []
-        
+
         try:
             self.client.unload_extension(f"cogs.{extension}")
             successful.append(f"{ctx.tick(True)} {extension}")
@@ -368,33 +365,34 @@ Average: {average_latency}
 {''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
 ```
                         """
-                        
-            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
-                    
+
+            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:",
+                                  file=io.StringIO(traceback_string))
+
         nl = "\n"
-                    
+
         embed = discord.Embed(title=f":arrow_down: Unloaded {extension}", description=f"""
 {nl.join(successful)}
 
 {nl.join(failed)}
 {'I have private messaged you the errors.' if failed else ''}
                             """)
-        
+
         if mode and mode.lower() == "silent":
             await ctx.author.send(embed=embed)
-            
+
         else:
             await ctx.send(embed=embed)
-            
+
     @commands.command(
         help="Reloads the specified extension")
     @commands.is_owner()
     async def reload(self, ctx, extension: str, mode: typing.Optional[str]):
         extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
-        
+
         successful = []
         failed = []
-        
+
         try:
             self.client.reload_extension(f"cogs.{extension}")
             successful.append(f"{ctx.tick(True)} {extension}")
@@ -406,24 +404,25 @@ Average: {average_latency}
 {''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
 ```
                         """
-                        
-            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
-                    
+
+            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:",
+                                  file=io.StringIO(traceback_string))
+
         nl = "\n"
-                    
+
         embed = discord.Embed(title=f":repeat: Reloaded {extension}", description=f"""
 {nl.join(successful)}
 
 {nl.join(failed)}
 {'I have private messaged you the errors.' if failed else ''}
                             """)
-        
+
         if mode and mode.lower() == "silent":
             await ctx.author.send(embed=embed)
-            
+
         else:
             await ctx.send(embed=embed)
-            
+
     @commands.command(
         help="Reloads all extensions.",
         aliases=['rall', 'reloadall', 'reload-all'])
@@ -449,9 +448,10 @@ Average: {average_latency}
 {''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
 ```
                                 """
-                                
-                    await ctx.author.send(content=f"{ctx.tick(False)} {file[:-3]} Traceback:", file=io.StringIO(traceback_string))
-                    
+
+                    await ctx.author.send(content=f"{ctx.tick(False)} {file[:-3]} Traceback:",
+                                          file=io.StringIO(traceback_string))
+
         for file in os.listdir('./helpers'):
             if file.endswith('.py'):
                 module = importlib.import_module(f"helpers.{file[:-3]}")
@@ -468,11 +468,12 @@ Average: {average_latency}
 {''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
 ```
                                 """
-                                
-                    await ctx.author.send(content=f"{ctx.tick(False)} {file[:-3]} Traceback:", file=io.StringIO(traceback_string))
-                
+
+                    await ctx.author.send(content=f"{ctx.tick(False)} {file[:-3]} Traceback:",
+                                          file=io.StringIO(traceback_string))
+
         nl = "\n"
-                    
+
         embed = discord.Embed(title=f":repeat: Reloaded all extensions", description=f"""
 **Successfully reloaded**: {len(successful) + len(successfulH)}/{len(everything)} extensions.
 
@@ -483,10 +484,10 @@ Average: {average_latency}
 {nl.join(failed)}
 {'I have private messaged you the errors.' if failed else ''}
                             """)
-        
+
         if mode and mode.lower() == "silent":
             await ctx.author.send(embed=embed)
-            
+
         else:
             await ctx.send(embed=embed)
 
@@ -505,15 +506,19 @@ Average: {average_latency}
         help="Adds a member to the acknowledgments list",
         aliases=['ack'])
     @commands.is_owner()
-    async def acknowledge(self, ctx, member: typing.Union[discord.Member, discord.User], *, message = None):
+    async def acknowledge(self, ctx, member: typing.Union[discord.Member, discord.User], *, message=None):
         if message:
-            await self.client.db.execute("INSERT INTO acknowledgments (user_id, acknowledgment) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET acknowledgment = $2", member.id, message)
-            return await ctx.send(f"Successfully added {member.mention if isinstance(member, discord.Member) else member} to the acknowledgements list.")
-            
+            await self.client.db.execute(
+                "INSERT INTO acknowledgments (user_id, acknowledgment) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET acknowledgment = $2",
+                member.id, message)
+            return await ctx.send(
+                f"Successfully added {member.mention if isinstance(member, discord.Member) else member} to the acknowledgements list.")
+
         else:
             await self.client.db.execute("DELETE FROM acknowledgments WHERE user_id = $1", member.id)
-            return await ctx.send(f"Successfully deleted {member.mention if isinstance(member, discord.Member) else member} from the acknowledgements list.")
-        
+            return await ctx.send(
+                f"Successfully deleted {member.mention if isinstance(member, discord.Member) else member} from the acknowledgements list.")
+
     @commands.command(
         help="Shutdowns the bot",
         aliases=['shutdown_bot'])
@@ -537,20 +542,20 @@ Average: {average_latency}
     @commands.is_owner()
     async def restart(self, ctx):
         confirm = await ctx.confirm(message="Are you sure you want to restart the bot?")
-        
+
         if confirm:
             embed = discord.Embed(title="<a:loading:747680523459231834> Restarting...",
                                   description="If this takes more than 10 seconds, you're fucked.")
 
             await ctx.send(embed=embed)
-            
+
             file = open("data/restart_log.log", "w")
             file.write(str(ctx.channel.id))
 
             await asyncio.sleep(1.5)
-            
+
             os.system("systemctl restart stealthbot")
-            
+
         else:
             return await ctx.send("Okay, I won't.")
 
@@ -677,7 +682,7 @@ Average: {average_latency}
         else:
             paginator.message = await ctx.send(embed=kwargs['embed'])
         await paginator.start(ctx)
-        
+
     @commands.group(
         invoke_without_command=True,
         help="Executes an SQL query to the database.",
@@ -722,12 +727,13 @@ Average: {average_latency}
         aliases=['ch', 'cmds'])
     @commands.is_owner()
     async def _commands(self, ctx):
-        executed_commands = await self.client.db.fetch("SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
+        executed_commands = await self.client.db.fetch(
+            "SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
         if not executed_commands:
             return await ctx.send("No results found...")
         table = [(command, self.client.get_user(user_id) or user_id, guild_id, str(timestamp).replace('+00:00', ''))
-                    for command, user_id, guild_id, timestamp in executed_commands]
-        
+                 for command, user_id, guild_id, timestamp in executed_commands]
+
         table = tabulate.tabulate(table, headers=["Command", "User/UID", "Guild ID", "Timestamp"], tablefmt="presto")
         lines = table.split("\n")
         lines, headers = lines[2:], '\n'.join(lines[0:2])
