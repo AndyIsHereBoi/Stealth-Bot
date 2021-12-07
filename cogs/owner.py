@@ -21,6 +21,7 @@ from discord.ext import commands, menus
 from discord.ext.menus.views import ViewMenuPages
 import importlib
 from jishaku.paginators import WrappedPaginator, PaginatorInterface
+from jishaku.codeblocks import codeblock_converter
 from jishaku.features.baseclass import Feature
 import io
 import contextlib
@@ -497,7 +498,7 @@ Average: {average_latency}
     @commands.is_owner()
     async def update(self, ctx):
         command = self.client.get_command('jsk git')
-        await ctx.invoke(command, argument=jishaku.codeblock_converter('pull'))
+        await ctx.invoke(command, argument=codeblock_converter('pull'))
 
         command = self.client.get_command('rall')
         await ctx.invoke(command)
