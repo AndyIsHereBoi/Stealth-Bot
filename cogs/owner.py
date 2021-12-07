@@ -494,7 +494,7 @@ Average: {average_latency}
         help="Update the bot.",
         aliases=['upd', 'gitpull', 'pull'])
     @commands.is_owner()
-    async def dev_git_pull(self, ctx, reload_everything = True):
+    async def update(self, ctx):
         command = self.client.get_command('jsk git')
         await ctx.invoke(command, argument=jishaku.codeblock_converter('pull'))
 
