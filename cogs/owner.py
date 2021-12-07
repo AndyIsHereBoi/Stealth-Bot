@@ -428,7 +428,7 @@ Average: {average_latency}
         help="Reloads all extensions.",
         aliases=['rall', 'reloadall', 'reload-all'])
     @commands.is_owner()
-    async def reload_all(self, ctx, mode: typing.Optional[str]):
+    async def reload_all(self, ctx, mode: typing.Optional[str] = None):
         everything = []
         successful = []
         successfulH = []
