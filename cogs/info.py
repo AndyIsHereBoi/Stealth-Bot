@@ -15,14 +15,10 @@ import inspect
 import discord
 import humanize
 import wikipedia as wiki
-# test lol HELIKOPTER HELIKOPTER
-
 
 from googletrans import Translator
 from helpers import helpers as helpers
 from discord.ext import commands, menus
-from helpers import paginator as paginator
-from deep_translator import GoogleTranslator
 from discord.ext.menus.views import ViewMenuPages
 from discord.ext.commands.cooldowns import BucketType
 
