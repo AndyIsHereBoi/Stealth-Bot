@@ -21,6 +21,7 @@ from discord.ext import commands, menus
 from discord.ext.menus.views import ViewMenuPages
 import importlib
 from jishaku.paginators import WrappedPaginator, PaginatorInterface
+from jishaku.features.baseclass import Feature
 import io
 import contextlib
 from helpers import helpers as help
@@ -91,7 +92,7 @@ class BlacklitedUsersEmbedPage(menus.ListPageSource):
 
 
 class Owner(commands.Cog):
-    "Commands that only the developer of this bot can use"
+    """Commands that only the developer of this bot can use"""
 
     def __init__(self, client):
         self.client = client
@@ -99,6 +100,10 @@ class Owner(commands.Cog):
         self._last_result = None
         self.select_emoji = "<:owner_crown:845946530452209734>"
         self.select_brief = "Commands that only the developer of this bot can use."
+
+    @Feature.Command(parent="jsk", name="git")
+    async def jsk_git(self, ctx, *, argument: jishaku.codeblock_converter):
+        return await ctx.invoke("jsk shell", argument=jishaku.Codeblock(argument.language, "cd ~/.git\ngit " + argument.content))
 
     @commands.command(
         help="Shows information about the system the bot is hosted on",
@@ -484,7 +489,18 @@ Average: {average_latency}
             
         else:
             await ctx.send(embed=embed)
-            
+
+    @commands.command(
+        help="Update the bot.",
+        aliases=['upd', 'gitpull', 'pull'])
+    @commands.is_owner()
+    async def dev_git_pull(self, ctx, reload_everything = True):
+        command = self.client.get_command('jsk git')
+        await ctx.invoke(command, argument=jishaku.codeblock_converter('pull'))
+
+        command = self.client.get_command('rall')
+        await ctx.invoke(command)
+
     @commands.command(
         help="Adds a member to the acknowledgments list",
         aliases=['ack'])

@@ -50,7 +50,6 @@ class HelpCentre(discord.ui.View):
         color = random.choice(colors)
         
         embed = discord.Embed(title=f"Here's a guild on how to use the help menu", description=f"""
-TESTING TE§STING
 `<argument>`
 This means that the argument is **required**.
 
