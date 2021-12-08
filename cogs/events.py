@@ -897,16 +897,20 @@ With the reason being: {info['reason']}
                 if message.mentions:
                     users = []
                     for user in message.mentions:
+                        if user.id == message.author.id:
+                            continue
+
                         user = message.guild.get_member(user.id)
                         users.append(user.mention)
 
-                    embed = discord.Embed(title="<a:alert:854743318033072158> Ghost ping detector <a:alert:854743318033072158>", description=f"""
+                    if users:
+                        embed = discord.Embed(title="<a:alert:854743318033072158> Ghost ping detector <a:alert:854743318033072158>", description=f"""
 {message.author.mention} just deleted a message that pinged {', '.join(users)}!
-                            """, color=discord.Color.red())
+                                """, color=discord.Color.red())
 
-                    message = await message.channel.send(message.author.mention, allowed_mentions=discord.AllowedMentions(users=True))
-                    await message.delete()
-                    return await message.channel.send(embed=embed)
+                        message = await message.channel.send(message.author.mention, allowed_mentions=discord.AllowedMentions(users=True))
+                        await message.delete()
+                        return await message.channel.send(embed=embed)
 
             else:
                 return
