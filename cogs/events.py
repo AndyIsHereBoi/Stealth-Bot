@@ -902,9 +902,11 @@ With the reason being: {info['reason']}
 
                     embed = discord.Embed(title="Ghost ping detector", description=f"""
 {message.author.mention} just deleted a message that pinged {', '.join(users)}!
-                            """)
+                            """, color=discord.Color.red())
 
-                    await message.channel.send(embed=embed)
+                    message = await message.channel.send(message.author.mention)
+                    await message.delete()
+                    return await message.channel.send(embed=embed)
 
             else:
                 return
