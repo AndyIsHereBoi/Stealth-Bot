@@ -1,6 +1,8 @@
+import errors
 import discord
 
 from discord.ext import commands
+from helpers.context import CustomContext
 
 
 def setup(client):
@@ -239,7 +241,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
         """
         if ctx.invoked_subcommand is None:
             if new_role:
-                await self.bot.db.execute(
+                await self.client.db.execute(
                     "INSERT INTO prefixes(guild_id, muted_id) VALUES ($1, $2) "
                     "ON CONFLICT (guild_id) DO UPDATE SET muted_id = $2",
                     ctx.guild.id, new_role.id)
@@ -247,7 +249,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
                 return await ctx.send(f"Updated the muted role to {new_role.mention}!",
                                       allowed_mentions=discord.AllowedMentions().none())
 
-            mute_role = await self.bot.db.fetchval('SELECT muted_id FROM prefixes WHERE guild_id = $1', ctx.guild.id)
+            mute_role = await self.client.db.fetchval('SELECT muted_id FROM prefixes WHERE guild_id = $1', ctx.guild.id)
 
             if not mute_role:
                 raise errors.MuteRoleNotFound
