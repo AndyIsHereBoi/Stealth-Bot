@@ -33,12 +33,13 @@ def setup(client):
     client.add_cog(WelcomeCog(client))
     
 class WelcomeCog(commands.Cog):
-    "Commands used to control the welcome system."
+    """Welcome system"""
     def __init__(self, client):
         self.client = client
+        self.hidden = True
         
         self.select_emoji = "👋"
-        self.select_brief = "Commands used to control the welcome system."
+        self.select_brief = "Welcome system"
         
         self._invites_ready = asyncio.Event()
         self._dict_filled = asyncio.Event()

@@ -440,22 +440,19 @@ Successfully kicked `{len(successful)}` members for `{reason}`
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed, footer=False)
-        
+
     @commands.command(
         help="With this command you can ban a lot of members at once.",
-        brief="massban @Noob @Fusion @Leo\nkick @Gamer @Danny @Buco Asked for it",
+        brief="massban @Noob @Fusion @Leo\nmassban @Gamer @Danny @Buco Asked for it",
         aliases=['mass_ban', 'mass-ban', 'multiban', 'multi_ban', 'multi-ban'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], delete_days: typing.Optional[int], *, reason: typing.Optional[str]):
+    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member]], delete_days: typing.Optional[int], *, reason: typing.Optional[str]):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
-            
+
         if members is None:
             return await ctx.send("You need to specify who you want me to ban!")
-            
-        if delete_days and 7 < delete_days < 0:
-            return await ctx.send("Delete days must be between 0 and 7")
 
         successful: typing.List[discord.Member] = []
         failed_perms: typing.List[discord.Member] = []
@@ -465,7 +462,7 @@ Successfully kicked `{len(successful)}` members for `{reason}`
             if member.id == ctx.author.id:
                 failed_perms.append(member)
                 continue
-            
+
             if member.id == self.client.user.id:
                 failed_perms.append(member)
                 continue
@@ -473,7 +470,7 @@ Successfully kicked `{len(successful)}` members for `{reason}`
             if member.id == ctx.guild.owner.id:
                 failed_perms.append(member)
                 continue
-            
+
             if member.guild_permissions.administrator:
                 failed_perms.append(member)
                 continue
@@ -482,21 +479,21 @@ Successfully kicked `{len(successful)}` members for `{reason}`
                 if member.top_role >= ctx.me.top_role:
                     failed_perms.append(member)
                     continue
-            
+
             try:
                 try:
                     await member.send(f"You have been banned from {ctx.guild}\nReason: {reason}")
-                    await ctx.guild.ban(member, reason=str(reason), delete_message_days=delete_days)
-                    
+                    await ctx.guild.ban(user=member, reason=str(reason), delete_days=int(delete_days))
+
                 except:
-                    await ctx.guild.ban(member, reason=str(reason), delete_message_days=delete_days)
-                    
+                    await ctx.guild.ban(user=member, reason=str(reason), delete_days=int(delete_days))
+
                 successful.append(member)
-                
+
             except (discord.Forbidden, discord.HTTPException):
                 failed_internal.append(member)
                 continue
-            
+
         embed = discord.Embed(description=f"""
 Successfully banned `{len(successful)}` members for `{reason}`
 
@@ -504,7 +501,7 @@ Successfully banned `{len(successful)}` members for `{reason}`
 **Successful**: {', '.join([member.display_name for member in successful]) if successful else 'N/A'}
 **Failed**: {', '.join([m.display_name for m in failed_perms + failed_internal]) if failed_perms or failed_internal else 'N/A'}
                               """)
-        
+
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed, footer=False)
