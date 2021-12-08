@@ -223,12 +223,13 @@ manipulate images and way more!
 
 I've been on discord since {discord.utils.format_dt(self.ctx.me.created_at)} ({discord.utils.format_dt(self.ctx.me.created_at, style='R')})
 I've been online for {self.ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}
-I have **{len(self.bot.commands)}** commands but you can only use **{self.usable_commands}** of those in this server.
+I have **{len(self.bot.commands)}** commands.
+But you can only use **{self.usable_commands}** of those in this server.
                         """, inline=False)
 
         embed.add_field(name=f"**Support server**", value=f"""
-To get help with the bot,
-you can either join [the support server](https://discord.gg/MrBcA6PZPw) or just DM me.
+To get help, you can join my [support server](https://discord.gg/MrBcA6PZPw).
+You can also send me a DM if you prefer to.
                                 """, inline=False)
 
         embed.set_footer(text=f"This command is inspired by R. Danny and DuckBot")
