@@ -43,7 +43,7 @@ class AFKUsersEmbedPage(menus.ListPageSource):
 
 
 class Events(commands.Cog):
-    "Just some events.. but how did you find this cog?..."
+    """Just some events.. but how did you find this cog?..."""
 
     def __init__(self, client):
         self.hidden = True
@@ -111,6 +111,26 @@ class Events(commands.Cog):
 
         
 #         # await self.client.db.execute("INSERT INTO economy(user_id, amount) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET amount= $2", int(data["user"]), balance + amount)
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message: discord.Message):
+        if message.guild is None:
+            return
+
+        if message.author.bot:
+            return
+
+        if message.guild.id == 799330949686231050:
+            if message.mentions:
+                users = []
+                for user in message.mentions:
+                    users.append(user.mention)
+
+                embed = discord.Embed(title="Ghost ping detector", description=f"""
+{message.author.mention} just deleted a message that mentioned {", ".join(users)}!
+                """)
+
+                await message.channel.send(embed=embed)
 
     @commands.Cog.listener('on_command_error')
     async def error_handler(self, ctx, error):
