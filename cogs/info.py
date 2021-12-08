@@ -614,6 +614,7 @@ Available?: {available}
             embed.set_image(url=emoji.url)
 
             await ctx.send(embed=embed, view=view)
+
         elif isinstance(emoji, discord.PartialEmoji):
             url = f"{emoji.url}"
             animated = "No"
@@ -715,43 +716,6 @@ Guilds: `{shards_guilds[shard_id]['guilds']:,}`
 Users: `{shards_guilds[shard_id]['users']:,}`
             """, inline=True)
 
-        await ctx.send(embed=embed)
-
-    @commands.command(
-        help="Shows information about the bot shards.",
-        aliases=['shards', 'shard'])
-    async def shardinfo(self, ctx):
-        shards_guilds = {i: {"guilds": 0, "users": 0} for i in range(len(self.client.shards))}
-        for guild in self.client.guilds:
-            shards_guilds[guild.shard_id]["guilds"] += 1
-            shards_guilds[guild.shard_id]["users"] += guild.member_count
-
-        embed = discord.Embed()
-        for shard_id, shard in self.client.shards.items():
-            embed.add_field(name=f"Shard #{shard_id}", value=f"""
-Latency: {round(shard.latency * 1000)}ms{' ' * (9 - len(str(round(shard.latency * 1000, 3))))}
-Guilds: {humanize.intcomma(shards_guilds[shard_id]['guilds'])}
-Users: {humanize.intcomma(shards_guilds[shard_id]['users'])}
-            """)
-
-        await ctx.send(embed=embed)
-
-    @commands.command(
-        help="Shows the summary of the given string from wikipedia",
-        aliases=['wiki'],
-        brief="wikipedia Quantum mechanics\nwikipedia Python (Programming Language)")
-    async def wikipedia(self, ctx, *, text):
-        URLText = urllib.parse.quote(text)
-        
-        try:
-            info = wiki.summary(URLText)
-            page = wiki.page(URLText)
-        except:
-            return await ctx.send("I couldn't find that on wikipedia.")
-        
-        embed = discord.Embed(title=f"Wikipedia - {text}", url=page.url, description=info)
-        embed.set_thumbnail(
-            url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/2244px-Wikipedia-logo-v2.svg.png")
         await ctx.send(embed=embed)
         
     @commands.command(
