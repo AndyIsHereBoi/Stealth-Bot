@@ -901,25 +901,6 @@ With the reason being: {info['reason']}
         if role in member.roles:
             await self.client.db.execute("INSERT INTO muted (user_id, guild_id) VALUES ($1, $2) ON CONFLICT (user_id, guild_id) DO NOTHING", member.id, member.guild.id)
 
-    @commands.Cog.listener('on_message')
-    async def emoji_sender(self, message: discord.Message):
-        if not await self.client.is_owner(message.author) or self.client.user.id != 760179628122964008:
-            return
-
-        ic = '\u200b'
-        content = message.content
-        emojis = re.findall(r';(?P<name>[a-zA-Z0-9]{1,32}?);', message.content)
-        for em_name in emojis:
-            emoji = discord.utils.find(lambda em: em.name.lower() == em_name.lower(), self.client.emojis)
-
-            if not emoji or not emoji.is_usable():
-                emoji = None
-
-            content = content.replace(f';{em_name};', f'{str(emoji or f";{ic}{em_name}{ic};")}', 1)
-
-        if content.replace(ic, '') != message.content:
-            await message.channel.send(content)
-
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         self.client.edited_messages_count = self.client.edited_messages_count + 1
