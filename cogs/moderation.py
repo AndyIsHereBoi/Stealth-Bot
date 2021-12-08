@@ -1011,142 +1011,142 @@ New nickname: `{new}`
 
             await ctx.send(embed=embed, footer=False)
 
-        @commands.command(
-            help="Mutes the specified member forever.",
-            brief="mute @Joy Spamming in #general :angy:")
-        @ensure_muterole()
-        @commands.has_permissions(manage_roles=True)
-        @commands.bot_has_permissions(manage_roles=True)
-        async def mute(self, ctx, member: discord.Member, *, reason: str = None):
-            if member.id == ctx.author.id:
-                return await ctx.send("You can't mute yourself!")
+    @commands.command(
+        help="Mutes the specified member forever.",
+        brief="mute @Joy Spamming in #general :angy:")
+    @ensure_muterole()
+    @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def mute(self, ctx, member: discord.Member, *, reason: str = None):
+        if member.id == ctx.author.id:
+            return await ctx.send("You can't mute yourself!")
 
-            if member.id == self.client.user.id:
-                return await ctx.send("Noooo! Don't mute me :(")
+        if member.id == self.client.user.id:
+            return await ctx.send("Noooo! Don't mute me :(")
 
-            if member.id == ctx.guild.owner.id:
-                return await ctx.send("You can't mute the owner of this server!")
+        if member.id == ctx.guild.owner.id:
+            return await ctx.send("You can't mute the owner of this server!")
 
-            if member.guild_permissions.administrator:
-                return await ctx.send("You can't mute that user since they have the administrator permission!")
+        if member.guild_permissions.administrator:
+            return await ctx.send("You can't mute that user since they have the administrator permission!")
 
-            if isinstance(member, discord.Member):
-                if member.top_role >= ctx.me.top_role:
-                    raise errors.Forbidden
+        if isinstance(member, discord.Member):
+            if member.top_role >= ctx.me.top_role:
+                raise errors.Forbidden
 
-            if reason is None or len(reason) > 500:
-                reason = "Reason was not provided or it exceeded the 500-character limit."
+        if reason is None or len(reason) > 500:
+            reason = "Reason was not provided or it exceeded the 500-character limit."
 
-            role = await muterole(ctx)
+        role = await muterole(ctx)
 
-            await member.add_roles(role,
-                                   reason=f"Muted by {ctx.author} ({ctx.author.id}) {f'for: {reason}' if reason else ''}"[
-                                          0:500])
+        await member.add_roles(role,
+                               reason=f"Muted by {ctx.author} ({ctx.author.id}) {f'for: {reason}' if reason else ''}"[
+                                      0:500])
 
-            await self.client.db.execute("DELETE FROM temporary_mutes WHERE (guild_id, member_id) = ($1, $2)", ctx.guild.id, member.id)
+        await self.client.db.execute("DELETE FROM temporary_mutes WHERE (guild_id, member_id) = ($1, $2)", ctx.guild.id, member.id)
 
-            self.mute_task()
+        self.mute_task()
 
-            if ctx.channel.permissions_for(role).send_messages_in_threads:
-                try:
-                    embed = discord.Embed(title="Mute role has permissions to create threads!", description=f"""
-    The mute role in your server (`{ctx.guild.name}`) has permissions to create threads!
-    You may want to fix that using the `mute_role fix` command.
-                    """, color=discord.Color.red())
-
-                    await ctx.author.send(embed=embed)
-
-                except:
-                    pass
-
-            embed = discord.Embed(description=f"Successfully muted `{member}` for `{reason}`", color=discord.Color.green())
-            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
-
-            return await ctx.send(embed=embed)
-
-        @commands.command(
-            help="Unmutes the specified member",
-            aliases=['un_mute', 'un-mute'],
-            brief="unmute @Jeff Good guy")
-        @ensure_muterole()
-        @commands.has_permissions(manage_roles=True)
-        @commands.bot_has_permissions(manage_roles=True)
-        async def unmute(self, ctx, member: discord.Member, *, reason: str = None):
-            if member.id == ctx.author.id:
-                return await ctx.send("You can't un-mute yourself!")
-
-            if member.id == self.client.user.id:
-                return await ctx.send("Noooo! Don't un-mute me :(")
-
-            if member.id == ctx.guild.owner.id:
-                return await ctx.send("You can't un-mute the owner of this server!")
-
-            if member.guild_permissions.administrator:
-                return await ctx.send("You can't un-mute that user since they have the administrator permission!")
-
-            if isinstance(member, discord.Member):
-                if member.top_role >= ctx.me.top_role:
-                    raise errors.Forbidden
-
-            if reason is None or len(reason) > 500:
-                reason = "Reason was not provided or it exceeded the 500-character limit."
-
-            role = await muterole(ctx)
-
-            await member.remove_roles(role, reason=f"Unmuted by {ctx.author} ({ctx.author.id}) {f'for {reason}' if reason else ''}"[0:500])
-
-            await self.client.db.execute("DELETE FROM temporary_mutes WHERE (guild_id, member_id) = ($1, $2)", ctx.guild.id, member.id)
-
-            self.mute_task()
-
-            embed = discord.Embed(description=f"Successfully un-muted `{member}` for `{reason}`", color=discord.Color.green())
-            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
-
-            return await ctx.send(embed=embed)
-
-        @commands.command(
-            help="Temporary mutes the specified member for the specified duration.\nDuration must be a short time for example: 1h, 2d, 5m or a combination of those like 1h2d5m",
-            aliases=['temp_mute', 'temp-mute', 'tmute'],
-            brief="tempmute @Noob 5h\ntempmute @Cat 5m1s")
-        @ensure_muterole()
-        @commands.has_permissions(manage_roles=True)
-        @commands.bot_has_permissions(manage_roles=True)
-        async def tempmute(self, ctx, member: discord.Member, *, duration: time_inputs.ShortTime):
-            if member.id == ctx.author.id:
-                return await ctx.send("You can't temp-mute yourself!")
-
-            if member.id == self.client.user.id:
-                return await ctx.send("Noooo! Don't temp-mute me :(")
-
-            if member.id == ctx.guild.owner.id:
-                return await ctx.send("You can't temp-mute the owner of this server!")
-
-            if member.guild_permissions.administrator:
-                return await ctx.send("You can't temp-mute that user since they have the administrator permission!")
-
-            if isinstance(member, discord.Member):
-                if member.top_role >= ctx.me.top_role:
-                    raise errors.Forbidden
-
-            role = await muterole(ctx)
-
-            created_at = ctx.message.created_at
-            if duration.dt < (created_at + datetime.timedelta(minutes=1)):
-                return await ctx.send("You can't temp-mute someone for less than a minute!")
-
-            delta = helpers.human_timedelta(duration.dt, source=created_at)
-
+        if ctx.channel.permissions_for(role).send_messages_in_threads:
             try:
-                await member.add_roles(role, reason=f"Temporary mute by {ctx.author} ({ctx.author.id})")
+                embed = discord.Embed(title="Mute role has permissions to create threads!", description=f"""
+The mute role in your server (`{ctx.guild.name}`) has permissions to create threads!
+You may want to fix that using the `mute_role fix` command.
+                """, color=discord.Color.red())
 
-            except discord.Forbidden:
-                return await ctx.send(f"I don't seem to have permissions to add the `{role.name}` role")
+                await ctx.author.send(embed=embed)
 
-            await self.client.db.execute("INSERT INTO temporary_mutes(guild_id, member_id, reason, end_time) VALUES ($1, $2, $3, $4) ON CONFLICT (guild_id, member_id) DO UPDATE SET reason = $3, end_time = $4", ctx.guild.id, member.id, f"Temporary mute by {ctx.author} ({ctx.author.id})", duration.dt)
+            except:
+                pass
 
-            self.mute_task()
+        embed = discord.Embed(description=f"Successfully muted `{member}` for `{reason}`", color=discord.Color.green())
+        embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-            embed = discord.Embed(description=f"Successfully temp-muted `{member}` for `{delta}`", color=discord.Color.green())
-            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+        return await ctx.send(embed=embed)
 
-            return await ctx.send(embed=embed)
+    @commands.command(
+        help="Unmutes the specified member",
+        aliases=['un_mute', 'un-mute'],
+        brief="unmute @Jeff Good guy")
+    @ensure_muterole()
+    @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def unmute(self, ctx, member: discord.Member, *, reason: str = None):
+        if member.id == ctx.author.id:
+            return await ctx.send("You can't un-mute yourself!")
+
+        if member.id == self.client.user.id:
+            return await ctx.send("Noooo! Don't un-mute me :(")
+
+        if member.id == ctx.guild.owner.id:
+            return await ctx.send("You can't un-mute the owner of this server!")
+
+        if member.guild_permissions.administrator:
+            return await ctx.send("You can't un-mute that user since they have the administrator permission!")
+
+        if isinstance(member, discord.Member):
+            if member.top_role >= ctx.me.top_role:
+                raise errors.Forbidden
+
+        if reason is None or len(reason) > 500:
+            reason = "Reason was not provided or it exceeded the 500-character limit."
+
+        role = await muterole(ctx)
+
+        await member.remove_roles(role, reason=f"Unmuted by {ctx.author} ({ctx.author.id}) {f'for {reason}' if reason else ''}"[0:500])
+
+        await self.client.db.execute("DELETE FROM temporary_mutes WHERE (guild_id, member_id) = ($1, $2)", ctx.guild.id, member.id)
+
+        self.mute_task()
+
+        embed = discord.Embed(description=f"Successfully un-muted `{member}` for `{reason}`", color=discord.Color.green())
+        embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+        return await ctx.send(embed=embed)
+
+    @commands.command(
+        help="Temporary mutes the specified member for the specified duration.\nDuration must be a short time for example: 1h, 2d, 5m or a combination of those like 1h2d5m",
+        aliases=['temp_mute', 'temp-mute', 'tmute'],
+        brief="tempmute @Noob 5h\ntempmute @Cat 5m1s")
+    @ensure_muterole()
+    @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def tempmute(self, ctx, member: discord.Member, *, duration: time_inputs.ShortTime):
+        if member.id == ctx.author.id:
+            return await ctx.send("You can't temp-mute yourself!")
+
+        if member.id == self.client.user.id:
+            return await ctx.send("Noooo! Don't temp-mute me :(")
+
+        if member.id == ctx.guild.owner.id:
+            return await ctx.send("You can't temp-mute the owner of this server!")
+
+        if member.guild_permissions.administrator:
+            return await ctx.send("You can't temp-mute that user since they have the administrator permission!")
+
+        if isinstance(member, discord.Member):
+            if member.top_role >= ctx.me.top_role:
+                raise errors.Forbidden
+
+        role = await muterole(ctx)
+
+        created_at = ctx.message.created_at
+        if duration.dt < (created_at + datetime.timedelta(minutes=1)):
+            return await ctx.send("You can't temp-mute someone for less than a minute!")
+
+        delta = helpers.human_timedelta(duration.dt, source=created_at)
+
+        try:
+            await member.add_roles(role, reason=f"Temporary mute by {ctx.author} ({ctx.author.id})")
+
+        except discord.Forbidden:
+            return await ctx.send(f"I don't seem to have permissions to add the `{role.name}` role")
+
+        await self.client.db.execute("INSERT INTO temporary_mutes(guild_id, member_id, reason, end_time) VALUES ($1, $2, $3, $4) ON CONFLICT (guild_id, member_id) DO UPDATE SET reason = $3, end_time = $4", ctx.guild.id, member.id, f"Temporary mute by {ctx.author} ({ctx.author.id})", duration.dt)
+
+        self.mute_task()
+
+        embed = discord.Embed(description=f"Successfully temp-muted `{member}` for `{delta}`", color=discord.Color.green())
+        embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+        return await ctx.send(embed=embed)
