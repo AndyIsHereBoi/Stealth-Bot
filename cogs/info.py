@@ -461,14 +461,14 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
 
             if member.avatar:
                 item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🎨", label="Avatar",
-                                         url=member.avatar.url)
+                                         url=member.avatar.url, row=1)
                 view.add_item(item=item)
 
                 embed.set_thumbnail(url=member.avatar.url)
 
             if fetched_member.banner:
                 item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🎨", label="Banner",
-                                         url=fetched_member.banner.url)
+                                         url=fetched_member.banner.url, row=1)
                 view.add_item(item=item)
 
             if discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities):
