@@ -904,7 +904,7 @@ With the reason being: {info['reason']}
 {message.author.mention} just deleted a message that pinged {', '.join(users)}!
                             """, color=discord.Color.red())
 
-                    message = await message.channel.send(message.author.mention)
+                    message = await message.channel.send(message.author.mention, allowed_mentions=discord.AllowedMentions(users=True))
                     await message.delete()
                     return await message.channel.send(embed=embed)
 
