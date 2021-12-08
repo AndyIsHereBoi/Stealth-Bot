@@ -447,7 +447,7 @@ Successfully kicked `{len(successful)}` members for `{reason}`
         aliases=['mass_ban', 'mass-ban', 'multiban', 'multi_ban', 'multi-ban'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], delete_days: typing.Optional[int] = None, *, reason: typing.Optional[str] = None):
+    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], delete_days: typing.Optional[int], *, reason: typing.Optional[str]):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
             
