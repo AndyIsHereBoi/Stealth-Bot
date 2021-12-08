@@ -382,12 +382,12 @@ class Moderation(commands.Cog):
         aliases=['mass_kick', 'mass-kick', 'multikick', 'multi_kick', 'multi-kick'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def masskick(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], *, reason=None):
+    async def masskick(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], *, reason: typing.Optional[str] = None):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
             
         if members is None:
-            return await ctx.send("You need to specify who you want me to ban!")
+            return await ctx.send("You need to specify who you want me to kick!")
 
         successful: typing.List[discord.Member] = []
         failed_perms: typing.List[discord.Member] = []
@@ -447,7 +447,7 @@ Successfully kicked `{len(successful)}` members for `{reason}`
         aliases=['mass_ban', 'mass-ban', 'multiban', 'multi_ban', 'multi-ban'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], delete_days: typing.Optional[int] = None, *, reason=None):
+    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], delete_days: typing.Optional[int] = None, *, reason: typing.Optional[str] = None):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
             
