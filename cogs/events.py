@@ -897,10 +897,11 @@ With the reason being: {info['reason']}
                 if message.mentions:
                     users = []
                     for user in message.mentions:
+                        user = await message.guild.get_member(user.id)
                         users.append(user.mention)
 
                     embed = discord.Embed(title="Ghost ping detector", description=f"""
-{message.author.mention} just deleted a message that pinged {message.mentions}!
+{message.author.mention} just deleted a message that pinged {', '.join(users)}!
                             """)
 
                     await message.channel.send(embed=embed)
