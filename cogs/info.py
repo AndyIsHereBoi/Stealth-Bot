@@ -473,7 +473,7 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
 
             if discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities):
                 item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="<:spotify:899263771342700574>", label="Spotify",
-                                         url=discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities).track_url)
+                                         url=discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities).track_url, row=2)
                 view.add_item(item=item)
 
             await ctx.send(embed=embed, view=view)
