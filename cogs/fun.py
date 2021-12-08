@@ -394,6 +394,22 @@ class Fun(commands.Cog):
         await ctx.send(f"{text}\n{member1.display_name if member1 in ctx.guild.members else member1.name} & {member2.display_name if member2 in ctx.guild.members else member2.name}\n{number1}%")
 
     @commands.command(
+        help=":clap: Claps the given message.",
+        brief="clap\nclap Hello there!")
+    async def clap(self, ctx, *, message: typing.Union[str, discord.Message] = None):
+        if message is None:
+            if ctx.message.reference:
+                message = ctx.message.reference.resolved.content
+
+            else:
+                message = "im not gay"
+
+        if len(message) >= 150:
+            return await ctx.send("Your message exceeded the 150-character limit!")
+
+        await ctx.send(":clap:" + ''.join([char + ":clap:" for char in message]))
+
+    @commands.command(
         help=":eggplant: Shows the size of the specified member's pp.",
         aliases=['banana', 'eggplant', 'egg_plant'])
     async def pp(self, ctx, member: typing.Union[discord.Member, discord.User] = None):

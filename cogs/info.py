@@ -641,7 +641,8 @@ Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.uti
             with f.open() as of:
                 for l in of.readlines():
                     l = l.strip()
-                    if l.startswith('class'):
+                    if l.startswith('cla'
+                                    'ss'):
                         cl += 1
                     if l.startswith('def'):
                         fn += 1
