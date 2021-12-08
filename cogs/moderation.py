@@ -382,7 +382,7 @@ class Moderation(commands.Cog):
         aliases=['mass_kick', 'mass-kick', 'multikick', 'multi_kick', 'multi-kick'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def masskick(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], *, reason: typing.Optional[str] = None):
+    async def masskick(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], *, reason: typing.Optional[str]):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
             
@@ -418,10 +418,10 @@ class Moderation(commands.Cog):
             try:
                 try:
                     await member.send(f"You have been kicked from {ctx.guild}\nReason: {reason}")
-                    await member.kick(reason=reason)
+                    await member.kick(reason=str(reason))
                     
                 except:
-                    await member.kick(reason=reason)
+                    await member.kick(reason=str(reason))
                     
                 successful.append(member)
                 
@@ -486,10 +486,10 @@ Successfully kicked `{len(successful)}` members for `{reason}`
             try:
                 try:
                     await member.send(f"You have been banned from {ctx.guild}\nReason: {reason}")
-                    await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
+                    await ctx.guild.ban(member, reason=str(reason), delete_message_days=delete_days)
                     
                 except:
-                    await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
+                    await ctx.guild.ban(member, reason=str(reason), delete_message_days=delete_days)
                     
                 successful.append(member)
                 
