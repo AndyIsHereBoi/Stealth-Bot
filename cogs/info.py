@@ -471,8 +471,6 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
                                          url=fetched_member.banner.url)
                 view.add_item(item=item)
 
-                embed.set_image(url=fetched_member.banner.url)
-
             await ctx.send(embed=embed, view=view)
         
         elif isinstance(member, discord.User):
