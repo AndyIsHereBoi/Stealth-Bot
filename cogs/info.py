@@ -456,6 +456,9 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
 {text}
             """, inline=False)
 
+            if member.avatar:
+                embed.set_thumbnail(url=member.avatar.url)
+
             await ctx.send(embed=embed)
         
         elif isinstance(member, discord.User):
