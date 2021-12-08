@@ -402,6 +402,7 @@ class Info(commands.Cog):
                 member = ctx.author
                 
         if isinstance(member, discord.Member):
+            fetched_member = await self.client.fetch_user(member.id)
 
             embed = discord.Embed(title=member.name if member.name else "No name", url=f"https://discord.com/users/{member.id}", description=f"<:greyTick:596576672900186113> ID: {member.id}")
 
@@ -427,9 +428,9 @@ class Info(commands.Cog):
 
             embed.add_field(name="__**Assets**__", value=f"""
 {helpers.get_member_avatar_urls(member, ctx, member.id)}
-{helpers.get_member_banner_urls(await self.client.fetch_user(member.id), ctx, member.id)}
+{helpers.get_member_banner_urls(fetched_member, ctx, member.id)}
 :art: Color: {helpers.get_member_color(member)}
-:art: Accent color: {helpers.get_member_accent_color(await self.client.fetch_user(member.id))}
+:art: Accent color: {helpers.get_member_accent_color(fetched_member)}
             """, inline=True)
             
             record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
@@ -449,17 +450,30 @@ class Info(commands.Cog):
 <:role:895688440513974365> Top role: {member.top_role.mention if member.top_role else 'No top role'}
 <:role:895688440513974365> Roles: {helpers.get_member_roles(member, ctx.guild)}
 <:badges:876507747292700713> Staff permissions: {helpers.get_member_permissions(member.guild_permissions)}
-<:badges:876507747292700713> Badges: {helpers.get_member_badges(member, await self.client.fetch_user(member.id))}
+<:badges:876507747292700713> Badges: {helpers.get_member_badges(member, fetched_member)}
 <:voice_channel:904474834526937120> Voice: {member.voice.channel.mention if member.voice else 'Not in a VC'} {f'**|** Muted: {"Yes" if member.voice.mute or member.voice.self_mute else "No"} **|** Deafened: {"Yes" if member.voice.deaf or member.voice.self_deaf else "No"}' if member.voice else ''}
 Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 else 'No mutual servers'}
 :star: Acknowledgments: {ack if ack else 'No acknowledgments'}
 {text}
             """, inline=False)
 
+            view = discord.ui.View()
+
             if member.avatar:
+                item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🎨", label="Avatar",
+                                         url=member.avatar.url)
+                view.add_item(item=item)
+
                 embed.set_thumbnail(url=member.avatar.url)
 
-            await ctx.send(embed=embed)
+            if fetched_member.banner:
+                item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🎨", label="Banner",
+                                         url=fetched_member.banner.url)
+                view.add_item(item=item)
+
+                embed.set_image(url=fetched_member.banner.url)
+
+            await ctx.send(embed=embed, view=view)
         
         elif isinstance(member, discord.User):
 
@@ -696,6 +710,7 @@ Commands: `{len(self.client.commands):,}`
 Commands used: `{self.client.commands_used:,}`
 Messages seen: `{self.client.messages_count:,}`
                         """, inline=True)
+
         embed.add_field(name=f"__**System**__", value=f"""
 PID: `{os.getpid()}`
 CPU: `{round(psutil.cpu_percent())}%`/`100%`
@@ -703,6 +718,7 @@ RAM: `{int(get_ram_usage() / 1024 / 1024)}MB`/`{int(get_ram_total() / 1024 / 102
 Disk: `{used // (2 ** 30)}GB`/`{total // (2 ** 30)}GB`
 Python: `{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}`
                           """, inline=True)
+
         embed.add_field(name=f"__**Files**__", value=f"""
 Files: `{fc:,}`
 Lines: `{ls:,}`
@@ -710,6 +726,7 @@ Classes: `{cl:,}`
 Functions: `{fn:,}`
 Courtines: `{cr:,}`
                           """, inline=True)
+
         embed.add_field(name=f"__**Latest changes**__", value=ctx.get_last_commits(5), inline=False)
 
         for shard_id, shard in self.client.shards.items():
