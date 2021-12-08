@@ -407,7 +407,7 @@ class Fun(commands.Cog):
         if len(message) >= 150:
             return await ctx.send("Your message exceeded the 150-character limit!")
 
-        await ctx.send(":clap:" + ''.join([char + ":clap:" for char in message]))
+        await ctx.send(f":clap: {discord.utils.remove_markdown(message.replace(' ', ' :clap: '))} :clap:")
 
     @commands.command(
         help=":eggplant: Shows the size of the specified member's pp.",
