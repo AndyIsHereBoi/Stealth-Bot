@@ -150,7 +150,7 @@ class Moderation(commands.Cog):
 
         if guild:
 
-            mute_role = await self.client.db.fetchval('SELECT muted_id FROM guilds WHERE guild_id = $1',
+            mute_role = await self.client.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1',
                                                    next_task['guild_id'])
             if mute_role:
 

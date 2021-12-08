@@ -317,7 +317,7 @@ Uses: {invite.uses}
                         
                     else:
                         embed.add_field(name=f"Avatar updated", value=f"User {'updated' if before.avatar else 'set'} their avatar.", inline=False)
-                        embed.set_image(url=f"{after.guild_avatar.url}")
+                        embed.set_image(url=f"{after.avatar.url}")
                     deliver = True
                     
                 if before.name != after.name:
