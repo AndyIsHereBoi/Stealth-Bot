@@ -25,14 +25,14 @@ def reading_recursive(root: str, /) -> int:
 
 def count_python(root: str) -> int:
     return sum(reading_recursive(root))
-        
-        
+
+
 class VoteButtons(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.add_item(discord.ui.Button(emoji="<:dbl:757235965629825084>", label="top.gg", url="https://top.gg/bot/760179628122964008"))
 
-        
+
 class HelpCentre(discord.ui.View):
     def __init__(self, ctx, other_view: discord.ui.View):
         super().__init__()
@@ -48,7 +48,7 @@ class HelpCentre(discord.ui.View):
     async def start(self, interaction: discord.Interaction):
         colors = [0x910023, 0xA523FF]
         color = random.choice(colors)
-        
+
         embed = discord.Embed(title=f"Here's a guild on how to use the help menu", description=f"""
 `<argument>`
 This means that the argument is **required**.
@@ -62,13 +62,13 @@ This means that the argument is **optional** and has a default value.
 **Do not use these brackets when running a command.**
 **They're only there to indicate if the argument is required or not.**
                               """, color=color)
-        
+
         embed.set_footer(text=f"To continue browsing the help menu, press the \"Go back\" button.")
 
         self.embed = interaction.message.embeds[0]
         self.add_item(discord.ui.Button(label="Support server", emoji="❓", url="https://discord.gg/MrBcA6PZPw"))
         self.add_item(discord.ui.Button(label="Invite me", emoji="<:invite:895688440639799347>", url="https://discord.com/oauth2/authorize?client_id=760179628122964008&scope=applications.commands+bot&permissions=549755813887"))
-        
+
         await interaction.response.edit_message(embed=embed, view=self)
 
 
@@ -77,8 +77,8 @@ This means that the argument is **optional** and has a default value.
             return True
         await interaction.response.defer()
         return False
-    
-    
+
+
 class NewsCentre(discord.ui.View):
     def __init__(self, ctx, other_view: discord.ui.View):
         super().__init__()
@@ -94,7 +94,7 @@ class NewsCentre(discord.ui.View):
     async def start(self, interaction: discord.Interaction):
         colors = [0x910023, 0xA523FF]
         color = random.choice(colors)
-        
+
         embed = discord.Embed(title=f"Latest news - ())", description=f"""
 __**<a:music:888778105844563988> Music system improved (<t:1637504100:R>)**__
 The music system has been improved and is now way faster and smoother!
@@ -117,13 +117,13 @@ __**:bell: New todo system (<t:1635951676:R>)**__
 With the todo system you can remind yourself to do tasks in the future!
 Do **{self.ctx.prefix}help todo** for more info.
                               """, color=color)
-        
+
         embed.set_footer(text=f"To continue browsing the help menu, press the \"Go back\" button.")
 
         self.embed = interaction.message.embeds[0]
         self.add_item(discord.ui.Button(label="Invite me", emoji="<:invite:895688440639799347>", url="https://discord.com/oauth2/authorize?client_id=760179628122964008&scope=applications.commands+bot&permissions=549755813887"))
         self.add_item(discord.ui.Button(label="Vote on top.gg", emoji="<:dbl:757235965629825084>", url="https://top.gg/bot/760179628122964008"))
-        
+
         await interaction.response.edit_message(embed=embed, view=self)
 
     async def interaction_check(self, interaction: Interaction):
@@ -165,38 +165,38 @@ class HelpView(discord.ui.View):
     def build_embeds(self, cog: commands.Cog):
         colors = [0x910023, 0xA523FF]
         color = random.choice(colors)
-        
+
         embeds = []
         commands = cog.get_commands()
         embed = discord.Embed(title=f"{str(cog.qualified_name).title()} commands [{len(commands)}]", description=f"{cog.description if cog.description else 'No description provided...'[0:1024]}", color=color, timestamp=discord.utils.utcnow())
-        
+
         for cmd in commands:
             embed.add_field(name=f"{cmd.name} {cmd.signature}", value=f"{cmd.help if cmd.help else 'No help provided...'[0:1024]}", inline=False)
             embed.set_footer(text="For info on a command, do help <command>")
-            
+
             if len(embed.fields) == 5:
                 embeds.append(embed)
                 embed = discord.Embed(title=f"{str(cog.qualified_name).title()} commands [{len(commands)}]", description=cog.description or "No description provided", color=color, timestamp=discord.utils.utcnow())
-        
+
         if len(embed.fields) > 0:
             embeds.append(embed)
-            
+
         return embeds
-    
+
 
     def build_select(self):
         self.category_select: discord.ui.Select
         self.category_select.options = []
         self.category_select.add_option(label="Main page", value="index", emoji="🏠")
-        
+
         for cog, comm in self.data.items():
             if not comm:
                 continue
-            
+
             emoji = getattr(cog, "select_emoji", None)
             label = cog.qualified_name
             brief = getattr(cog, "select_brief", None)
-            
+
             self.category_select.add_option(label=label, value=label, emoji=emoji, description=brief)
 
     def build_main_page(self):
@@ -204,32 +204,30 @@ class HelpView(discord.ui.View):
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        
-        
-        
+
         embed = discord.Embed(title="Help menu", description=f"""
 Hello there! I'm **Stealth Bot**. Welcome to the help menu.
          """)
-        
+
         embed.add_field(name=f"**Getting help**", value=f"""
 Use **sb!help <command>** for more info on a command.
 There's also **sb!help <command> [sub-command]**.
 Use **sb!help <category>** for more info on a category.
 You can also use the dropdown below to select a category.
                         """, inline=False)
-        
+
         embed.add_field(name=f"**Support server**", value=f"""
 https://discord.gg/MrBcA6PZPw
                         """, inline=False)
-        
+
         embed.add_field(name=f"**Wait a minute.. Who are you?**", value=f"""
-I'm a discord bot made by Ender2K89#9999.
+I'm a discord bot made by [Ender2K89#9999](https://github.com/Ender2K89/).
 I've been on discord since {discord.utils.format_dt(self.ctx.me.created_at)} ({discord.utils.format_dt(self.ctx.me.created_at, style='R')})
 I have a lot of features such as moderation, fun, info and more!
 I've been online for {self.ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}
 I have **{len(self.bot.commands)}** commands but you can only use **{self.usable_commands}** of those in this server.
                         """, inline=False)
-        
+
         embed.set_footer(text=f"This command is inspired by R. Danny and DuckBot")
 
         return embed
@@ -258,7 +256,7 @@ I have **{len(self.bot.commands)}** commands but you can only use **{self.usable
         await interaction.response.edit_message(embed=self.embeds[self.current_page], view=self)
         print(self.embeds[self.current_page].fields[0].name)
         print(self.current_page)
-        
+
     @discord.ui.button(label="News", emoji="📰", style=discord.ButtonStyle.blurple, row=1)
     async def news(self, button: discord.ui.Button, interaction: discord.Interaction):
         view = NewsCentre(self.ctx, self)
@@ -303,7 +301,7 @@ class GeneralView(discord.ui.View):
         await interaction.message.delete()
         if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
             await self.ctx.message.delete()
-        
+
     @discord.ui.button(label="News", emoji="📰", style=discord.ButtonStyle.blurple, row=1)
     async def news(self, button: discord.ui.Button, interaction: discord.Interaction):
         view = NewsCentre(self.ctx, self)
@@ -312,10 +310,10 @@ class GeneralView(discord.ui.View):
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user == self.ctx.author:
             return True
-        
+
         await interaction.response.defer()
         return False
-    
+
     async def on_timeout(self):
         self.clear_items()
         await self.message.edit(view=self)
@@ -333,10 +331,10 @@ class StealthHelp(commands.HelpCommand):
         """Retrieves the bot mapping passed to :meth:`send_bot_help`."""
         bot = self.context.bot
         ignored_cogs = ['NSFW', 'Events', 'Levels', 'IPC', 'SignalPvP', 'Help', 'Jishaku']
-        
+
         if self.context.channel.is_nsfw():
             ignored_cogs = ['Events', 'Levels', 'IPC', 'SignalPvP', 'Help', 'Jishaku']
-            
+
         mapping = {cog: cog.get_commands() for cog in sorted(bot.cogs.values(), key=lambda c: len(c.get_commands()), reverse=True) if cog.qualified_name not in ignored_cogs}
         return mapping
 
@@ -351,8 +349,8 @@ class StealthHelp(commands.HelpCommand):
         view = HelpView(self.context, usable_commands=f"{len(await self.filter_commands(list(self.context.bot.commands), sort=True)):,}",
                                                                 data=mapping)
         await view.start()
-        
-        
+
+
     async def send_cog_help(self, cog):
         entries = [command for command in cog.get_commands()]
         menu = paginator.ViewPaginator(paginator.GroupHelpPageSource(cog, entries, prefix=self.context.clean_prefix,
@@ -360,8 +358,8 @@ class StealthHelp(commands.HelpCommand):
                                                                 usable_commands=len(await self.filter_commands(cog.get_commands()))),
                                                                 ctx=self.context, compact=True)
         await menu.start()
-        
-        
+
+
     async def send_group_help(self, group):
         entries = [command for command in group.commands]
         menu = paginator.ViewPaginator(paginator.GroupHelpPageSource(group, entries, prefix=self.context.clean_prefix,
@@ -369,17 +367,17 @@ class StealthHelp(commands.HelpCommand):
                                                                 usable_commands=len(await self.filter_commands(group.commands, sort=True))),
                                                                 ctx=self.context, compact=True)
         await menu.start()
-        
-        
+
+
     async def send_command_help(self, command: commands.Command):
         embed = discord.Embed(title=f"{self.get_minimal_command_signature(command)}", description=f"""
 {command.help if command.help else 'No help given...'}
                               """)
-        
+
         # <---- Command Information ---->
 
         aliases = command.aliases
-        
+
         commandInformation = [f"Category: {command.cog_name}"]
 
         if aliases:
@@ -444,13 +442,13 @@ class StealthHelp(commands.HelpCommand):
                 pass
 
         commandChecks = '\n'.join(commandChecks)
-        
+
         embed.add_field(name="<:info:888768239889424444> Command Information", value=f"""
 ```yaml
 {commandInformation}
 ```
                         """, inline=False)
-        
+
         if commandChecks:
             embed.add_field(name="<:greenTick:895688440690147370> Command Checks", value=f"""
 ```yaml
@@ -465,20 +463,20 @@ class StealthHelp(commands.HelpCommand):
 ```
                             """, inline=False)
         embed.set_footer(text="<> = required argument | [] = optional argument\nDo NOT type these when using commands!")
-            
+
         view = GeneralView(ctx=self.context)
         view.message = await self.context.send(embed=embed, footer=False, view=view)
-        
+
 
     def command_not_found(self, string):
         return string
-    
+
 
     def subcommand_not_found(self, command, string):
         if isinstance(command, commands.Group) and len(command.all_commands) > 0:
             return command.qualified_name + string
         return command.qualified_name
-    
+
 
     async def send_error_message(self, error):
         ctx = self.context
@@ -499,7 +497,7 @@ class StealthHelp(commands.HelpCommand):
 
         else:
             raise errors.CommandDoesntExist
-        
+
 
     async def on_help_command_error(self, ctx, error):
         if isinstance(error, commands.CommandInvokeError):
@@ -507,20 +505,20 @@ class StealthHelp(commands.HelpCommand):
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
 
             await ctx.send(embed=embed)
-            
-            
+
+
 def setup(client):
     client.add_cog(Help(client))
-            
+
 class Help(commands.Cog):
     ":question: | The help command, how did you find this though..."
     def __init__(self, client):
         self.client = client
         self.hidden = True
-        
+
         self.select_emoji = "<:info:888768239889424444>"
         self.select_brief = "The help command.. but how did you find this?!"
-        
+
         help_command = StealthHelp(command_attrs=dict(slash_command=True))
         help_command.cog = self
         client.help_command = help_command

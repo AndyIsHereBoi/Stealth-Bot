@@ -203,6 +203,10 @@ def get_member_badges(member, fetched_member):
     if flags['verified_bot_developer']:
         emotes.append("<:earlybotdev:895688440547520513>")
         text.append("Bot developer")
+
+    if flags['verified_bot']:
+        emotes.append("<:verified_bot:918166172631969843>")
+        text.append("Verified bot")
         
     if flags['discord_certified_moderator']:
         emotes.append("<:certified_moderator:895688440589484072>")
