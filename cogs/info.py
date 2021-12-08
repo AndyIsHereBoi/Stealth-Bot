@@ -517,15 +517,11 @@ Banner: {helpers.get_member_banner_urls(member)}
     @commands.command(
         help="Shows information about the specified server. If no server is specified it will default to the current server.",
         aliases=['si', 'guild', 'guildinfo'])
-    async def serverinfo(self, ctx, guild: discord.Guild = None):
+    async def serverinfo(self, ctx, guild: int = None):
         await ctx.trigger_typing()
         
         if guild:
-            try:
-                guild = self.client.get_guild(guild.id)
-
-            except:
-                return await ctx.send("Invalid guild!")
+            guild = self.client.get_guild(guild)
 
         else:
             guild = ctx.guild
