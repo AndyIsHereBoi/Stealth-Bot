@@ -8,9 +8,10 @@ import expr
 import random
 import errors
 import urllib
-import pathlib
 import shutil
 import typing
+import psutil
+import pathlib
 import inspect
 import discord
 import humanize
@@ -23,6 +24,18 @@ from discord.ext.menus.views import ViewMenuPages
 from discord.ext.commands.cooldowns import BucketType
 
 translator = Translator()
+
+
+def get_ram_usage():
+    return int(psutil.virtual_memory().total - psutil.virtual_memory().available)
+
+
+def get_ram_total():
+    return int(psutil.virtual_memory().total)
+
+
+def get_ram_usage_pct():
+    return psutil.virtual_memory().percent
 
 
 def finder(text, collection, *, key=None, lazy=True):
@@ -632,6 +645,11 @@ Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.uti
         help="Shows basic information about the bot.",
         aliases=['bi', 'about', 'info'])
     async def botinfo(self, ctx):
+        shards_guilds = {i: {"guilds": 0, "users": 0} for i in range(len(self.client.shards))}
+        for guild in self.client.guilds:
+            shards_guilds[guild.shard_id]["guilds"] += 1
+            shards_guilds[guild.shard_id]["users"] += guild.member_count
+
         p = pathlib.Path('./')
         cm = cr = fn = cl = ls = fc = 0
         for f in p.rglob('*.py'):
@@ -641,8 +659,7 @@ Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.uti
             with f.open() as of:
                 for l in of.readlines():
                     l = l.strip()
-                    if l.startswith('cla'
-                                    'ss'):
+                    if l.startswith('class'):
                         cl += 1
                     if l.startswith('def'):
                         fn += 1
@@ -651,64 +668,57 @@ Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.uti
                     if '#' in l:
                         cm += 1
                     ls += 1
-                    
+
         delta_uptime = discord.utils.utcnow() - self.client.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        
+
         total, used, free = shutil.disk_usage("/")
 
-        embed = discord.Embed(title=f"{self.client.user}", description=f"""
+        embed = discord.Embed(title="Bot info", description=f"""
 [Invite me](https://discord.com/api/oauth2/authorize?client_id=760179628122964008&permissions=8&scope=bot%20applications.commands) **|** [Support server](https://discord.gg/MrBcA6PZPw) **|** [Vote](https://top.gg/bot/760179628122964008) **|** [Website](https://stealthbot.xyz)
-        """)
-        
-        embed.add_field(name="Files", value=f"""
-```yaml
-Files: {fc:,}
-Lines: {ls:,}
-Classes: {cl:,}
-Functions: {fn:,}
-Courtines: {cr:,}
-Comments: {cm:,}
-```
+
+I'm a discord bot made by Ender2K89#9999.
+I've been on discord since {discord.utils.format_dt(ctx.me.created_at)} ({discord.utils.format_dt(ctx.me.created_at, style='R')})
+I have a lot of features such as moderation, fun, info and more!
+I've been online for {ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}.
+                              """)
+
+        embed.add_field(name=f"__**Numbers**__", value=f"""
+Guilds: `{len(self.client.guilds):,}`
+Users: `{len(self.client.users):,}`
+Commands: `{len(self.client.commands):,}`
+Commands used: `{self.client.commands_used:,}`
+Messages seen: `{self.client.messages_count:,}`
                         """, inline=True)
-        
-        embed.add_field(name="Numbers", value=f"""
-```yaml
-Servers: {len(self.client.guilds):,}
-Users: {len(self.client.users):,}
-Bots: {len([m for m in self.client.users if m.bot]):,}
-Commands: {len(self.client.commands):,}
-Commands used: {self.client.commands_used:,}
-Messages seen: {self.client.messages_count:,} ({self.client.edited_messages_count:,} edited)
-```
-                        """, inline=True)
-        
-        embed.add_field(name="Channels", value=f"""
-```yaml
-Text: {len([channel for channel in self.client.get_all_channels() if isinstance(channel, discord.TextChannel)])}
-Voice: {len([channel for channel in self.client.get_all_channels() if isinstance(channel, discord.VoiceChannel)])}
-Category: {len([channel for channel in self.client.get_all_channels() if isinstance(channel, discord.CategoryChannel)])}
-Stage: {len([channel for channel in self.client.get_all_channels() if isinstance(channel, discord.StageChannel)])}
-Thread: {len([channel for channel in self.client.get_all_channels() if isinstance(channel, discord.Thread)])}
-```
-                        """, inline=False)
-        
-        embed.add_field(name="Other", value=f"""
-```yaml
-Enhanced-dpy version: {discord.__version__}
-Python version: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}
-Developer: Marceline
-```
-                        """, inline=True)
-        
-        embed.set_thumbnail(url=self.client.user.avatar.url)
+        embed.add_field(name=f"__**System**__", value=f"""
+PID: `{os.getpid()}`
+CPU: `{round(psutil.cpu_percent())}%`/`100%`
+RAM: `{int(get_ram_usage() / 1024 / 1024)}MB`/`{int(get_ram_total() / 1024 / 1024)}MB`
+Disk: `{used // (2 ** 30)}GB`/`{total // (2 ** 30)}GB`
+Python: `{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}`
+                          """, inline=True)
+        embed.add_field(name=f"__**Files**__", value=f"""
+Files: `{fc:,}`
+Lines: `{ls:,}`
+Classes: `{cl:,}`
+Functions: `{fn:,}`
+Courtines: `{cr:,}`
+                          """, inline=True)
+        embed.add_field(name=f"__**Latest changes**__", value=ctx.get_last_commits(5), inline=False)
+
+        for shard_id, shard in self.client.shards.items():
+            embed.add_field(name=f"__**Shard #{shard_id}**__", value=f"""
+Latency: `{round(shard.latency * 1000)}`ms{' ' * (9 - len(str(round(shard.latency * 1000, 3))))}
+Guilds: `{shards_guilds[shard_id]['guilds']:,}`
+Users: `{shards_guilds[shard_id]['users']:,}`
+            """, inline=True)
 
         await ctx.send(embed=embed)
 
     @commands.command(
-        help="Shows information about the bot's shards.",
+        help="Shows information about the bot shards.",
         aliases=['shards', 'shard'])
     async def shardinfo(self, ctx):
         shards_guilds = {i: {"guilds": 0, "users": 0} for i in range(len(self.client.shards))}
