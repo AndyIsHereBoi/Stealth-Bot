@@ -112,26 +112,6 @@ class Events(commands.Cog):
         
 #         # await self.client.db.execute("INSERT INTO economy(user_id, amount) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET amount= $2", int(data["user"]), balance + amount)
 
-    @commands.Cog.listener()
-    async def on_message_delete(self, message: discord.Message):
-        if message.guild is None:
-            return
-
-        if message.author.bot:
-            return
-
-        if message.guild.id == 799330949686231050:
-            if message.mentions:
-                users = []
-                for user in message.mentions:
-                    users.append(user.mention)
-
-                embed = discord.Embed(title="Ghost ping detector", description=f"""
-{message.author.mention} just deleted a message that mentioned {", ".join(users)}!
-                """)
-
-                await message.channel.send(embed=embed)
-
     @commands.Cog.listener('on_command_error')
     async def error_handler(self, ctx, error):
         owners = [564890536947875868, 555818548291829792]
@@ -909,6 +889,25 @@ With the reason being: {info['reason']}
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
+        if not message.guild:
+            return
+
+        if message.guild.id == 799330949686231050:
+            if not message.author.bot:
+                if message.mentions:
+                    users = []
+                    for user in message.mentions:
+                        users.append(user.mention)
+
+                    embed = discord.Embed(title="Ghost ping detector", description=f"""
+{message.author.mention} just deleted a message that pinged {message.mentions}!
+                            """)
+
+                    await message.channel.send(embed=embed)
+
+            else:
+                return
+
         if self.client.messages.get(message.guild.id) is None:
             self.client.messages[message.guild.id] = {}
 
