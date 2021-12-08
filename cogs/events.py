@@ -900,7 +900,7 @@ With the reason being: {info['reason']}
                         user = message.guild.get_member(user.id)
                         users.append(user.mention)
 
-                    embed = discord.Embed(title="Ghost ping detector", description=f"""
+                    embed = discord.Embed(title="<a:alert:854743318033072158> Ghost ping detector <a:alert:854743318033072158>", description=f"""
 {message.author.mention} just deleted a message that pinged {', '.join(users)}!
                             """, color=discord.Color.red())
 
