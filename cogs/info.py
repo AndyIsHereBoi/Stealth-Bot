@@ -519,12 +519,8 @@ Banner: {helpers.get_member_banner_urls(member)}
         aliases=['si', 'guild', 'guildinfo'])
     async def serverinfo(self, ctx, guild: int = None):
         await ctx.trigger_typing()
-        
-        if guild:
-            guild = self.client.get_guild(guild)
 
-        else:
-            guild = ctx.guild
+        guild = self.client.get_guild(guild if guild else ctx.guild.id)
             
         embed = discord.Embed(title=guild.name if guild.name else 'No name', description=f"""
 <:greyTick:596576672900186113> ID: {guild.id}
