@@ -216,6 +216,11 @@ Use **sb!help <category>** for more info on a category.
 You can also use the dropdown below to select a category.
                         """, inline=False)
 
+        embed.add_field(name=f"**Getting support**", value=f"""
+To get help, you can join my [support server](https://discord.gg/MrBcA6PZPw).
+You can also send me a DM if you prefer to.
+                        """, inline=False)
+
         embed.add_field(name=f"**Wait a minute.. Who are you?**", value=f"""
 I'm a multipurpose discord bot created by <:github:895688440492986389> [Ender2K89#9999](https://github.com/Ender2K89/).
 You can use me to moderate your server, play music,
@@ -226,11 +231,6 @@ I've been online for {self.ctx.time(days=days, hours=hours, minutes=minutes, sec
 I have **{len(self.bot.commands)}** commands.
 But you can only use **{self.usable_commands}** of those in this server.
                         """, inline=False)
-
-        embed.add_field(name=f"**Support server**", value=f"""
-To get help, you can join my [support server](https://discord.gg/MrBcA6PZPw).
-You can also send me a DM if you prefer to.
-                                """, inline=False)
 
         embed.set_footer(text=f"This command is inspired by R. Danny and DuckBot")
 
