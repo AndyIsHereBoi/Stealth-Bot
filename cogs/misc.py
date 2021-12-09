@@ -103,7 +103,7 @@ class Nitro(discord.ui.View):
 
 
 class Misc(commands.Cog):
-    "Commands that don't belong under any category."
+    """Commands that don't belong under any category."""
 
     def __init__(self, client):
         self.client = client

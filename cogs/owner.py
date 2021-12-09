@@ -628,7 +628,7 @@ Average: {average_latency}
         except KeyError:
             status = False
 
-        embed = discord.Embed(description=f"{ctx.toggle(status)} {member.mention} is {'' if status else 'not'} blacklisted.\n{f'Reason: {reason}' if reason else ''}")
+        embed = discord.Embed(description=f"{member.mention} is {'' if status else 'not'} blacklisted.\n{f'Reason: {reason}' if reason else ''}")
 
         await ctx.send(embed=embed)
 
@@ -643,54 +643,19 @@ Average: {average_latency}
             user = self.client.get_user(stuff["user_id"])
             reason = stuff["reason"]
 
-            blacklistedUsers.append(
-                f"{user.name} **|** {user.id} **|** [Hover over for reason]({ctx.message.jump_url} '{reason}')")
+            blacklistedUsers.append(f"{user.name} **|** {user.id} **|** [Hover over for reason]({ctx.message.jump_url} '{reason}')")
 
         paginator = ViewMenuPages(source=BlacklitedUsersEmbedPage(blacklistedUsers), clear_reactions_after=True)
         page = await paginator._source.get_page(0)
         kwargs = await paginator._get_kwargs_from_page(page)
+
         if paginator.build_view():
             paginator.message = await ctx.send(embed=kwargs['embed'], view=paginator.build_view())
+
         else:
             paginator.message = await ctx.send(embed=kwargs['embed'])
+
         await paginator.start(ctx)
-
-    @commands.group(
-        invoke_without_command=True,
-        help="Executes an SQL query to the database.",
-        aliases=['db', 'database', 'psql', 'postgre'])
-    @commands.is_owner()
-    async def sql(self, ctx: CustomContext, *, query: str):
-        body = cleanup_code(query)
-        await ctx.invoke(self._eval, body=f"return await client.db.fetch(f\"\"\"{body}\"\"\")")
-
-    @sql.command(
-        help="Executes an SQL query to the database. (Fetch)",
-        aliases=['f'])
-    async def fetch(self, ctx: CustomContext, *, query: str):
-        body = cleanup_code(query)
-        await ctx.invoke(self._eval, body=f"return await client.db.fetch(f\"\"\"{body}\"\"\")")
-
-    @sql.command(
-        help="Executes an SQL query to the database. (Fetchval)",
-        aliases=['fr'])
-    async def fetchval(self, ctx: CustomContext, *, query: str):
-        body = cleanup_code(query)
-        await ctx.invoke(self._eval, body=f"return await client.db.fetchval(f\"\"\"{body}\"\"\")")
-
-    @sql.command(
-        help="Executes an SQL query to the database. (Fetchrow)",
-        aliases=['fv'])
-    async def fetchrow(self, ctx: CustomContext, *, query: str):
-        body = cleanup_code(query)
-        await ctx.invoke(self._eval, body=f"return await client.db.fetchrow(f\"\"\"{body}\"\"\")")
-
-    @sql.command(
-        help="Executes an SQL query to the database. (Execute)",
-        aliases=['e'])
-    async def execute(self, ctx: CustomContext, *, query: str):
-        body = cleanup_code(query)
-        await ctx.invoke(self._eval, body=f'return await client.db.execute(f"{body}")')
 
     @commands.group(
         invoke_without_command=True,
@@ -699,12 +664,12 @@ Average: {average_latency}
         aliases=['ch', 'cmds'])
     @commands.is_owner()
     async def _commands(self, ctx: CustomContext):
-        executed_commands = await self.client.db.fetch(
-            "SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
+        executed_commands = await self.client.db.fetch("SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
+
         if not executed_commands:
             return await ctx.send("No results found...")
-        table = [(command, self.client.get_user(user_id) or user_id, guild_id, str(timestamp).replace('+00:00', ''))
-                 for command, user_id, guild_id, timestamp in executed_commands]
+
+        table = [(command, self.client.get_user(user_id) or user_id, guild_id, str(timestamp).replace('+00:00', '')) for command, user_id, guild_id, timestamp in executed_commands]
 
         table = tabulate.tabulate(table, headers=["Command", "User/UID", "Guild ID", "Timestamp"], tablefmt="presto")
         lines = table.split("\n")
@@ -715,8 +680,3 @@ Average: {average_latency}
         interface = PaginatorInterface(self.client, pages)
         await interface.send_to(ctx)
 
-    @_commands.command(name='clear')
-    async def delete_commands(self, ctx: CustomContext):
-        """ Clears all command history """
-        await self.client.db.execute("DELETE FROM commands")
-        await ctx.message.add_reaction('✅')

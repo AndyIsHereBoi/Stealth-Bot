@@ -10,7 +10,7 @@ def setup(client):
 
 
 class SignalPvP(commands.Cog):
-    "Commands that are helpful for the SignalPvP Minecraft Server."
+    """Commands that are helpful for the SignalPvP Minecraft Server."""
 
     def __init__(self, client):
         self.client = client
@@ -22,7 +22,7 @@ class SignalPvP(commands.Cog):
         help="Shows you how to join the SignalPvP server on Bedrock Edition!",
         aliases=['address', 'server'])
     @helpers.is_spvp_server()
-    async def joinsrv(self, ctx):
+    async def joinsrv(self, ctx: CustomContext):
         embed = discord.Embed(title="How to join the server", description=f"""
 For Java Edition it's very easy, you just need to enter `play.SignalPvP.xyz` as the server address.
 On bedrock it's a bit more difficult. To see the explanation do `{ctx.prefix}bedrock`
@@ -35,7 +35,7 @@ On bedrock it's a bit more difficult. To see the explanation do `{ctx.prefix}bed
         help="Shows you how to join the SignalPvP server on Bedrock Edition!",
         aliases=['pocket'])
     @helpers.is_spvp_server()
-    async def bedrock(self, ctx):
+    async def bedrock(self, ctx: CustomContext):
         embed = discord.Embed(title="How to join on bedrock", description=f"""
 First, you need to join the Minehut server using the information below.
 After you've joined the Minehut server you need to do `/join SignalPvP`. This will redirect you to the actual SignalPvP server.
