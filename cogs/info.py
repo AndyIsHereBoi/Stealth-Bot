@@ -262,7 +262,8 @@ class Info(commands.Cog):
             'edpy': 'https://enhanced-dpy.readthedocs.io/en/latest',
             'chai': 'https://chaidiscordpy.readthedocs.io/en/latest',
             'bing': 'https://asyncbing.readthedocs.io/en/latest',
-            'pycord': 'https://pycord.readthedocs.io/en/master'
+            'pycord': 'https://pycord.readthedocs.io/en/master',
+            'pomice': 'https://pomice.readthedocs.io/en/latest'
         }
         embed_titles = {
             'latest': 'discord.py v1.7.3',
@@ -273,7 +274,8 @@ class Info(commands.Cog):
             'edpy': 'enhanced-dpy',
             'chai': 'chaidiscord.py',
             'bing': 'asyncbing',
-            'pycord': 'pycord'
+            'pycord': 'pycord',
+            'pomice': 'pomice'
         }
         embed_icons = {
             'latest': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
@@ -284,7 +286,8 @@ class Info(commands.Cog):
             'edpy': 'https://cdn.discordapp.com/emojis/781918475009785887.png?size=96',
             'chai': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
             'bing': 'https://pbs.twimg.com/profile_images/1313103135414448128/0EVE9TeW.png',
-            'pycord': 'https://avatars.githubusercontent.com/u/89700626?v=4'
+            'pycord': 'https://avatars.githubusercontent.com/u/89700626?v=4',
+            'pomice': 'https://pterodactylmarket.com/images/resources/305.webp'
         }
 
         if obj is None:
@@ -1503,3 +1506,9 @@ XP: {format(database[0]['xp'], ',')}
         name='pycord')
     async def rtfm_pycord(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'pycord', obj)
+
+    @rtfm.command(
+        help="Gives you a documentation link for a pomice entity",
+        name='pomice')
+    async def rtfm_pomice(self, ctx: CustomContext, *, obj: str = None):
+        await self.do_rtfm(ctx, 'pomice', obj)
