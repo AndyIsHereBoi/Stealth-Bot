@@ -618,12 +618,15 @@ Average: {average_latency}
         help="Checks if the specified user is blacklisted or not.",
         liases=['c'])
     async def check(self, ctx: CustomContext, member: discord.User):
-        status = False
+        status = None
         reason = None
 
-        if self.client.blacklist[member.id]:
-            status = True
+        try:
+            status = self.client.blacklist[member.id]
             reason = await self.client.db.fetchval("SELECT reason FROM blacklist WHERE user_id = $1", member.id)
+
+        except KeyError:
+            status = False
 
         embed = discord.Embed(description=f"{ctx.toggle(status)} {member.mention} is {'' if status else 'not'} blacklisted.\n{f'Reason: {reason}' if reason else ''}")
 
