@@ -3,6 +3,7 @@ import asyncio
 import discord
 
 from discord.ext import commands
+from helpers.context import CustomContext
 from helpers.ttt import LookingToPlay, TicTacToe
 from helpers.helpers import generate_youtube_bar as bar
 
@@ -12,7 +13,7 @@ def setup(client):
 
 
 class Games(commands.Cog):
-    "Commands used to play games when you're bored!"
+    """Commands used to play games when you're bored!"""
 
     def __init__(self, client):
         self.client = client
@@ -22,7 +23,7 @@ class Games(commands.Cog):
     @commands.command(
         help="RPG.",
         aliases=['fight', 'r'])
-    async def rpg(self, ctx):
+    async def rpg(self, ctx: CustomContext):
         items = ['wooden sword', 'stone sword', 'iron sword', 'diamond sword']
         argument = "wooden sword"
         authorItem = str(argument).lower()
@@ -165,7 +166,7 @@ Item: {str(botItem).title()}
     @commands.command(
         help="Plays rock, paper, scissors with you",
         aliases=['rps', 'rock_paper_scissors'])
-    async def rockpaperscissors(self, ctx):
+    async def rockpaperscissors(self, ctx: CustomContext):
         validAnswers = ['rock', 'paper', 'scissors', 'win']
         botAnswers = ['rock', 'paper', 'scissors']
 
@@ -241,7 +242,7 @@ Stealth Bot's answer: {str(botAnswer).title()}
     @commands.command(
         help="Starts a Tic-Tac-Toe game",
         aliases=['ttt', 'tic'])
-    async def tictactoe(self, ctx):
+    async def tictactoe(self, ctx: CustomContext):
         embed = discord.Embed(description=f"🔎 {ctx.author.name} is looking to play Tic-Tac-Toe!")
 
         player1 = ctx.author
@@ -260,7 +261,7 @@ Stealth Bot's answer: {str(botAnswer).title()}
     @commands.command(
         help="Starts a type-race game. You have 1 minute to type the given words. You can also specify how many words the bot should send. If no amount is specified it will default to 5.",
         aliases=['type-race', 'type_race', 'typeracer', 'type-racer', 'type_racer'])
-    async def typerace(self, ctx, number: int = None):
+    async def typerace(self, ctx: CustomContext, number: int = None):
         if number is None or number > 20:
             number = 5
 

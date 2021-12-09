@@ -1,4 +1,7 @@
+import discord
+
 from discord.ext import commands
+from helpers.context import CustomContext
 
 
 def setup(client):
@@ -6,7 +9,7 @@ def setup(client):
 
 
 class Levels(commands.Cog):
-    "Levelling system."
+    """Levelling system."""
 
     def __init__(self, client):
         self.client = client

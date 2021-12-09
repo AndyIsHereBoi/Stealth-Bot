@@ -8,10 +8,10 @@ import asyncio
 import discord
 import datetime
 import argparse
-import contextlib
 
 from collections import Counter
 from helpers import helpers as helpers
+from helpers.context import CustomContext
 from helpers import time_inputs as time_inputs
 from discord.ext import commands, menus, tasks
 from discord.ext.menus.views import ViewMenuPages
@@ -73,7 +73,7 @@ class ServerBansEmbedPage(menus.ListPageSource):
 
 
 class Moderation(commands.Cog):
-    "Commands useful for staff members of the server."
+    """Commands useful for staff members of the server."""
 
     def __init__(self, client):
         self.client = client
@@ -182,7 +182,7 @@ class Moderation(commands.Cog):
     @commands.command(
         help="Cleans up the bots messages.",
         brief="cleanup\ncleanup 50")
-    async def cleanup(self, ctx, amount: int = 25):
+    async def cleanup(self, ctx: CustomContext, amount: int = 25):
         if amount > 25:
 
             if not ctx.channel.permissions_for(ctx.author).manage_messages:
@@ -210,13 +210,8 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, ban_members=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def bans(self, ctx, id: int = None):
-        if id:
-            guild = self.client.get_guild(id)
-            if not guild:
-                return await ctx.send("I couldn't find that server. Make sure the ID you entered was correct.")
-        else:
-            guild = ctx.guild
+    async def bans(self, ctx: CustomContext):
+        guild = ctx.guild
 
         guildBans = await guild.bans()
         bans = []
@@ -241,7 +236,7 @@ class Moderation(commands.Cog):
         help="Announces a message in a specified channel. If no channel is specified it will default to the current one.")
     @commands.has_permissions(manage_messages=True)
     @commands.check_any(commands.has_permissions(manage_messages=True), commands.is_owner())
-    async def announce(self, ctx, channel: typing.Optional[discord.TextChannel] = None, *, message):
+    async def announce(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel] = None, *, message):
         if channel is None:
             channel = ctx.channel
 
@@ -261,7 +256,7 @@ class Moderation(commands.Cog):
         brief="ban @Spammer\nban @Raider 7 Raiding")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, member: typing.Union[discord.Member, discord.User], delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
+    async def ban(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
         if delete_days and 7 < delete_days < 0:
             return await ctx.send("Delete days must be between 0 and 7")
         
@@ -302,7 +297,7 @@ class Moderation(commands.Cog):
         aliases=['soft_ban', 'soft-ban'])
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def softban(self, ctx, member: typing.Union[discord.Member, discord.User], delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
+    async def softban(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
         if delete_days and 7 < delete_days < 0:
             return await ctx.send("Delete days must be between 0 and 7")
         
@@ -332,19 +327,19 @@ class Moderation(commands.Cog):
 
         try:
             await member.send(f"You have been soft-banned from {ctx.guild}\nReason: {reason}")
-            await ctx.guild.ban(member, reason, delete_message_days=delete_days)
-            return await ctx.guild.unban(member, reason)
+            await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
+            return await ctx.guild.unban(member, reason=reason)
 
         except:
-            await ctx.guild.ban(member, reason, delete_message_days=delete_days)
-            return await ctx.guild.unban(member, reason)
+            await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
+            return await ctx.guild.unban(member, reason=reason)
 
     @commands.command(
         help="With this command you can kick the specified member with a specified reason. If no reason is provided it will not add a reason. The reason cannot be more than 500 characters.",
         brief="kick @Noob\nkick @Gamer Asked for it")
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def kick(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
+    async def kick(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, reason=None):
         if member.id == ctx.author.id:
             return await ctx.send("You can't kick yourself!")
         
@@ -382,7 +377,7 @@ class Moderation(commands.Cog):
         aliases=['mass_kick', 'mass-kick', 'multikick', 'multi_kick', 'multi-kick'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def masskick(self, ctx, members: commands.Greedy[typing.Union[discord.Member, discord.User]], *, reason: typing.Optional[str]):
+    async def masskick(self, ctx: CustomContext, members: commands.Greedy[typing.Union[discord.Member, discord.User]], *, reason: typing.Optional[str]):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
             
@@ -447,7 +442,7 @@ Successfully kicked `{len(successful)}` members for `{reason}`
         aliases=['mass_ban', 'mass-ban', 'multiban', 'multi_ban', 'multi-ban'])
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def massban(self, ctx, members: commands.Greedy[typing.Union[discord.Member]], delete_days: typing.Optional[int], *, reason: typing.Optional[str]):
+    async def massban(self, ctx: CustomContext, members: commands.Greedy[typing.Union[discord.Member]], delete_days: typing.Optional[int], *, reason: typing.Optional[str]):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
 
@@ -483,10 +478,10 @@ Successfully kicked `{len(successful)}` members for `{reason}`
             try:
                 try:
                     await member.send(f"You have been banned from {ctx.guild}\nReason: {reason}")
-                    await ctx.guild.ban(user=member, reason=str(reason), delete_days=int(delete_days))
+                    await ctx.guild.ban(member, reason=reason, delete_days=delete_days)
 
                 except:
-                    await ctx.guild.ban(user=member, reason=str(reason), delete_days=int(delete_days))
+                    await ctx.guild.ban(member, reason=reason, delete_days=delete_days)
 
                 successful.append(member)
 
@@ -512,7 +507,7 @@ Successfully banned `{len(successful)}` members for `{reason}`
         brief="setnick @Guy\nsetnick @Jeff Jeffie\nsetnick @Danny Pog guy")
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(manage_nicknames=True)
-    async def setnick(self, ctx, member: discord.Member, *, nickname: typing.Optional[str] = None):
+    async def setnick(self, ctx: CustomContext, member: discord.Member, *, nickname: typing.Optional[str] = None):
         if member.id == ctx.guild.owner.id:
             return await ctx.send("You can't change the nickname of the server owner.")
         
@@ -550,7 +545,7 @@ New nickname: `{new}`
         brief="vcmute @Noobie\nvcmute @Noobie shutt")
     @commands.has_permissions(mute_members=True)
     @commands.bot_has_permissions(mute_members=True)
-    async def vcmute(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
+    async def vcmute(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, reason=None):
         if not can_execute_action(ctx, ctx.author, member):
             return await ctx.send("You can't VC mute that person!")
 
@@ -569,7 +564,7 @@ New nickname: `{new}`
         brief="vcdeafen @Noob\nvcdeafen @Noob imagine being deafened smh")
     @commands.has_permissions(deafen_members=True)
     @commands.bot_has_permissions(deafen_members=True)
-    async def vcdeafen(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
+    async def vcdeafen(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, reason=None):
         if not can_execute_action(ctx, ctx.author, member):
             return await ctx.send("You can't VC deafen that person!")
 
@@ -588,7 +583,7 @@ New nickname: `{new}`
         brief="remove 100\nremove user @Spammer#6942\nremove embeds 53")
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    async def remove(self, ctx, search: typing.Optional[int] = 100):
+    async def remove(self, ctx: CustomContext, search: typing.Optional[int] = 100):
         if ctx.invoked_subcommand is None:
             await self.do_removal(ctx, search, lambda e: not e.pinned)
 
@@ -596,42 +591,42 @@ New nickname: `{new}`
         name="embeds",
         help="Removes messages that have embeds in them.",
         aliases=['embed'])
-    async def remove_embeds(self, ctx, search=100):
+    async def remove_embeds(self, ctx: CustomContext, search=100):
         await self.do_removal(ctx, search, lambda e: len(e.embeds))
 
     @remove.command(
         name="files",
         help="Removes messages that have attachments in them.",
         aliases=["attachments"])
-    async def remove_files(self, ctx, search=100):
+    async def remove_files(self, ctx: CustomContext, search=100):
         await self.do_removal(ctx, search, lambda e: len(e.attachments))
 
     @remove.command(
         name="images",
         help="Removes messages that have embeds or attachments.",
         aliases=['imgs'])
-    async def remove_images(self, ctx, search=100):
+    async def remove_images(self, ctx: CustomContext, search=100):
         await self.do_removal(ctx, search, lambda e: len(e.embeds) or len(e.attachments))
 
     @remove.command(
         name="all",
         help="Removes all messages.",
         aliases=['everything'])
-    async def remove_all(self, ctx, search=100):
+    async def remove_all(self, ctx: CustomContext, search=100):
         await self.do_removal(ctx, search, lambda e: True)
 
     @remove.command(
         name="user",
         help="Removes all messages sent by the specified member.",
         aliases=['member'])
-    async def remove_user(self, ctx, member: typing.Union[discord.Member, discord.User], search=100):
+    async def remove_user(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], search=100):
         await self.do_removal(ctx, search, lambda e: e.author == member)
 
     @remove.command(
         name="contains",
         help="Removes all messages containing a substring.\nThe substring must be at least 3 characters long.",
         aliases=["has"])
-    async def remove_contains(self, ctx, *, text: str):
+    async def remove_contains(self, ctx: CustomContext, *, text: str):
         if len(text) < 3:
             return await ctx.send("The substring must be at least 3 characters!")
             
@@ -642,7 +637,7 @@ New nickname: `{new}`
         name="bot",
         help="Removes a bot user's messages and messages with their optional prefix.",
         aliases=['bots', 'robot'])
-    async def remove_bot(self, ctx, prefix: typing.Optional[str] = None, search=100):
+    async def remove_bot(self, ctx: CustomContext, prefix: typing.Optional[str] = None, search=100):
         def predicate(m):
             return (m.webhook_id is None and m.author.bot) or (prefix and m.content.startswith(prefix))
 
@@ -652,7 +647,7 @@ New nickname: `{new}`
         name="emoji",
         help="Removes all messages containing custom emojis.",
         aliases=['emojis', 'emote', 'emotes'])
-    async def remove_emoji(self, ctx, search=100):
+    async def remove_emoji(self, ctx: CustomContext, search=100):
         custom_emoji = re.compile(r'<a?:[a-zA-Z0-9_]+:([0-9]+)>')
 
         def predicate(m):
@@ -666,7 +661,7 @@ New nickname: `{new}`
         name="threads",
         help="Removes the given amount of threads",
         aliases=['thread'])
-    async def remove_threads(self, ctx, search: int = 100):
+    async def remove_threads(self, ctx: CustomContext, search: int = 100):
         async with ctx.typing():
             if search > 2000:
                 return await ctx.send(f'Too many messages to search given ({search}/2000)')
@@ -710,7 +705,7 @@ New nickname: `{new}`
         name="reactions",
         help="Removes all reactions from messages that have them.",
         aliases=['reaction'])
-    async def remove_reactions(self, ctx, search=100):
+    async def remove_reactions(self, ctx: CustomContext, search=100):
         async with ctx.typing():
             if search > 2000:
                 return await ctx.send(f'Too many messages to search for ({search}/2000)')
@@ -728,7 +723,7 @@ New nickname: `{new}`
         name="custom",
         help="A more advanced purge command, with a command-line-like syntax.\nDo \"sb!remove help\" for usage.",
         aliases=['c'])
-    async def remove_custom(self, ctx, *, args: str):
+    async def remove_custom(self, ctx: CustomContext, *, args: str):
         parser = Arguments(add_help=False, allow_abbrev=False)
         parser.add_argument('--user', nargs='+')
         parser.add_argument('--contains', nargs='+')
@@ -809,7 +804,7 @@ New nickname: `{new}`
         await self.do_removal(ctx, args.search, predicate, before=args.before, after=args.after)
 
     @remove.command(name="help", hidden=True)
-    async def remove_custom_readme(self, ctx):
+    async def remove_custom_readme(self, ctx: CustomContext):
         """A more advanced purge command.
         This command uses a powerful "command line" syntax.
         Most options support multiple values to indicate 'any' match.
@@ -841,7 +836,7 @@ New nickname: `{new}`
         brief="slowmode 3h, 5m, 2s\nslowmode 5h1m35s\nslowmode")
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
-    async def slowmode(self, ctx, channel: typing.Optional[discord.TextChannel], *, duration: time_inputs.ShortTime = None):
+    async def slowmode(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel], *, duration: time_inputs.ShortTime = None):
         channel = channel if channel and channel.permissions_for(ctx.author).manage_channels and channel.permissions_for(ctx.me).manage_channels else ctx.channel
 
         if not duration:
@@ -869,7 +864,7 @@ New nickname: `{new}`
     @commands.command(help="Gives a member a role", aliases=['give_role'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, manage_roles=True)
-    async def giverole(self, ctx, member: typing.Union[discord.Member, discord.User], role: discord.Role):
+    async def giverole(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], role: discord.Role):
         await member.add_roles(role, reason=f'Added by `{ctx.author}` using command')
         
         embed = discord.Embed(description=f"Successfully gave {member.mention} the {role.mention} role.")
@@ -880,7 +875,7 @@ New nickname: `{new}`
     @commands.command(help="Removes a role from a member", aliases=['remove_role'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, manage_roles=True)
-    async def removerole(self, ctx, member: typing.Union[discord.Member, discord.User], role: discord.Role):
+    async def removerole(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], role: discord.Role):
         await member.remove_roles(role, reason=f'Removed by `{ctx.author}` using command')
         
         embed = discord.Embed(description=f"Successfully removed the {role.mention} role from {member.mention}.")
@@ -893,7 +888,7 @@ New nickname: `{new}`
         aliases=['lock', 'ld'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def lockdown(self, ctx, channel: typing.Optional[discord.TextChannel], role: typing.Optional[discord.Role]):
+    async def lockdown(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel], role: typing.Optional[discord.Role]):
         role = role if role and (role < ctx.me.top_role or ctx.author == ctx.guild.owner) \
                        and role < ctx.author.top_role else ctx.guild.default_role
 
@@ -925,7 +920,7 @@ New nickname: `{new}`
         aliases=['unlockdown', 'uld'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def unlock(self, ctx, channel: typing.Optional[discord.TextChannel], role: typing.Optional[discord.Role]):
+    async def unlock(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel], role: typing.Optional[discord.Role]):
         role = role if role and (role < ctx.me.top_role or ctx.author == ctx.guild.owner) \
                        and role < ctx.author.top_role else ctx.guild.default_role
 
@@ -947,11 +942,11 @@ New nickname: `{new}`
 
     @commands.command(
         help="Archives the specified thread")
-    async def archive(self, ctx, thread: discord.Thread, *, reason: str = None):
+    async def archive(self, ctx: CustomContext, thread: discord.Thread, *, reason: str = None):
         if not isinstance(thread, discord.Thread):
             raise errors.InvalidThread
 
-        if reason is None or reason > 150:
+        if reason is None or len(reason) >= 150:
             reason = f"Reason not provided or it exceeded the 150-character limit"
             
         await thread.edit(archived=True)
@@ -967,7 +962,7 @@ New nickname: `{new}`
         help="Blocks the specified member from using the current channel")
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def block(self, ctx, member: typing.Union[discord.Member, discord.User]):
+    async def block(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User]):
         if not can_execute_action(ctx, ctx.author, member):
             raise errors.Forbidden
 
@@ -990,7 +985,7 @@ New nickname: `{new}`
         help="Unblocks the specified member from the current channel")
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def unblock(self, ctx, member: typing.Union[discord.Member, discord.User]):
+    async def unblock(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User]):
         if not can_execute_action(ctx, ctx.author, member):
             raise errors.Forbidden
 
@@ -1014,7 +1009,7 @@ New nickname: `{new}`
     @ensure_muterole()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def mute(self, ctx, member: discord.Member, *, reason: str = None):
+    async def mute(self, ctx: CustomContext, member: discord.Member, *, reason: str = None):
         if member.id == ctx.author.id:
             return await ctx.send("You can't mute yourself!")
 
@@ -1068,7 +1063,7 @@ You may want to fix that using the `mute_role fix` command.
     @ensure_muterole()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def unmute(self, ctx, member: discord.Member, *, reason: str = None):
+    async def unmute(self, ctx: CustomContext, member: discord.Member, *, reason: str = None):
         if member.id == ctx.author.id:
             return await ctx.send("You can't un-mute yourself!")
 
@@ -1108,7 +1103,7 @@ You may want to fix that using the `mute_role fix` command.
     @ensure_muterole()
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def tempmute(self, ctx, member: discord.Member, *, duration: time_inputs.ShortTime):
+    async def tempmute(self, ctx: CustomContext, member: discord.Member, *, duration: time_inputs.ShortTime):
         if member.id == ctx.author.id:
             return await ctx.send("You can't temp-mute yourself!")
 

@@ -6,26 +6,22 @@ import asyncpg
 import tabulate
 import traceback
 import sys
-import re
 import shutil
 import pathlib
 import typing
 import asyncio
 import asyncbing
-import jishaku
 import psutil
-import lavalink
 import random
-import itertools
+import pomice
 from discord.ext import commands, menus
 from discord.ext.menus.views import ViewMenuPages
 import importlib
 from jishaku.paginators import WrappedPaginator, PaginatorInterface
 from jishaku.codeblocks import codeblock_converter
-from jishaku.features.baseclass import Feature
+from helpers.context import CustomContext
 import io
 import contextlib
-from helpers import helpers as help
 
 
 def setup(client):
@@ -106,7 +102,7 @@ class Owner(commands.Cog):
         help="Shows information about the system the bot is hosted on",
         aliases=['sys'])
     @commands.is_owner()
-    async def system(self, ctx):
+    async def system(self, ctx: CustomContext):
         colors = [0x910023, 0xA523FF]
         color = random.choice(colors)
 
@@ -215,7 +211,7 @@ Comments: {cm:,}
         embed.add_field(name="\u200b", value=f"""
 ```yaml
 PostgreSQL:
-Lavalink: {lavalink.__version__}
+Pomice: {pomice.__version__}
 e-dpy: {discord.__version__}
 asyncpg: {asyncpg.__version__}
 Python: {full_version}
@@ -233,14 +229,14 @@ Average: {average_latency}
 ```
                         """, inline=True)
 
-        embed.set_footer(text=f"{round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.me.avatar.url)
+        embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.me.avatar.url)
 
-        await message.edit(content="Received system information!", embed=embed)
+        await message.edit("Received system information!", embed=embed)
 
     @commands.command(
         help="Evaluates code",
         aliases=['eval'])
-    async def _eval(self, ctx, *, body: str):
+    async def _eval(self, ctx: CustomContext, *, body: str):
         if ctx.author.id == 564890536947875868 or ctx.author.id == 530472612871143476 or ctx.author.id == 523452718413643788:
             env = {
                 'client': self.client,
@@ -310,7 +306,7 @@ Average: {average_latency}
     @commands.command(
         help="Loads the specified extension")
     @commands.is_owner()
-    async def load(self, ctx, extension: str, mode: typing.Optional[str]):
+    async def load(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
         extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
 
         successful = []
@@ -328,8 +324,7 @@ Average: {average_latency}
 ```
                         """
 
-            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:",
-                                  file=io.StringIO(traceback_string))
+            await ctx.author.send(f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
 
         nl = "\n"
 
@@ -349,7 +344,7 @@ Average: {average_latency}
     @commands.command(
         help="Unloads the specified extension")
     @commands.is_owner()
-    async def unload(self, ctx, extension: str, mode: typing.Optional[str]):
+    async def unload(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
         extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
 
         successful = []
@@ -367,8 +362,7 @@ Average: {average_latency}
 ```
                         """
 
-            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:",
-                                  file=io.StringIO(traceback_string))
+            await ctx.author.send(f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
 
         nl = "\n"
 
@@ -388,7 +382,7 @@ Average: {average_latency}
     @commands.command(
         help="Reloads the specified extension")
     @commands.is_owner()
-    async def reload(self, ctx, extension: str, mode: typing.Optional[str]):
+    async def reload(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
         extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
 
         successful = []
@@ -406,8 +400,7 @@ Average: {average_latency}
 ```
                         """
 
-            await ctx.author.send(content=f"{ctx.tick(False)} {extension[:-3]} Traceback:",
-                                  file=io.StringIO(traceback_string))
+            await ctx.author.send(f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
 
         nl = "\n"
 
@@ -428,7 +421,7 @@ Average: {average_latency}
         help="Reloads all extensions.",
         aliases=['rall', 'reloadall', 'reload-all'])
     @commands.is_owner()
-    async def reload_all(self, ctx, mode: typing.Optional[str] = None):
+    async def reload_all(self, ctx: CustomContext, mode: typing.Optional[str] = None):
         everything = []
         successful = []
         successfulH = []
@@ -450,8 +443,7 @@ Average: {average_latency}
 ```
                                 """
 
-                    await ctx.author.send(content=f"{ctx.tick(False)} {file[:-3]} Traceback:",
-                                          file=io.StringIO(traceback_string))
+                    await ctx.author.send(f"{ctx.tick(False)} {file[:-3]} Traceback:", file=io.StringIO(traceback_string))
 
         for file in os.listdir('./helpers'):
             if file.endswith('.py'):
@@ -470,8 +462,7 @@ Average: {average_latency}
 ```
                                 """
 
-                    await ctx.author.send(content=f"{ctx.tick(False)} {file[:-3]} Traceback:",
-                                          file=io.StringIO(traceback_string))
+                    await ctx.author.send(f"{ctx.tick(False)} {file[:-3]} Traceback:", file=io.StringIO(traceback_string))
 
         nl = "\n"
 
@@ -496,7 +487,7 @@ Average: {average_latency}
         help="Update the bot.",
         aliases=['upd', 'gitpull', 'pull'])
     @commands.is_owner()
-    async def update(self, ctx):
+    async def update(self, ctx: CustomContext):
         command = self.client.get_command('jsk git')
         await ctx.invoke(command, argument=codeblock_converter('pull'))
 
@@ -507,7 +498,7 @@ Average: {average_latency}
         help="Adds a member to the acknowledgments list",
         aliases=['ack'])
     @commands.is_owner()
-    async def acknowledge(self, ctx, member: typing.Union[discord.Member, discord.User], *, message=None):
+    async def acknowledge(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, message=None):
         if message:
             await self.client.db.execute(
                 "INSERT INTO acknowledgments (user_id, acknowledgment) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET acknowledgment = $2",
@@ -524,10 +515,10 @@ Average: {average_latency}
         help="Shutdowns the bot",
         aliases=['shutdown_bot'])
     @commands.is_owner()
-    async def shutdown(self, ctx):
+    async def shutdown(self, ctx: CustomContext):
         confirm = await ctx.confirm(message="Are you sure you want to shutdown the bot?")
 
-        if confirm == True:
+        if confirm:
             embed = discord.Embed(title="<a:loading:747680523459231834> Shutting down...")
 
             message = await ctx.send(embed=embed)
@@ -541,7 +532,7 @@ Average: {average_latency}
         help="Restarts the bot.",
         aliases=['reboot', 'restartbot', 'restart-bot'])
     @commands.is_owner()
-    async def restart(self, ctx):
+    async def restart(self, ctx: CustomContext):
         confirm = await ctx.confirm(message="Are you sure you want to restart the bot?")
 
         if confirm:
@@ -564,107 +555,84 @@ Average: {average_latency}
         help="Toggles the no-prefix mode on/off",
         aliases=["no_prefix", "silentprefix", "silent_prefix"])
     @commands.is_owner()
-    async def noprefix(self, ctx, state: str = None):
-        if state == 'on':
-            await ctx.message.add_reaction('<:toggle_on:896743740285263892>')
-            self.client.no_prefix = True
-        elif state == 'off':
-            await ctx.message.add_reaction('<:toggle_off:896743704323309588>')
+    async def noprefix(self, ctx: CustomContext):
+        if self.client.no_prefix:
             self.client.no_prefix = False
+            await ctx.send("Successfully turned off no-prefix mode.")
+
         else:
-            if self.client.no_prefix == False:
-                await ctx.message.add_reaction('<:toggle_on:896743740285263892>')
-                self.client.no_prefix = True
-            elif self.client.no_prefix == True:
-                await ctx.message.add_reaction('<:toggle_off:896743704323309588>')
-                self.client.no_prefix = False
+            self.client.no_prefix = True
+            await ctx.send("Successfully turned on no-prefix mode.")
 
     @commands.command(
         help="Toggles the bot-maintenance mode on/off",
         aliases=["bot_maintenance", "maintenancebot", "maintenance_bot", 'botmaintenance'])
     @commands.is_owner()
-    async def maintenance(self, ctx, state: str = None):
-        if state == 'on':
-            await ctx.message.add_reaction('<:toggle_on:896743740285263892>')
-            self.client.maintenance = True
-        elif state == 'off':
-            await ctx.message.add_reaction('<:toggle_off:896743704323309588>')
+    async def maintenance(self, ctx: CustomContext):
+        if self.client.maintenance:
             self.client.maintenance = False
+
+            embed = discord.Embed(description=f"{ctx.toggle(False)} Successfully turned off maintenance mode.")
+
+            await ctx.send(embed=embed)
+
         else:
-            if self.client.maintenance == False:
-                await ctx.message.add_reaction('<:toggle_on:896743740285263892>')
-                self.client.maintenance = True
-            elif self.client.maintenance == True:
-                await ctx.message.add_reaction('<:toggle_off:896743704323309588>')
-                self.client.maintenance = False
+            self.client.maintenance = True
+
+            embed = discord.Embed(description=f"{ctx.toggle(True)} Successfully turned on maintenance mode.")
+
+            await ctx.send(embed=embed)
 
     @commands.group(
         invoke_without_command=True,
         help="<:scroll:904038785921187911> | Commands that the owner can use to prevent someone from using this bot",
         aliases=['bl'])
     @commands.is_owner()
-    async def blacklist(self, ctx):
+    async def blacklist(self, ctx: CustomContext):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @blacklist.command(
         help="Adds the specified user to the blacklist.",
         aliases=['a'])
-    async def add(self, ctx, member: discord.User, *, reason: str):
-
-        await self.client.db.execute(
-            "INSERT INTO blacklist(user_id, is_blacklisted, reason) VALUES ($1, $2, $3) "
-            "ON CONFLICT (user_id) DO UPDATE SET is_blacklisted = $2",
-            member.id, True, reason[0:1800])
-
+    async def add(self, ctx: CustomContext, member: discord.User, *, reason: str):
+        await self.client.db.execute("INSERT INTO blacklist(user_id, is_blacklisted, reason) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET is_blacklisted = $2", member.id, True, reason[0:1800])
         self.client.blacklist[member.id] = True
 
-        embed = discord.Embed(
-            description=f"Successfully added {member} to the blacklist with the reason being {reason[0:1800]}",
-            timestamp=discord.utils.utcnow(), color=0x2F3136)
+        embed = discord.Embed(description=f"Successfully added {member} to the blacklist with the reason being {reason[0:1800]}")
 
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @blacklist.command(
         help="Removes the specified user from the blacklist.",
         aliases=['r', 'rm'])
-    async def remove(self, ctx, member: discord.User):
-
-        await self.client.db.execute(
-            "DELETE FROM blacklist where user_id = $1",
-            member.id)
-
+    async def remove(self, ctx: CustomContext, member: discord.User):
+        await self.client.db.execute("DELETE FROM blacklist where user_id = $1", member.id)
         self.client.blacklist[member.id] = False
 
-        embed = discord.Embed(description=f"Successfully removed {member} from the blacklist",
-                              timestamp=discord.utils.utcnow(), color=0x2F3136)
+        embed = discord.Embed(description=f"Successfully removed {member} from the blacklist")
 
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @blacklist.command(
         help="Checks if the specified user is blacklisted or not.",
         liases=['c'])
-    async def check(self, ctx, member: discord.User):
-        try:
-            status = self.client.blacklist[member.id]
+    async def check(self, ctx: CustomContext, member: discord.User):
+        status = False
+        reason = None
 
-        except KeyError:
-            status = False
-
-        text = f"{member} isn't blacklisted"
-
-        if status is True:
+        if self.client.blacklist[member.id]:
+            status = True
             reason = await self.client.db.fetchval("SELECT reason FROM blacklist WHERE user_id = $1", member.id)
-            text = f"{member} is blacklisted\nReason: {reason}"
 
-        embed = discord.Embed(description=f"{text}", timestamp=discord.utils.utcnow(), color=0x2F3136)
+        embed = discord.Embed(description=f"{ctx.toggle(status)} {member.mention} is {'' if status else 'not'} blacklisted.\n{f'Reason: {reason}' if reason else ''}")
 
-        return await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @blacklist.command(
         help="Sends a list of all blacklisted users.",
         aliases=['l'])
-    async def list(self, ctx):
+    async def list(self, ctx: CustomContext):
         blacklistedUsers = []
 
         blacklist = await self.client.db.fetch("SELECT * FROM blacklist")
@@ -689,35 +657,35 @@ Average: {average_latency}
         help="Executes an SQL query to the database.",
         aliases=['db', 'database', 'psql', 'postgre'])
     @commands.is_owner()
-    async def sql(self, ctx, *, query: str):
+    async def sql(self, ctx: CustomContext, *, query: str):
         body = cleanup_code(query)
         await ctx.invoke(self._eval, body=f"return await client.db.fetch(f\"\"\"{body}\"\"\")")
 
     @sql.command(
         help="Executes an SQL query to the database. (Fetch)",
         aliases=['f'])
-    async def fetch(self, ctx, *, query: str):
+    async def fetch(self, ctx: CustomContext, *, query: str):
         body = cleanup_code(query)
         await ctx.invoke(self._eval, body=f"return await client.db.fetch(f\"\"\"{body}\"\"\")")
 
     @sql.command(
         help="Executes an SQL query to the database. (Fetchval)",
         aliases=['fr'])
-    async def fetchval(self, ctx, *, query: str):
+    async def fetchval(self, ctx: CustomContext, *, query: str):
         body = cleanup_code(query)
         await ctx.invoke(self._eval, body=f"return await client.db.fetchval(f\"\"\"{body}\"\"\")")
 
     @sql.command(
         help="Executes an SQL query to the database. (Fetchrow)",
         aliases=['fv'])
-    async def fetchrow(self, ctx, *, query: str):
+    async def fetchrow(self, ctx: CustomContext, *, query: str):
         body = cleanup_code(query)
         await ctx.invoke(self._eval, body=f"return await client.db.fetchrow(f\"\"\"{body}\"\"\")")
 
     @sql.command(
         help="Executes an SQL query to the database. (Execute)",
         aliases=['e'])
-    async def execute(self, ctx, *, query: str):
+    async def execute(self, ctx: CustomContext, *, query: str):
         body = cleanup_code(query)
         await ctx.invoke(self._eval, body=f'return await client.db.execute(f"{body}")')
 
@@ -727,7 +695,7 @@ Average: {average_latency}
         help="Shows all used commands",
         aliases=['ch', 'cmds'])
     @commands.is_owner()
-    async def _commands(self, ctx):
+    async def _commands(self, ctx: CustomContext):
         executed_commands = await self.client.db.fetch(
             "SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
         if not executed_commands:
@@ -745,7 +713,7 @@ Average: {average_latency}
         await interface.send_to(ctx)
 
     @_commands.command(name='clear')
-    async def delete_commands(self, ctx):
+    async def delete_commands(self, ctx: CustomContext):
         """ Clears all command history """
         await self.client.db.execute("DELETE FROM commands")
         await ctx.message.add_reaction('✅')

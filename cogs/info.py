@@ -7,7 +7,6 @@ import time
 import expr
 import random
 import errors
-import urllib
 import shutil
 import typing
 import psutil
@@ -15,11 +14,11 @@ import pathlib
 import inspect
 import discord
 import humanize
-import wikipedia as wiki
 
 from googletrans import Translator
 from helpers import helpers as helpers
 from discord.ext import commands, menus
+from helpers.context import CustomContext
 from discord.ext.menus.views import ViewMenuPages
 from discord.ext.commands.cooldowns import BucketType
 
@@ -253,7 +252,7 @@ class Info(commands.Cog):
 
         return result
 
-    async def do_rtfm(self, ctx, key, obj):
+    async def do_rtfm(self, ctx: CustomContext, key, obj):
         page_types = {
             'latest': 'https://discordpy.readthedocs.io/en/latest',
             'latest-jp': 'https://discordpy.readthedocs.io/ja/latest',
@@ -287,7 +286,7 @@ class Info(commands.Cog):
             'bing': 'https://pbs.twimg.com/profile_images/1313103135414448128/0EVE9TeW.png',
             'pycord': 'https://avatars.githubusercontent.com/u/89700626?v=4'
         }
-        
+
         if obj is None:
             await ctx.send(page_types[key])
             return
@@ -311,7 +310,7 @@ class Info(commands.Cog):
         cache = list(self._rtfm_cache[key].items())
 
         matches = finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
-        
+
         if len(matches) == 0:
             return await ctx.send('Could not find anything. Sorry.')
 
@@ -322,15 +321,15 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def covid(self, ctx, country: str = None):
+    async def covid(self, ctx: CustomContext, country: str = None):
         url = f"https://disease.sh/v3/covid-19/countries/{country}"
-        
+
         if country is None:
             url = f"https://disease.sh/v3/covid-19/all"
-        
+
         coviddata = await self.client.session.get(url)
         data = await coviddata.json()
-        
+
         embed = discord.Embed(title=f"COVID-19 - {data.get('country') if country else 'World'}", description=f"""
 :mag_right: Total: {data.get('cases'):,}
 :ambulance: Recovered: {data.get('recovered'):,}
@@ -346,14 +345,14 @@ class Info(commands.Cog):
 {data.get('flag') if country else 'https://images-ext-1.discordapp.net/external/vSPP_4a9WMkettFFBXUTIqlCfqyxWlFEHHmszqCMPq0/https/upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Western_Hemisphere_transparent_background.png/1200px-Earth_Western_Hemisphere_transparent_background.png?width=671&height=671'}
                                 """)
         # embed.set_thumbnail(url=f"{data.get('flag') if country else 'https://images-ext-1.discordapp.net/external/vSPP_4a9WMkettFFBXUTIqlCfqyxWlFEHHmszqCMPq0/https/upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Western_Hemisphere_transparent_background.png/1200px-Earth_Western_Hemisphere_transparent_background.png?width=671&height=671'}")
-        
+
         await ctx.send(embed=embed)
-        
+
     @commands.command(
         help="Shows info about the song the specified member is currently listening to. If no member is specified it will default to the author of the message.",
         aliases=['sp'],
         brief="spotify\nspotify @Jake\nspotify 80088516616269824")
-    async def spotify(self, ctx, member: discord.Member = None):
+    async def spotify(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -361,7 +360,7 @@ class Info(commands.Cog):
                 member = ctx.author
 
         spotify = discord.utils.find(lambda a: isinstance(a, discord.Spotify), member.activities)
-        
+
         if spotify is None:
             raise errors.NoSpotifyStatus
 
@@ -372,19 +371,19 @@ class Info(commands.Cog):
             'start_timestamp': spotify.start.timestamp(),
             'artists': spotify.artists
         }
-        
+
         async with self.client.session.get("https://api.jeyy.xyz/discord/spotify", params=params) as response:
             buffer = io.BytesIO(await response.read())
             artists = ', '.join(spotify.artists)
-            
+
             view = discord.ui.View()
             style = discord.ButtonStyle.gray
             item = discord.ui.Button(style=style, emoji="<:spotify:899263771342700574>", label=f"listen on spotify",
                                     url=spotify.track_url)
             view.add_item(item=item)
-            
+
             await ctx.send(f"**{member}** is listening to **{spotify.title}** by **{artists}**", file=discord.File(buffer, 'spotify.png'), view=view)
-            
+
     @commands.command(
         slash_command=True,
         message_command=True,
@@ -392,15 +391,15 @@ class Info(commands.Cog):
         aliases=['ui', 'user', 'member', 'memberinfo'],
         brief="userinfo\nuserinfo @Andy\nuserinfo Jake#9999")
     @commands.cooldown(1, 5, BucketType.member)
-    async def userinfo(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def userinfo(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         await ctx.trigger_typing()
-        
+
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
-                
+
         if isinstance(member, discord.Member):
             fetched_member = await self.client.fetch_user(member.id)
 
@@ -432,7 +431,7 @@ class Info(commands.Cog):
 :art: Color: {helpers.get_member_color(member)}
 :art: Accent color: {helpers.get_member_accent_color(fetched_member)}
             """, inline=True)
-            
+
             record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
             text = ""
             if record:
@@ -443,7 +442,7 @@ class Info(commands.Cog):
 <:dollar:899676397600141334> Wallet: {f'{wallet:,}' if wallet else '0'}
 :bank: Bank: {f'{bank:,}' if bank else '0'}/{f'{bank_limit:,}' if bank_limit else '0'}
                 """
-                
+
             ack = await self.client.db.fetchval("SELECT acknowledgment FROM acknowledgments WHERE user_id = $1", member.id)
 
             embed.add_field(name="__**Other**__", value=f"""
@@ -477,7 +476,7 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
                 view.add_item(item=item)
 
             await ctx.send(embed=embed, view=view)
-        
+
         elif isinstance(member, discord.User):
 
             embed = discord.Embed(title=member.name if member.name else "No name", url=f"https://discord.com/users/{member.id}", description=f"*Less info cause this is a user not a member*\n<:greyTick:596576672900186113> ID: {member.id}")
@@ -487,7 +486,7 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
 <:mention:908055690277433365> Mention: {member.mention}
 :robot: Bot: {'Yes' if member.bot else 'No'} **|** :zzz: AFK {'Yes' if member.id in self.client.afk_users else 'No'}
             """, inline=True)
-            
+
             ack = await self.client.db.fetchval("SELECT acknowledgment FROM acknowledgments WHERE user_id = $1", member.id)
 
             embed.add_field(name="__**Something**__", value=f"""
@@ -501,7 +500,7 @@ Banner: {helpers.get_member_banner_urls(member)}
 :rainbow: Color: {helpers.get_member_color(member)}
 :rainbow: Accent color: {helpers.get_member_accent_color(member)}
             """, inline=True)
-            
+
             if member.avatar:
                 embed.set_thumbnail(url=member.avatar.url)
 
@@ -510,18 +509,18 @@ Banner: {helpers.get_member_banner_urls(member)}
             # """, inline=False)
 
             await ctx.send(embed=embed)
-            
+
         else:
             raise errors.UnknownError
 
     @commands.command(
         help="Shows information about the specified server. If no server is specified it will default to the current server.",
         aliases=['si', 'guild', 'guildinfo'])
-    async def serverinfo(self, ctx, guild: int = None):
+    async def serverinfo(self, ctx: CustomContext, guild: int = None):
         await ctx.trigger_typing()
 
         guild = self.client.get_guild(guild if guild else ctx.guild.id)
-            
+
         embed = discord.Embed(title=guild.name if guild.name else 'No name', description=f"""
 <:greyTick:596576672900186113> ID: {guild.id}
 <:info:888768239889424444> Description: {guild.description if guild.description else 'No description'}
@@ -583,7 +582,7 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
         help="<:emoji_ghost:658538492321595393> Shows information about a emoji. If the emoji is from a server the bot is in it will show more information. If it's not it will send a bit less information.",
         aliases=['ei', 'emoteinfo', 'emoinfo', 'eminfo', 'emojinfo', 'einfo', 'emoji', 'emote'],
         brief="emojiinfo :bonk:")
-    async def emojiinfo(self, ctx, emoji: typing.Union[discord.Emoji, discord.PartialEmoji]):
+    async def emojiinfo(self, ctx: CustomContext, emoji: typing.Union[discord.Emoji, discord.PartialEmoji]):
         if isinstance(emoji, discord.Emoji):
             fetchedEmoji = await ctx.guild.fetch_emoji(emoji.id)
             url = f"{emoji.url}"
@@ -657,7 +656,7 @@ Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.uti
     @commands.command(
         help="Shows basic information about the bot.",
         aliases=['bi', 'about', 'info'])
-    async def botinfo(self, ctx):
+    async def botinfo(self, ctx: CustomContext):
         shards_guilds = {i: {"guilds": 0, "users": 0} for i in range(len(self.client.shards))}
         for guild in self.client.guilds:
             shards_guilds[guild.shard_id]["guilds"] += 1
@@ -732,11 +731,11 @@ Users: `{shards_guilds[shard_id]['users']:,}`
             """, inline=True)
 
         await ctx.send(embed=embed)
-        
+
     @commands.command(
         help="Calculates the specified math problem.",
         aliases=['calculator', 'math', 'calc'])
-    async def calculate(self, ctx, *, expression: str):
+    async def calculate(self, ctx: CustomContext, *, expression: str):
         embed1 = discord.Embed(title="Input", description=f"""
 ```
 {expression.replace(', ', '').replace('x', '*')}
@@ -755,7 +754,7 @@ Users: `{shards_guilds[shard_id]['users']:,}`
         invoke_without_command=True,
         help="Shows the 1 policy of the bot.",
         aliases=['privacy-policy', 'privacy_policy'])
-    async def privacy(self, ctx):
+    async def privacy(self, ctx: CustomContext):
         embed = discord.Embed(title="Stealth Bot Privacy Policy", description=f"""
 We store your server id to make multiple prefixes work.
 
@@ -772,73 +771,73 @@ If you do not like this, disable it by doing: `{ctx.prefix}privacy disable_comma
         embed.set_footer(text=f"TL;DR: Privacy doesn't exist 👍")
 
         await ctx.send(embed=embed, footer=False)
-        
+
     @privacy.command(
         help="Disables the log-commands features.",
         aliases=['dc', 'disable_command'])
     @commands.has_permissions(manage_guild=True)
-    async def disable_commands(self, ctx):
+    async def disable_commands(self, ctx: CustomContext):
         if ctx.guild.id not in self.client.disable_commands_guilds:
             await self.client.db.execute("INSERT INTO guilds (guild_id, disable_commands) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET disable_commands = $2", ctx.guild.id, True)
             self.client.disable_commands_guilds[ctx.guild.id] = True
-        
+
             embed = discord.Embed(title="Changed Stealth Bot Privacy Policy for this server", description=f"""
 The developers will no longer be notified when you do a command in this server.
 To enable it, do `{ctx.prefix}privacy enable_commands`
                                 """)
 
             await ctx.send(embed=embed)
-            
+
         else:
             return await ctx.send("That setting is already **disabled** for this server!")
-        
+
     @privacy.command(
         help="Enables the log-commands features.",
         aliases=['ec', 'enable_command'])
     @commands.has_permissions(manage_guild=True)
-    async def enable_commands(self, ctx):
+    async def enable_commands(self, ctx: CustomContext):
         if ctx.guild.id in self.client.disable_commands_guilds:
             await self.client.db.execute("INSERT INTO guilds (guild_id, disable_commands) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET disable_commands = $2", ctx.guild.id, True)
             self.client.disable_commands_guilds.pop(ctx.guild.id)
-        
+
             embed = discord.Embed(title="Changed Stealth Bot Privacy Policy for this server", description=f"""
 The developers will now be notified when you do a command in this server.
 To disable it, do `{ctx.prefix}privacy enable_commands`
                                 """)
 
             await ctx.send(embed=embed)
-            
+
         else:
             return await ctx.send("That setting is already **enabled** for this server!")
-        
+
     @commands.command(
         help="Translates the given message to English",
         aliases=['trans'],
         brief="translate english Hello!\ntranslate en こんにちは")
-    async def translate(self, ctx, *, message: str = None):
+    async def translate(self, ctx: CustomContext, *, message: str = None):
         if message is None:
             reference = ctx.message.reference
-            
+
             if reference and isinstance(reference.resolved, discord.Message):
                 message = reference.resolved.content
-                
+
             else:
                 embed = discord.Embed(description="Pleaes specfiy the message to translate.")
                 return await ctx.send(embed=embed)
-            
+
         translation = translator.translate(message)
         await ctx.send(translation)
         embed = discord.Embed()
         embed.add_field(name=f"Input ({translation.src.upper()})", value=f"{message}")
         embed.add_field(name=f"Output (English)", value=f"{translation.text}")
-        
+
         await ctx.send(embed=embed)
 
     @commands.command(
         help="Shows you a list of emotes from the specified server. If no server is specified it will default to the current one.",
         aliases=['emojilist', 'emote_list', 'emoji_list', 'emotes', 'emojis'],
         brief="emotelist\nemotelist 799330949686231050")
-    async def emotelist(self, ctx, guildID: int = None):
+    async def emotelist(self, ctx: CustomContext, guildID: int = None):
         if guildID:
             guild = self.client.get_guild(guildID)
             if not guild:
@@ -872,7 +871,7 @@ To disable it, do `{ctx.prefix}privacy enable_commands`
         help="Shows you a list of members from the specified server. If no server is specified it will default to the current one.",
         aliases=['member_list', 'memlist', 'mem_list', 'members'],
         brief="memberlist\nmemberlist 799330949686231050")
-    async def memberlist(self, ctx, guildID: int = None):
+    async def memberlist(self, ctx: CustomContext, guildID: int = None):
         if guildID:
             guild = self.client.get_guild(guildID)
             if not guild:
@@ -899,7 +898,7 @@ To disable it, do `{ctx.prefix}privacy enable_commands`
         help="Shows information about the specified role. If no role is specified it will default to the author's top role.",
         aliases=['ri'],
         brief="roleinfo @Members\nroleinfo Admim\nroleinfo 799331025724375040")
-    async def roleinfo(self, ctx, role: discord.Role = None):
+    async def roleinfo(self, ctx: CustomContext, role: discord.Role = None):
         if role is None:
             role = ctx.author.top_role
 
@@ -921,7 +920,7 @@ Permissions: {role.permissions}
         help="Shows the first message of the specified channel. If no channel is specified it will default to the current one.",
         aliases=['fm', 'first_message'],
         brief="firstmessage\nfirstmessage #general\nfirstmessage 829418754408317029")
-    async def firstmessage(self, ctx, channel: discord.TextChannel = None):
+    async def firstmessage(self, ctx: CustomContext, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
 
@@ -947,27 +946,27 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         aliases=['av'],
         brief="avatar\navatar @Jeff\navatar Luke#1951")
     @commands.cooldown(1, 5, BucketType.member)
-    async def avatar(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def avatar(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         errorMessage = f"{member} doesnt have a avatar."
 
         await ctx.trigger_typing()
-        
+
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
                 errorMessage = f"You don't have a avatar."
-                
+
         if member.avatar:
             embed = discord.Embed(title=f"{member}'s avatar", description=f"{helpers.get_member_avatar_urls(member, ctx, member.id)}")
             embed.set_image(url=member.avatar.url)
-            
+
             if member.avatar != member.display_avatar:
                 embed.set_thumbnail(url=member.display_avatar.url)
 
             return await ctx.send(embed=embed)
-            
+
         else:
             embed = discord.Embed(description=errorMessage)
             await ctx.send(embed=embed)
@@ -977,26 +976,26 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         invoke_without_command=True,
         aliases=['bn'],
         brief="banner\nbanner @Bruno\nbanner Mars#0001")
-    async def banner(self, ctx, member: discord.Member = None):
+    async def banner(self, ctx: CustomContext, member: discord.Member = None):
         errorMessage = f"{member} doesnt have a banner."
 
         await ctx.trigger_typing()
-        
+
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
                 errorMessage = f"You don't have a banner."
-                
+
         fetched_member = await self.client.fetch_user(member.id)
-                
+
         if fetched_member.banner:
             embed = discord.Embed(title=f"{ctx.author.name}'s banner", description=f"{helpers.get_member_banner_urls(await self.client.fetch_user(member.id), ctx, member.id)}")
             embed.set_image(url=fetched_member.banner.url)
 
             await ctx.send(embed=embed)
-            
+
         else:
             embed = discord.Embed(description=errorMessage)
             await ctx.send(embed=embed)
@@ -1004,25 +1003,25 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @banner.command(
         help="Shows the banner of this server.",
         aliases=['guild'])
-    async def server(self, ctx):
+    async def server(self, ctx: CustomContext):
         errorMessage = f"This server doesn't have a banner."
 
         await ctx.trigger_typing()
-    
+
         if ctx.guild.banner:
             embed = discord.Embed(title=f"{ctx.guild.name}'s banner", description=f"{helpers.get_server_banner_urls(ctx.guild)}")
             embed.set_image(url=ctx.guild.banner)
 
             await ctx.send(embed=embed)
-            
+
         else:
             embed = discord.Embed(description=errorMessage)
             await ctx.send(embed=embed)
-        
+
     @commands.command(
         help="Shows the latency of the bot",
         aliases=['pong'])
-    async def ping(self, ctx):
+    async def ping(self, ctx: CustomContext):
         pings = []
 
         typings = time.monotonic()
@@ -1074,12 +1073,12 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @commands.command(
         help="Shows the uptime of the bot.",
         aliases=['up'])
-    async def uptime(self, ctx):
+    async def uptime(self, ctx: CustomContext):
         delta_uptime = discord.utils.utcnow() - self.client.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        
+
         embed = discord.Embed(title=f"I've been online for {ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}")
 
         await ctx.send(embed=embed)
@@ -1087,7 +1086,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @commands.command(
         help="Shows how many servers the bot is in.",
         aliases=['guilds'])
-    async def servers(self, ctx):
+    async def servers(self, ctx: CustomContext):
         embed = discord.Embed(title=f"I'm in `{len(self.client.guilds)}` servers.")
 
         await ctx.send(embed=embed)
@@ -1095,7 +1094,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @commands.command(
         help="Shows how many messages the bot has seen since the last restart.",
         aliases=['msg', 'msgs', 'message'])
-    async def messages(self, ctx):
+    async def messages(self, ctx: CustomContext):
         embed = discord.Embed(
             title=f"I've seen a total of `{self.client.messages_count}` messages and `{self.client.edited_messages_count}` edits.")
 
@@ -1103,13 +1102,13 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
     @commands.group(
         help="<:scroll:904038785921187911> | Todo commands.")
-    async def todo(self, ctx):
+    async def todo(self, ctx: CustomContext):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @todo.command(
         help="Adds the specified task to your todo list.")
-    async def add(self, ctx, *, text):
+    async def add(self, ctx: CustomContext, *, text):
         todo = await self.client.db.fetchrow(
             "INSERT INTO todo (user_id, text, jump_url, creation_date) VALUES ($1, $2, $3, $4) "
             "ON CONFLICT (user_id, text) DO UPDATE SET user_id = $1 RETURNING jump_url, creation_date",
@@ -1128,7 +1127,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @todo.command(
         name="list",
         help="Sends a list of your tasks.")
-    async def _list(self, ctx):
+    async def _list(self, ctx: CustomContext):
         todos = await self.client.db.fetch(
             "SELECT text, creation_date, jump_url FROM todo WHERE user_id = $1 ORDER BY creation_date ASC",
             ctx.author.id)
@@ -1158,7 +1157,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
     @todo.command(
         help="Deletes all tasks from your todo list.")
-    async def clear(self, ctx):
+    async def clear(self, ctx: CustomContext):
         confirm = await ctx.confirm("Are you sure you want to clear your todo list?\n*This action cannot be undone*")
 
         if confirm is True:
@@ -1172,7 +1171,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
     @todo.command(
         help="Removes the specified task from your todo list")
-    async def remove(self, ctx, index: int):
+    async def remove(self, ctx: CustomContext, index: int):
         todos = await self.client.db.fetch(
             "SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC",
             ctx.author.id)
@@ -1193,7 +1192,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
     @todo.command(
         help="Edits the specified task")
-    async def edit(self, ctx, index: int, *, text):
+    async def edit(self, ctx: CustomContext, index: int, *, text):
         todos = await self.client.db.fetch(
             "SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC",
             ctx.author.id)
@@ -1230,7 +1229,7 @@ Jump URL: [Click here]({new['jump_url']})
 
     @commands.command(
         help="Makes you go AFK. If someone pings you the bot will tell them that you're AFK.")
-    async def afk(self, ctx, *, reason="No reason provided"):
+    async def afk(self, ctx: CustomContext, *, reason="No reason provided"):
         if ctx.author.id in self.client.afk_users and ctx.author.id in self.client.auto_un_afk and self.client.auto_un_afk[ctx.author.id] is True:
             return
 
@@ -1249,9 +1248,9 @@ Jump URL: [Click here]({new['jump_url']})
             info = await self.client.db.fetchrow("SELECT * FROM afk WHERE user_id = $1", ctx.author.id)
             await self.client.db.execute("INSERT INTO afk (user_id, start_time, reason) VALUES ($1, null, null) ON CONFLICT (user_id) DO UPDATE SET start_time = null, reason = null", ctx.author.id)
 
-            time = info["start_time"]
+            start_time = info["start_time"]
 
-            delta_uptime = ctx.message.created_at - time
+            delta_uptime = ctx.message.created_at - start_time
             hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
             minutes, seconds = divmod(remainder, 60)
             days, hours = divmod(hours, 24)
@@ -1267,7 +1266,7 @@ With the reason being: {info['reason']}""")
     @commands.command(
         help="Toggles if the bot should remove your AFK status after you send a message or not",
         aliases=['auto_un_afk', 'aafk', 'auto-afk-remove'])
-    async def autoafk(self, ctx, mode: bool = None):
+    async def autoafk(self, ctx: CustomContext, mode: bool = None):
         mode = mode or (False if (ctx.author.id in self.client.auto_un_afk and self.client.auto_un_afk[
             ctx.author.id] is True) or ctx.author.id not in self.client.auto_un_afk else True)
         self.client.auto_un_afk[ctx.author.id] = mode
@@ -1281,19 +1280,19 @@ With the reason being: {info['reason']}""")
                               description="To remove your AFK status do `afk` again.")
 
         return await ctx.send(embed=embed)
-    
+
     @commands.command(
         help="Checks if the specified member has voted or not.",
         aliases=['vote_check'])
-    async def votecheck(self, ctx, member: discord.Member = None):
+    async def votecheck(self, ctx: CustomContext, member: discord.Member = None):
         await ctx.trigger_typing()
-        
+
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
-                
+
         if member.bot:
             return await ctx.send("bro bots cant vote")
 
@@ -1308,13 +1307,13 @@ With the reason being: {info['reason']}""")
 
         data = await response.json()
         voted = bool(data['voted'])
-        
+
         if member != ctx.author:
             text = f"{member.display_name} {'has' if voted else 'has not'} voted."
-            
+
         else:
             text = f"You {'have' if voted else 'have not'} voted."
-            
+
         embed = discord.Embed(title="Vote checker", description=text)
 
         return await ctx.send(embed=embed)
@@ -1322,7 +1321,7 @@ With the reason being: {info['reason']}""")
     @commands.command(
         help="Shows the specified member's level. If no member is specified it will default to the author.",
         aliases=['lvl', 'rank'])
-    async def level(self, ctx, member: discord.Member = None):
+    async def level(self, ctx: CustomContext, member: discord.Member = None):
         if member is not None:
             message = f"{member.mention} doesn't have a level!"
 
@@ -1350,7 +1349,7 @@ XP: {format(database[0]['xp'], ',')}
     @commands.command(
         help="Shows the level leaderboard of this server.",
         aliases=['lvllb', 'lvl_leaderboard', 'lvl-leaderboard', 'lvl_lb', 'lvl-lb'])
-    async def lvlleaderboard(self, ctx):
+    async def lvlleaderboard(self, ctx: CustomContext):
         database = await self.client.db.fetch("SELECT * FROM users WHERE guild_id = $1 ORDER BY level DESC LIMIT 10",
                                               ctx.guild.id)
         topTenUsers = []
@@ -1383,7 +1382,7 @@ XP: {format(database[0]['xp'], ',')}
     @commands.command(
         help="Sends the source code of the bot/a command")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def source(self, ctx, *, command: str = None):
+    async def source(self, ctx: CustomContext, *, command: str = None):
         prefix = ctx.clean_prefix
         source_url = 'https://github.com/Ender2K89/Stealth-Bot'
 
@@ -1448,59 +1447,59 @@ XP: {format(database[0]['xp'], ',')}
         invoke_without_command=True,
         help=":books: | Gives you a documentation link for a discord.py entity.\nEvents, objects, and functions are all supported through a cruddy fuzzy algorithm.",
         aliases=['rtfd', 'rtdm'])
-    async def rtfm(self, ctx, *, obj: str = None):
+    async def rtfm(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'master', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a discord.py entity (Japanese).",
         name='jp')
-    async def rtfm_jp(self, ctx, *, obj: str = None):
+    async def rtfm_jp(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'latest-jp', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a Python entity.",
         name='python',
         aliases=['py'])
-    async def rtfm_python(self, ctx, *, obj: str = None):
+    async def rtfm_python(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'python', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a Python entity (Japanese).",
         name='py-jp',
         aliases=['py-ja'])
-    async def rtfm_python_jp(self, ctx, *, obj: str = None):
+    async def rtfm_python_jp(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'python-jp', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a discord.py entity (master branch)",
         name='master',
         aliases=['2.0'])
-    async def rtfm_master(self, ctx, *, obj: str = None):
+    async def rtfm_master(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'master', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a enhanced-discord.py entity",
         name='enhanced-dpy',
         aliases=['edpy'])
-    async def rtfm_edpy(self, ctx, *, obj: str = None):
+    async def rtfm_edpy(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'edpy', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for an asyncbing entity",
         name='asyncbing',
         aliases=['bing'])
-    async def rtfm_asyncbing(self, ctx, *, obj: str = None):
+    async def rtfm_asyncbing(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'bing', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a chaidiscord.py entity",
         name='chaidiscordpy',
         aliases=['chaidpy', 'cdpy'])
-    async def rtfm_chai(self, ctx, *, obj: str = None):
+    async def rtfm_chai(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'chai', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a pycord entity",
         name='pycord')
-    async def rtfm_pycord(self, ctx, *, obj: str = None):
+    async def rtfm_pycord(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'pycord', obj)

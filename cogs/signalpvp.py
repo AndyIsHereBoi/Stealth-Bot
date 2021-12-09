@@ -1,6 +1,8 @@
 import discord
-from discord.ext import commands
+
 from helpers import helpers
+from discord.ext import commands
+from helpers.context import CustomContext
 
 
 def setup(client):

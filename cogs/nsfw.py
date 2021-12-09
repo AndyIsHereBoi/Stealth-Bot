@@ -2,6 +2,7 @@ import time
 import discord
 
 from discord.ext import commands
+from helpers.context import CustomContext
 
 
 def setup(client):
@@ -19,7 +20,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_ass', 'ass_nsfw'])
     @commands.is_nsfw()
-    async def ass(self, ctx, type: str = None):
+    async def ass(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/ass/"
 
         if str(type).lower() == "gif":
@@ -45,7 +46,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_ecchi', 'ecchi_nsfw'])
     @commands.is_nsfw()
-    async def ecchi(self, ctx, type: str = None):
+    async def ecchi(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/ass/"
 
         if str(type).lower() == "gif":
@@ -71,7 +72,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_ero', 'ero_nsfw'])
     @commands.is_nsfw()
-    async def ero(self, ctx, type: str = None):
+    async def ero(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/ero/"
 
         if str(type).lower() == "gif":
@@ -97,7 +98,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_hentai', 'hentai_nsfw'])
     @commands.is_nsfw()
-    async def hentai(self, ctx, type: str = None):
+    async def hentai(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/hentai/"
 
         if str(type).lower() == "gif":
@@ -123,7 +124,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['maidh', 'nsfw_maid', 'maid_nsfw'])
     @commands.is_nsfw()
-    async def hmaid(self, ctx, type: str = None):
+    async def hmaid(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/hmaid/"
 
         if str(type).lower() == "gif":
@@ -149,7 +150,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_milf', 'milf_nsfw'])
     @commands.is_nsfw()
-    async def milf(self, ctx, type: str = None):
+    async def milf(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/milf/"
 
         if str(type).lower() == "gif":
@@ -173,7 +174,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_oppai', 'oppai_nsfw'])
     @commands.is_nsfw()
-    async def oppai(self, ctx, type: str = None):
+    async def oppai(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/oppai/"
 
         if str(type).lower() == "gif":
@@ -199,7 +200,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_oral', 'oral_nsfw'])
     @commands.is_nsfw()
-    async def oral(self, ctx, type: str = None):
+    async def oral(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/oral/"
 
         if str(type).lower() == "gif":
@@ -225,7 +226,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_paizuri', 'paizuri_nsfw'])
     @commands.is_nsfw()
-    async def paizuri(self, ctx, type: str = None):
+    async def paizuri(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/paizuri/"
 
         if str(type).lower() == "gif":
@@ -251,7 +252,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_selfies', 'selfies_nsfw', 'selfie', 'nsfw_selfie', 'selfie_nsfw'])
     @commands.is_nsfw()
-    async def selfies(self, ctx, type: str = None):
+    async def selfies(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/selfie/"
 
         if str(type).lower() == "gif":
@@ -277,7 +278,7 @@ class NSFW(commands.Cog):
 
     @commands.command(aliases=['nsfw_uniform', 'uniform_nsfw'])
     @commands.is_nsfw()
-    async def uniform(self, ctx, type: str = None):
+    async def uniform(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/nsfw/uniform/"
 
         if str(type).lower() == "gif":

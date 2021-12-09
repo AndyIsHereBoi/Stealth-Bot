@@ -2,7 +2,6 @@ import io
 import re
 import copy
 import yaml
-import prsaw
 import random
 import errors
 import typing
@@ -16,6 +15,7 @@ import traceback
 from discord import Webhook
 from helpers import helpers as helpers
 from discord.ext import commands, menus
+from helpers.context import CustomContext
 
 
 with open(r'/root/stealthbot/config.yaml') as file:
@@ -113,7 +113,7 @@ class Events(commands.Cog):
 #         # await self.client.db.execute("INSERT INTO economy(user_id, amount) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET amount= $2", int(data["user"]), balance + amount)
 
     @commands.Cog.listener('on_command_error')
-    async def error_handler(self, ctx, error):
+    async def error_handler(self, ctx: CustomContext, error):
         owners = [564890536947875868, 555818548291829792]
 
         error = getattr(error, "original", error)
@@ -647,7 +647,7 @@ Message: {ctx.message.content[0:1700]}
                 return await reaction.message.channel.send(f"Fuck {e}")
             
     @commands.Cog.listener()
-    async def on_command(self, ctx):
+    async def on_command(self, ctx: CustomContext):
         self.client.commands_used = self.client.commands_used + 1
         # self.api.command_run(ctx)
         

@@ -4,6 +4,7 @@ import discord
 import asyncio
 
 from discord.ext import commands, menus
+from helpers.context import CustomContext
 from discord.ext.menus.views import ViewMenuPages
 from discord.ext.commands.cooldowns import BucketType
 from helpers.decorators import has_started, has_ref_started
@@ -36,7 +37,7 @@ class RichestUsersEmbedPage(menus.ListPageSource):
 
 
 class Economy(commands.Cog):
-    "Economy commands"
+    """Economy commands"""
 
     def __init__(self, client):
         self.client = client
@@ -47,7 +48,7 @@ class Economy(commands.Cog):
         help="Shows the specified member's balance. If no member is specified it will default to the author.",
         aliases=['bal'])
     @has_started()
-    async def balance(self, ctx, member: discord.Member = None):
+    async def balance(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -68,7 +69,7 @@ Bank: {bank:,}/{bank_limit:,} :dollar:
     @commands.command(
         help="Shows the money leaderboard.",
         aliases=['lb'])
-    async def leaderboard(self, ctx):
+    async def leaderboard(self, ctx: CustomContext):
         database = await self.client.db.fetch("SELECT * FROM economy ORDER BY wallet DESC LIMIT 10")
         topTen = []
         number = 0
@@ -96,7 +97,7 @@ Bank: {bank:,}/{bank_limit:,} :dollar:
         help="Withdraws the specified amount of money from your bank to your wallet.",
         aliases=['wd', 'withdrawal', 'with'])
     @has_started()
-    async def withdraw(self, ctx, amount: int):
+    async def withdraw(self, ctx: CustomContext, amount: int):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", ctx.author.id)
 
         if amount <= 0:
@@ -120,7 +121,7 @@ Bank: {record['bank'] - amount}
         help="Deposits the specified amount of money from your wallet to your bank.",
         aliases=['depo', 'dep'])
     @has_started()
-    async def deposit(self, ctx, amount: int):
+    async def deposit(self, ctx: CustomContext, amount: int):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", ctx.author.id)
 
         if amount <= 0:
@@ -162,13 +163,13 @@ Bank: {record['bank'] + amount}
             return await ctx.send(embed=embed)
 
         else:
-            raise UnknownError("Something wrong happened")
+            raise errors.UnknownError("Something wrong happened")
 
     @commands.command(
         help="With this command you can beg people for some coins. Sometimes You get nothing")
     @has_started()
     @commands.cooldown(1, 3, BucketType.member)
-    async def beg(self, ctx):
+    async def beg(self, ctx: CustomContext):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", ctx.author.id)
 
         rn = random.randint(0, 200)
@@ -489,7 +490,7 @@ Bank: {record['bank'] + amount}
         aliases=['cf'])
     @has_started()
     @commands.cooldown(1, 10, BucketType.member)
-    async def coinflip(self, ctx, amount: int):
+    async def coinflip(self, ctx: CustomContext, amount: int):
         database = await self.client.db.fetchrow("SELECT * FROM economy where user_id = $1; ", ctx.author.id)
 
         if amount < 500:
@@ -498,12 +499,12 @@ Bank: {record['bank'] + amount}
         if amount > database['wallet']:
             return await ctx.send("You don't have that much money in your wallet!")
 
-        possibleAnswers = ['heads', 'tails']
-        possibleAnswers2 = ['heads', 'tails', 'cancel']
-        botAnswer = random.choice(possibleAnswers)
+        possible_answers = ['heads', 'tails']
+        possible_answers2 = ['heads', 'tails', 'cancel']
+        bot_answer = random.choice(possible_answers)
 
         def check(m):
-            return m.content.lower() in possibleAnswers2 and m.channel.id == ctx.channel.id and m.author.id == ctx.author.id
+            return m.content.lower() in possible_answers2 and m.channel.id == ctx.channel.id and m.author.id == ctx.author.id
 
         embed = discord.Embed(title=f"Coinflip - {amount:,}$", description=f"Choose an option in the next 15 seconds!\ntails or heads.", color=discord.Color.blurple())
         embed.set_footer(text=f"To cancel, just type cancel")
@@ -526,10 +527,10 @@ Bank: {record['bank'] + amount}
 
                 return await message.edit(embed=embed)
 
-            if str(botAnswer).lower() == str(msg).lower():
+            if str(bot_answer).lower() == str(msg).lower():
                 embed = discord.Embed(title=f"Coinflip - {amount:,}$", description=f"""
 :tada: __**CONGRATULATIONS {ctx.author.display_name}!!!!**__ :tada:
-The coin landed on **{str(botAnswer).title()}** and you chose **{str(msg).title()}**, meaning that you've just won **{amount:,}$**!
+The coin landed on **{str(bot_answer).title()}** and you chose **{str(msg).title()}**, meaning that you've just won **{amount:,}$**!
 
 Your new balance is {database['wallet'] + amount:,}
                 """, color=discord.Color.green())
@@ -542,7 +543,7 @@ Your new balance is {database['wallet'] + amount:,}
             else:
                 embed = discord.Embed(title=f"Coinflip - {amount:,}$", description=f"""
 You lost {ctx.author.display_name}..
-The coin landed on **{str(botAnswer).title()}** and you chose **{str(msg).title()}**, meaning that you've just lost **{amount:,}$**!
+The coin landed on **{str(bot_answer).title()}** and you chose **{str(msg).title()}**, meaning that you've just lost **{amount:,}$**!
 
 Your new balance is {database['wallet'] - amount:,}
                 """, color=discord.Color.red())
@@ -557,7 +558,7 @@ Your new balance is {database['wallet'] - amount:,}
         aliases=['guess-the-number', 'gtn'])
     @has_started()
     @commands.cooldown(1, 10, BucketType.member)
-    async def guess_the_number(self, ctx, amount: int):
+    async def guess_the_number(self, ctx: CustomContext, amount: int):
         database = await self.client.db.fetchrow("SELECT * FROM economy where user_id = $1; ", ctx.author.id)
 
         if amount < 500:
@@ -622,7 +623,7 @@ Your new balance is {database['wallet'] - amount:,}
     @commands.command(
         help="Creates a balance for you if you don't have one.",
         aliases=['make'])
-    async def start(self, ctx):
+    async def start(self, ctx: CustomContext):
         user = await self.client.db.fetchrow("SELECT user_id FROM economy WHERE user_id = $1", ctx.author.id)
 
         if user:
@@ -634,11 +635,11 @@ Your new balance is {database['wallet'] - amount:,}
 
     @commands.command(
         help="Resets your balance, theres 2 confirmations so you don't do it accidentally.")
-    async def reset(self, ctx):
+    async def reset(self, ctx: CustomContext):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", ctx.author.id)
 
         if not record:
-            raise NotStartedEconomy(
+            raise errors.NotStartedEconomy(
                 f"How am I gonna reset your balance if you don't have a balance? Do `{ctx.prefix}start` to make one.")
 
         else:
@@ -667,7 +668,7 @@ Your new balance is {database['wallet'] - amount:,}
         help=":moneybag: | Economy commands only for the owner of the bot.",
         aliases=['admineco', 'ecoadmin', 'economyadmin'])
     @commands.is_owner()
-    async def admineconomy(self, ctx):
+    async def admineconomy(self, ctx: CustomContext):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
@@ -675,7 +676,7 @@ Your new balance is {database['wallet'] - amount:,}
         help="Gives the specified member's a specified amount of money.",
         aliases=['add', 'g', 'a'])
     @commands.is_owner()
-    async def give(self, ctx, member: discord.Member, amount: int):
+    async def give(self, ctx: CustomContext, member: discord.Member, amount: int):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
 
         if not record:
@@ -694,7 +695,7 @@ Your new balance is {database['wallet'] - amount:,}
         help="Sets the specified member's balance to the specified number.",
         aliases=['s'])
     @commands.is_owner()
-    async def _set(self, ctx, member: discord.Member, amount: int):
+    async def _set(self, ctx: CustomContext, member: discord.Member, amount: int):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
 
         if not record:
@@ -710,7 +711,7 @@ Your new balance is {database['wallet'] - amount:,}
         help="Removes the specified number from the specified member's balance.",
         aliases=['r'])
     @commands.is_owner()
-    async def remove(self, ctx, member: discord.Member, amount: int):
+    async def remove(self, ctx: CustomContext, member: discord.Member, amount: int):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
 
         if not record:
@@ -729,7 +730,7 @@ Your new balance is {database['wallet'] - amount:,}
         help="Resets the specified member's balance.",
         aliases=['re'])
     @commands.is_owner()
-    async def reset(self, ctx, member: discord.Member):
+    async def reset(self, ctx: CustomContext, member: discord.Member):
         record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
 
         if not record:
@@ -744,7 +745,7 @@ Your new balance is {database['wallet'] - amount:,}
     @admineconomy.command(
         help="Resets the entire economy.")
     @commands.is_owner()
-    async def resetall(self, ctx):
+    async def resetall(self, ctx: CustomContext):
         confirmation1 = await ctx.confirm(message="Are you sure you want to do this?")
 
         if confirmation1:

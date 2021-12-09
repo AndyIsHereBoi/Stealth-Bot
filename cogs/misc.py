@@ -1,17 +1,14 @@
 import re
-import time
 import typing
 import errors
 import random
 import asyncio
 import difflib
 import discord
-import datetime
 import itertools
-import unidecode
 
-from pistonapi import PistonAPI
 from discord.ext import commands
+from helpers.context import CustomContext
 
 def main(string):
     string = str(string).lower()
@@ -99,7 +96,7 @@ class Button(discord.ui.Button):
 
 
 class Nitro(discord.ui.View):
-    def __init__(self, ctx):
+    def __init__(self, ctx: CustomContext):
         super().__init__()
         self.ctx = ctx
         self.add_item(Button())
@@ -115,7 +112,7 @@ class Misc(commands.Cog):
 
     @commands.group(
         help="<:PES_Sniper:896787924903919648> | Snipes the most recently deleted message from this server.")
-    async def snipe(self, ctx):
+    async def snipe(self, ctx: CustomContext):
         if ctx.invoked_subcommand is None:
             if self.client.messages.get(ctx.guild.id) is None:
                 embed = discord.Embed(description=f"I couldn't find any deleted self.client.messages in this server.")
@@ -166,7 +163,7 @@ class Misc(commands.Cog):
     @snipe.command(
         help="<:PES_Sniper:896787924903919648> Snipes the most recently edited message from this server.",
         aliases=['edited', 'e'])
-    async def edit(self, ctx):
+    async def edit(self, ctx: CustomContext):
         if self.client.edited_messages.get(ctx.guild.id) == None:
             embed = discord.Embed(description=f"I couldn't find any edited self.client.messages in this server.")
             await ctx.send(embed=embed)
@@ -211,7 +208,7 @@ class Misc(commands.Cog):
 
     @commands.command(
         help="Scans the given text for bad words. Note that this is not close to being done and is still in development.")
-    async def scan(self, ctx, *, string: str):
+    async def scan(self, ctx: CustomContext, *, string: str):
         with open("./data/badwords.txt", "r") as file:
             allText = file.read()
             blacklistedWords = list(map(str, allText.split()))
@@ -257,7 +254,7 @@ Message: `{message}`
             return await ctx.send(embed=embed)
 
     @commands.command()
-    async def nitro(self, ctx):
+    async def nitro(self, ctx: CustomContext):
         invisible_character = "\u2800"
         embed = discord.Embed(title="You've been gifted a subscription.",
                               description=f"Stealth Bot#1082 has gifted you Nitro for 1 year.", color=0x2F3136)
@@ -302,7 +299,7 @@ Message: `{message}`
     @commands.command(
         help="Sends invite links to invite the bot to your server.",
         aliases=['inv', 'invite_me', 'inviteme'])
-    async def invite(self, ctx):
+    async def invite(self, ctx: CustomContext):
         view = discord.ui.View()
         style = discord.ButtonStyle.gray
         item = discord.ui.Button(style=style, emoji="⭐", label="Recommended",
@@ -325,7 +322,7 @@ Message: `{message}`
         
     @commands.command(
         help="Sends you the link of the Stealth Bot website.")
-    async def website(self, ctx):
+    async def website(self, ctx: CustomContext):
         view = discord.ui.View()
         style = discord.ButtonStyle.gray
         item = discord.ui.Button(style=style, emoji="🌐", label="Website",
@@ -337,7 +334,7 @@ Message: `{message}`
     @commands.command(
         help="Sends you a link where you can vote for the bot.",
         aliases=['topgg', 'top-gg', 'top_gg'])
-    async def vote(self, ctx):
+    async def vote(self, ctx: CustomContext):
         view = discord.ui.View()
         style = discord.ButtonStyle.gray
         item = discord.ui.Button(style=style, emoji="<:dbl:757235965629825084>", label="Vote for me",
@@ -349,7 +346,7 @@ Message: `{message}`
     @commands.command(
         help="Sends the support server of the bot.",
         aliases=['supportserver', 'support_server'])
-    async def support(self, ctx):
+    async def support(self, ctx: CustomContext):
         view = discord.ui.View()
         style = discord.ButtonStyle.gray
         item = discord.ui.Button(style=style, emoji="<:servers:895688440690147371>", label="Join support server",
@@ -362,7 +359,7 @@ Message: `{message}`
         invoke_without_command=True,
         help="<:rich_presence:895688440887246858> | Shows you a list of the bot's prefixes",
         aliases=['prefix'])
-    async def prefixes(self, ctx):
+    async def prefixes(self, ctx: CustomContext):
         prefixes = await self.client.get_pre(self.client, ctx.message, raw_prefix=True)
         embed = discord.Embed(title="Here's a list of my prefixes for this server:",
                               description=ctx.me.mention + '\n' + '\n'.join(prefixes))
@@ -374,7 +371,7 @@ Message: `{message}`
         name="add",
         help="Adds a prefix to the bot's prefixes",
         aliases=['a', 'create'])
-    async def prefixes_add(self, ctx, new: str):
+    async def prefixes_add(self, ctx: CustomContext, new: str):
         old = list(await self.client.get_pre(self.client, ctx.message, raw_prefix=True))
 
         if len(new) > 50:
@@ -404,7 +401,7 @@ Message: `{message}`
         name="remove",
         help="Removes a prefix from the bot's prefixes",
         aliases=['r', 'delete'])
-    async def prefixes_remove(self, ctx, prefix: str):
+    async def prefixes_remove(self, ctx: CustomContext, prefix: str):
         old = list(await self.client.get_pre(self.client, ctx.message, raw_prefix=True))
 
         if prefix in old:
@@ -432,7 +429,7 @@ Message: `{message}`
         name="clear",
         help="Clears the bot's prefixes",
         aliases=['c', 'deleteall'])
-    async def prefixes_clear(self, ctx):
+    async def prefixes_clear(self, ctx: CustomContext):
         await self.client.db.execute(
             "INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) "
             "ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
@@ -443,7 +440,7 @@ Message: `{message}`
     @commands.command(
         help="<:greenTick:895688440690147370> Sends 2 random words, the author has 60 seconds to re-type the words. Copy pasting doesn't work.")
     # @helpers.is_sh_server()
-    async def verify(self, ctx):
+    async def verify(self, ctx: CustomContext):
         with open("./data/verifyWords.txt", "r") as file:
             allText = file.read()
             wordsList = list(map(str, allText.split()))
@@ -511,7 +508,7 @@ Message: `{message}`
         aliases=['verify_role', 'verify-role', 'vr'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def verifyrole(self, ctx):
+    async def verifyrole(self, ctx: CustomContext):
         role = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not role['verify_role_id']:
@@ -525,7 +522,7 @@ Message: `{message}`
     @verifyrole.command(
         name="set",
         help="Changes the verify role to the specified role.")
-    async def _set(self, ctx, role: discord.Role):
+    async def _set(self, ctx: CustomContext, role: discord.Role):
         await self.client.db.execute(
             "INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2",
             ctx.guild.id, role.id)
@@ -533,7 +530,7 @@ Message: `{message}`
 
     @verifyrole.command(
         help="Removes the verify role")
-    async def remove(self, ctx):
+    async def remove(self, ctx: CustomContext):
         await self.client.db.execute(
             "INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2",
             ctx.guild.id, None)
@@ -544,7 +541,7 @@ Message: `{message}`
         aliases=["ss"])
     @commands.is_nsfw()
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def screenshot(self, ctx, link):
+    async def screenshot(self, ctx: CustomContext, link):
         URL_REGEX = re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
         if not re.fullmatch(URL_REGEX, link):
@@ -557,7 +554,7 @@ Message: `{message}`
             
     @commands.command(
         help="Shows you the avatar history of the specified member.")
-    async def avatarhistory(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def avatarhistory(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         await ctx.trigger_typing()
         
         if member is None:
@@ -579,7 +576,7 @@ Message: `{message}`
         help="Sends the specified suggestion to the bot developer.",
         aliases=['suggestion', 'botsuggest', 'bot_suggest', 'bot-suggest'],
         brief="suggest Filters to music")
-    async def suggest(self, ctx, *, suggestion):
+    async def suggest(self, ctx: CustomContext, *, suggestion):
         if len(suggestion) > 1000:
             return await ctx.send("Your suggestion has exceeded the 1000-character limit.")
         

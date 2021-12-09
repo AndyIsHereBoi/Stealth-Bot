@@ -1,5 +1,7 @@
+import time
 import errors
 import discord
+import asyncio
 
 from discord.ext import commands
 from helpers.context import CustomContext
@@ -216,16 +218,12 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
 
         message = message.replace("[server]", f"{ctx.guild.name}")
 
-        message = message.replace("[user]", f"{ctx.author.display_name}").replace("[full-user]",
-                                                                                  f"{ctx.author}").replace(
+        message = message.replace("[user]", f"{ctx.author.display_name}").replace("[full-user]", f"{ctx.author}").replace(
             "[user-mention]", f"{ctx.author.mention}")
 
         message = message.replace("[count]", f"{self.make_ordinal(ctx.guild.member_count)}")
 
-        message = message.replace("[code]", f"123456789").replace("[full-code]", f"discord.gg/123456789").replace(
-            "[full-url]", f"https://discord.gg/123456789").replace("[inviter]", f"John").replace("[full-inviter]",
-                                                                                                 f"John#1234").replace(
-            "[inviter-mention]", f"@John")
+        message = message.replace("[code]", f"123456789").replace("[full-code]", f"discord.gg/123456789").replace("[full-url]", f"https://discord.gg/123456789").replace("[inviter]", f"John").replace("[full-inviter]", f"John#1234").replace("[inviter-mention]", f"@John")
 
         await ctx.send(message)
 
@@ -314,8 +312,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
                 perms.update(send_messages=None,
                              add_reactions=None,
                              create_public_threads=None,
-                             create_private_threads=None
-                             )
+                             create_private_threads=None)
                 try:
                     await channel.set_permissions(role, overwrite=perms,
                                                   reason=f"DuckBot mute-role creation. Requested "

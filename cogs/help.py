@@ -8,8 +8,8 @@ import contextlib
 
 from discord.ui import Button
 from discord import Interaction
-from helpers import helpers as helpers
 from discord.ext import commands
+from helpers.context import CustomContext
 from helpers import paginator as paginator
 
 
@@ -34,7 +34,7 @@ class VoteButtons(discord.ui.View):
 
 
 class HelpCentre(discord.ui.View):
-    def __init__(self, ctx, other_view: discord.ui.View):
+    def __init__(self, ctx: CustomContext, other_view: discord.ui.View):
         super().__init__()
         self.embed = None
         self.ctx = ctx
@@ -80,7 +80,7 @@ This means that the argument is **optional** and has a default value.
 
 
 class NewsCentre(discord.ui.View):
-    def __init__(self, ctx, other_view: discord.ui.View):
+    def __init__(self, ctx: CustomContext, other_view: discord.ui.View):
         super().__init__()
         self.embed = None
         self.ctx = ctx
@@ -134,7 +134,7 @@ Do **{self.ctx.prefix}help todo** for more info.
 
 
 class HelpView(discord.ui.View):
-    def __init__(self, ctx, usable_commands, data: typing.Dict[commands.Cog, typing.List[commands.Command]]):
+    def __init__(self, ctx: CustomContext, usable_commands, data: typing.Dict[commands.Cog, typing.List[commands.Command]]):
         super().__init__()
         self.ctx = ctx
         self.usable_commands = usable_commands
@@ -142,7 +142,7 @@ class HelpView(discord.ui.View):
         self.bot = ctx.bot
         self.main_embed = self.build_main_page()
         self.current_page = 0
-        self.message: discord.Message = None
+        self.message = None
         self.embeds: typing.List[discord.Embed] = [self.main_embed]
 
     @discord.ui.select(placeholder="Select a category...", row=0)
@@ -167,16 +167,16 @@ class HelpView(discord.ui.View):
         color = random.choice(colors)
 
         embeds = []
-        commands = cog.get_commands()
-        embed = discord.Embed(title=f"{str(cog.qualified_name).title()} commands [{len(commands)}]", description=f"{cog.description if cog.description else 'No description provided...'[0:1024]}", color=color, timestamp=discord.utils.utcnow())
+        cog_commands = cog.get_commands()
+        embed = discord.Embed(title=f"{str(cog.qualified_name).title()} commands [{len(cog_commands)}]", description=f"{cog.description if cog.description else 'No description provided...'[0:1024]}", color=color, timestamp=discord.utils.utcnow())
 
-        for cmd in commands:
+        for cmd in cog_commands:
             embed.add_field(name=f"{cmd.name} {cmd.signature}", value=f"{cmd.help if cmd.help else 'No help provided...'[0:1024]}", inline=False)
             embed.set_footer(text="For info on a command, do help <command>")
 
             if len(embed.fields) == 5:
                 embeds.append(embed)
-                embed = discord.Embed(title=f"{str(cog.qualified_name).title()} commands [{len(commands)}]", description=cog.description or "No description provided", color=color, timestamp=discord.utils.utcnow())
+                embed = discord.Embed(title=f"{str(cog.qualified_name).title()} commands [{len(cog_commands)}]", description=cog.description or "No description provided", color=color, timestamp=discord.utils.utcnow())
 
         if len(embed.fields) > 0:
             embeds.append(embed)
@@ -289,11 +289,11 @@ But you can only use **{self.usable_commands}** of those in this server.
 
 
 class GeneralView(discord.ui.View):
-    def __init__(self, ctx):
+    def __init__(self, ctx: CustomContext):
         super().__init__()
         self.ctx = ctx
         self.bot = ctx.bot
-        self.message: discord.Message = None
+        self.message = None
 
     @discord.ui.button(label="Help", emoji="❓", style=discord.ButtonStyle.blurple, row=1)
     async def help(self, button: Button, interaction: Interaction):
@@ -503,7 +503,7 @@ class StealthHelp(commands.HelpCommand):
             raise errors.CommandDoesntExist
 
 
-    async def on_help_command_error(self, ctx, error):
+    async def on_help_command_error(self, ctx: CustomContext, error):
         if isinstance(error, commands.CommandInvokeError):
             embed = discord.Embed(description=f"{str(error.original)}")
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
@@ -515,7 +515,7 @@ def setup(client):
     client.add_cog(Help(client))
 
 class Help(commands.Cog):
-    ":question: | The help command, how did you find this though..."
+    """The help command, how did you find this though..."""
     def __init__(self, client):
         self.client = client
         self.hidden = True

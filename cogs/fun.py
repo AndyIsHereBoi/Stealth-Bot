@@ -5,17 +5,16 @@ import urllib
 import random
 import discord
 
-from discord.ext import owoify
-from discord.ext import commands, menus
+from helpers.context import CustomContext
 from helpers import paginator as paginator
-from discord.ext.menus.views import ViewMenuPages
+from discord.ext import commands, menus, owoify
 from discord.ext.commands.cooldowns import BucketType
 
 def setup(client):
     client.add_cog(Fun(client))
-    
+
 class UrbanDictionaryPageSource(menus.ListPageSource):
-    BRACKETED = re.compile(r'(\[(.+?)\])')
+    BRACKETED = re.compile(r'(\[(.+?)])')
     
     def __init__(self, data):
         super().__init__(entries=data, per_page=1)
@@ -26,10 +25,10 @@ class UrbanDictionaryPageSource(menus.ListPageSource):
             return f"[{word}](http://{word.replace(' ', '-')}.urbanup.com)"
 
         ret = regex.sub(repl, definition)
-        
+
         if len(ret) >= 2048:
             return ret[0:2000] + " [...]"
-        
+
         return ret
 
     async def format_page(self, menu, entry):
@@ -66,7 +65,7 @@ class UrbanDictionaryPageSource(menus.ListPageSource):
 
 
 class Fun(commands.Cog):
-    "Fun commands like meme, hug and more!"
+    """Fun commands like meme, hug and more!"""
 
     def __init__(self, client):
         self.client = client
@@ -76,7 +75,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":frog: Sends a random meme from Reddit.")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def meme(self, ctx):
+    async def meme(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://meme-api.herokuapp.com/gimme/dankmemes?hot=True')
@@ -96,7 +95,7 @@ class Fun(commands.Cog):
         help=":frog: Sends a random programmer meme from Reddit.",
         aliases=['programmer_meme', 'programmerhumor', 'programmer_humor', 'programmerhumour', 'programmer_humour'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def programmermeme(self, ctx):
+    async def programmermeme(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://meme-api.herokuapp.com/gimme/programmerhumor?hot=True')
@@ -117,7 +116,7 @@ class Fun(commands.Cog):
         help=":frog: Sends a random bad discord bot from Reddit.",
         aliases=['bdb', 'bad_discord_bots', 'baddiscordbot', 'bad_discord_bot'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def baddiscrodbots(self, ctx):
+    async def baddiscrodbots(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://meme-api.herokuapp.com/gimme/baddiscordbots?hot=True')
@@ -136,7 +135,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":frog: Sends a random post from the specified subreddit.")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def reddit(self, ctx, reddit: str):
+    async def reddit(self, ctx: CustomContext, reddit: str):
         start = time.perf_counter()
 
         request = await self.client.session.get(f'https://meme-api.herokuapp.com/gimme/{reddit}?hot=True')
@@ -161,7 +160,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":bookmark: Searches the specified word in the dictionary.")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def dictionary(self, ctx, *, word):
+    async def dictionary(self, ctx: CustomContext, *, word):
         start = time.perf_counter()
 
         request = await self.client.session.get(f'https://some-random-api.ml/dictionary?word={urllib.parse.quote(word)}')
@@ -185,7 +184,7 @@ class Fun(commands.Cog):
         help=":rainbow: Shows you how gay the specified member is.",
         aliases=['gayrate', 'gay'],
         brief="gay\ngay @James Charles\ngay Hehe#9999")
-    async def howgay(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def howgay(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -201,7 +200,7 @@ class Fun(commands.Cog):
         help=":hot_face: Shows you how horny the specified member is.",
         aliases=['hornyrate', 'howhorny'],
         brief="horny\nhorny @Johhny Sins\nhorny GayMen#1041")
-    async def horny(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def horny(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -209,7 +208,8 @@ class Fun(commands.Cog):
             else:
                 member = ctx.author
 
-        embed = discord.Embed(title="horny rate machine", description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 100)}% horny :hot_face:")
+        embed = discord.Embed(title="horny rate machine",
+                              description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 100)}% horny :hot_face:")
 
         await ctx.send(embed=embed)
 
@@ -217,7 +217,7 @@ class Fun(commands.Cog):
         help=":flushed: Shows you how sexy the specified member is.",
         aliases=['sexyrate', 'howsexy'],
         brief="sexy\nsexy @Dan\ngay Mike#1844")
-    async def sexy(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def sexy(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -225,7 +225,8 @@ class Fun(commands.Cog):
             else:
                 member = ctx.author
 
-        embed = discord.Embed(title="sexy rate machine", description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 100)}% sexy :flushed:")
+        embed = discord.Embed(title="sexy rate machine",
+                              description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 100)}% sexy :flushed:")
 
         await ctx.send(embed=embed)
 
@@ -233,7 +234,7 @@ class Fun(commands.Cog):
         help=":straight_ruler: Shows you how big someone is in cm.",
         aliases=['heightrate', 'howbig', 'howtall'],
         brief="height\nheight @Bee\nhorny Albert Einstein#9999")
-    async def height(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def height(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is not None:
             message = f"{member.display_name if member in ctx.guild.members else member.name} is "
 
@@ -247,7 +248,7 @@ class Fun(commands.Cog):
                 message = "you are "
 
         embed = discord.Embed(title="height machine",
-                              description=f"{message} {random.randint(1, 8)} feet and {random.randint(1, 11)} inches tall :straight_ruler:")
+                              description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(1, 8)} feet and {random.randint(1, 11)} inches tall :straight_ruler:")
 
         await ctx.send(embed=embed)
 
@@ -255,21 +256,16 @@ class Fun(commands.Cog):
         help=":muscle: Shows you how skilled the specified member is.",
         aliases=['skillrate', 'howskilled'],
         brief="skill\nskill @Gamer\nskill EA Games#1854")
-    async def skill(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
-        if member is not None:
-            message = f"{member.display_name if member in ctx.guild.members else member.name} is "
-
+    async def skill(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
-                message = f"{member.display_name if member in ctx.guild.members else member.name} is "
 
             else:
                 member = ctx.author
-                message = "you are "
 
         embed = discord.Embed(title="skill rate machine",
-                              description=f"{message} {random.randint(0, 100)}% skilled :muscle:")
+                              description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 100)}% skilled :muscle:")
 
         await ctx.send(embed=embed)
 
@@ -277,20 +273,16 @@ class Fun(commands.Cog):
         help=":brain: Shows you how smart the specified member is.",
         aliases=['smartrate', 'howsmart', 'iq', 'howmuchiq', 'iqrate'],
         brief="smart\nsmart @Meow\nsmart BigBrain#6942")
-    async def smart(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
-        if member is not None:
-            message = f"{member.display_name if member in ctx.guild.members else member.name} has "
-
+    async def smart(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
-                message = f"{member.display_name if member in ctx.guild.members else member.name} has "
 
             else:
                 member = ctx.author
-                message = "you have "
 
-        embed = discord.Embed(title="smart rate machine", description=f"{random.randint(0, 150)} IQ :brain:")
+        embed = discord.Embed(title="smart rate machine",
+                              description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 150)} IQ :brain:")
 
         await ctx.send(embed=embed)
 
@@ -298,28 +290,23 @@ class Fun(commands.Cog):
         help=":mouse_three_button: Shows you how many CPS (Clicks per second) the specified member gets.",
         aliases=['cpsrate', 'howcps'],
         brief="cps\ncps @Peen\ncps HoldUp#5952")
-    async def cps(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
-        if member is not None:
-            message = f"{member.display_name if member in ctx.guild.members else member.name} gets "
-
+    async def cps(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
-                message = f"{member.display_name if member in ctx.guild.members else member.name} gets "
 
             else:
                 member = ctx.author
-                message = "you get "
 
         embed = discord.Embed(title="cps rate machine",
-                              description=f"{message} {random.randint(0, 50)} CPS :mouse_three_button:")
+                              description=f"{'you get ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} gets '} {random.randint(0, 50)} CPS :mouse_three_button:")
 
         await ctx.send(embed=embed)
 
     @commands.command(
         help="<a:mOcK:913874174387322971> Mocks the given message.",
         brief="mock\nmock Your mom is straight")
-    async def mock(self, ctx, *, message: typing.Union[str, discord.Message] = None):
+    async def mock(self, ctx: CustomContext, *, message: typing.Union[str, discord.Message] = None):
         if message is None:
             if ctx.message.reference:
                 message = ctx.message.reference.resolved.content
@@ -327,12 +314,12 @@ class Fun(commands.Cog):
             else:
                 message = "im not gay"
 
-        await ctx.send("".join(random.choice((str.upper, str.lower))(word) for word in message))
+        await ctx.send(''.join(random.choice((str.upper, str.lower))(word) for word in message))
         
     @commands.command(
         help=":leftwards_arrow_with_hook: Reverses the given message.",
         brief="reverse\nreverse Your mom is straight")
-    async def reverse(self, ctx, *, message: typing.Union[str, discord.Message] = None):
+    async def reverse(self, ctx: CustomContext, *, message: typing.Union[str, discord.Message] = None):
         if message is None:
             if ctx.message.reference:
                 message = ctx.message.reference.resolved.content
@@ -345,7 +332,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<a:OwOUwU:913874401404018698> Owoifies the given message.",
         brief="owoify\nowoify Hello there!")
-    async def owoify(self, ctx, *, message: typing.Union[str, discord.Message] = None):
+    async def owoify(self, ctx: CustomContext, *, message: typing.Union[str, discord.Message] = None):
         if message is None:
             if ctx.message.reference:
                 message = ctx.message.reference.resolved.content
@@ -357,7 +344,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help=":heart: Ships you with someone.")
-    async def ship(self, ctx, member1: typing.Union[discord.Member, discord.User], member2: typing.Union[discord.Member, discord.User] = None):
+    async def ship(self, ctx: CustomContext, member1: typing.Union[discord.Member, discord.User], member2: typing.Union[discord.Member, discord.User] = None):
         if member2 is None:
             if ctx.message.reference:
                 member2 = ctx.message.reference.resolved.author
@@ -396,7 +383,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":clap: Claps the given message.",
         brief="clap\nclap Hello there!")
-    async def clap(self, ctx, *, message: typing.Union[str, discord.Message] = None):
+    async def clap(self, ctx: CustomContext, *, message: typing.Union[str, discord.Message] = None):
         if message is None:
             if ctx.message.reference:
                 message = ctx.message.reference.resolved.content
@@ -412,7 +399,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":eggplant: Shows the size of the specified member's pp.",
         aliases=['banana', 'eggplant', 'egg_plant'])
-    async def pp(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def pp(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -429,7 +416,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":8ball: Answers with yes or no to your question.",
         aliases=['8ball', 'magicball', 'magic_ball', 'eight_ball'])
-    async def eightball(self, ctx):
+    async def eightball(self, ctx: CustomContext):
         responses = ['It is certain.',
                     'It is decidedly so.',
                     'Without a doubt.',
@@ -457,7 +444,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="Searches for the given query on urban dictionary.",
         brief="urban What is love?\nurban something")
-    async def urban(self, ctx, *, word):
+    async def urban(self, ctx: CustomContext, *, word):
         async with self.client.session.get("http://api.urbandictionary.com/v0/define", params={"term": word}) as resp:
             if resp.status != 200:
                 embed = discord.Embed(description=f"Error: {resp.status} {resp.reason}")
@@ -477,7 +464,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<:HUGGERS:896790320572940309> Hugs the specified member.")
     @commands.cooldown(1, 5, BucketType.member)
-    async def hug(self, ctx, member: typing.Union[discord.Member, discord.User] = None):
+    async def hug(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -495,7 +482,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<a:stealth_bot_pat:888354636258496522> Pats the specified member.")
     @commands.cooldown(1, 5, BucketType.member)
-    async def pat(self, ctx, member: discord.Member = None):
+    async def pat(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -513,7 +500,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":kiss: Kisses the specified member.")
     @commands.cooldown(1, 5, BucketType.member)
-    async def kiss(self, ctx, member: discord.Member = None):
+    async def kiss(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -531,7 +518,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":tongue: Licks the specified member.")
     @commands.cooldown(1, 5, BucketType.member)
-    async def lick(self, ctx, member: discord.Member = None):
+    async def lick(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -549,7 +536,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<:rooBulli:744346131324076072> Bullies the specified member.")
     @commands.cooldown(1, 5, BucketType.member)
-    async def bully(self, ctx, member: discord.Member = None):
+    async def bully(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -567,7 +554,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<a:aPES_Cuddle:896790837793529936> Cuddles the specified member.")
     @commands.cooldown(1, 5, BucketType.member)
-    async def cuddle(self, ctx, member: discord.Member = None):
+    async def cuddle(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -585,7 +572,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<:slap:896790905133092944> Let's you slap someone!")
     @commands.cooldown(1, 5, BucketType.member)
-    async def slap(self, ctx, member: discord.Member = None):
+    async def slap(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -603,7 +590,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<:yeet:787677937746182174> Let's you yeet someone!")
     @commands.cooldown(1, 5, BucketType.member)
-    async def yeet(self, ctx, member: discord.Member = None):
+    async def yeet(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -622,7 +609,7 @@ class Fun(commands.Cog):
         help="<a:aPES_HighFiveL:896791127385051156><a:aPES_HighFiveR:896791137434599524> Let's you high five someone!",
         aliases=['high_five'])
     @commands.cooldown(1, 5, BucketType.member)
-    async def highfive(self, ctx, member: discord.Member = None):
+    async def highfive(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -640,7 +627,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="Let's you bite someone!")
     @commands.cooldown(1, 5, BucketType.member)
-    async def bite(self, ctx, member: discord.Member = None):
+    async def bite(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -658,7 +645,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<a:kermitkill:896791354875711569> Let's you kill someone!")
     @commands.cooldown(1, 5, BucketType.member)
-    async def kill(self, ctx, member: discord.Member = None):
+    async def kill(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -677,7 +664,7 @@ class Fun(commands.Cog):
         help="<:minecraft:895688440614649919> Let's you customize a minecraft achievement!",
         aliases=['minecraft_achievement', 'mc_achievement'])
     @commands.cooldown(1, 5, BucketType.member)
-    async def achievement(self, ctx, *, text):
+    async def achievement(self, ctx: CustomContext, *, text):
         text = urllib.parse.quote(text)
 
         async with self.client.session.get(f"https://api.cool-img-api.ml/achievement?text={text}",
@@ -690,7 +677,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="Sends a random roast")
     @commands.cooldown(1, 5, BucketType.member)
-    async def roast(self, ctx, member: discord.Member = None):
+    async def roast(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -702,7 +689,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="Sends a random joke")
-    async def joke(self, ctx):
+    async def joke(self, ctx: CustomContext):
         joke = await self.client.dagpi.joke()
 
         await ctx.send(f"{joke}")
@@ -710,7 +697,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="Sends a random yo mama joke",
         aliases=['yomom', 'yo_mama', 'yo-mama', 'yo-mom', 'yo_mom'])
-    async def yomama(self, ctx):
+    async def yomama(self, ctx: CustomContext):
         yomama = await self.client.dagpi.yomama()
 
         await ctx.send(f"{yomama}")
@@ -718,9 +705,8 @@ class Fun(commands.Cog):
     @commands.command(
         help=":rainbow_flag: Catches someone gay",
         aliases=['cag'])
-    async def catch(self, ctx, member: discord.Member = None):
-        upper_hand = await ctx.send(
-            "https://media.discordapp.net/attachments/879251951714467840/896293818096291840/Sv6kz8f.png", reply=False)
+    async def catch(self, ctx: CustomContext, member: discord.Member = None):
+        upper_hand = await ctx.send("https://media.discordapp.net/attachments/879251951714467840/896293818096291840/Sv6kz8f.png", reply=False)
 
         message = await self.client.wait_for("message", check=lambda m: m.channel == ctx.channel and m.author != ctx.me)
         if (member and message.author != member) or message.author == ctx.author:
@@ -732,7 +718,7 @@ class Fun(commands.Cog):
     # @commands.command(
     #     help="<:oof:787677985468579880> OOF's the person you mentioned",
     #     aliases=['commitoof', 'commit_oof'])
-    # async def oof(self, ctx, member : discord.Member=None):
+    # async def oof(self, ctx: CustomContext, member : discord.Member=None):
     #     if member is None or member == ctx.author:
     #         responses = [f"{ctx.author.name} was killed in Electrical.",
     #         f"{ctx.author.name} failed math.",

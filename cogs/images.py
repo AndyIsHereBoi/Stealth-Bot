@@ -2,12 +2,12 @@ import io
 import time
 import random
 import errors
-import urllib
 import typing
 import discord
 
 from io import BytesIO
 from discord.ext import commands
+from helpers.context import CustomContext
 from asyncdagpi import ImageFeatures as imageFeatures
 
 def setup(client):
@@ -15,7 +15,7 @@ def setup(client):
 
 
 class Images(commands.Cog):
-    "Commands that manipulate/send images."
+    """Commands that manipulate/send images."""
 
     def __init__(self, client):
         self.client = client
@@ -27,7 +27,7 @@ class Images(commands.Cog):
     #     invoke_without_command=True,
     #     help="<:frame_photo:899621559520595968> | Commands that show you images of animals",
     #     aliases=['i', 'images'])
-    # async def image(self, ctx):
+    # async def image(self, ctx: CustomContext):
     #     if ctx.invoked_subcommand is None:
     #         await ctx.send_help(ctx.command)
 
@@ -35,7 +35,7 @@ class Images(commands.Cog):
         help="Sends a picture of a SFW waifu",
         aliases=['sfw_waifu', 'waifu_sfw'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def waifu(self, ctx, type: str = None):
+    async def waifu(self, ctx: CustomContext, type: str = None):
         await ctx.trigger_typing()
         
         start = time.perf_counter()
@@ -57,7 +57,7 @@ class Images(commands.Cog):
         help="Sends a picture of a SFW maid",
         aliases=['sfw_maid', 'maid_sfw'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def maid(self, ctx, type: str = None):
+    async def maid(self, ctx: CustomContext, type: str = None):
         url = "https://api.waifu.im/sfw/maid/"
 
         if str(type).lower() == "gif":
@@ -85,7 +85,7 @@ class Images(commands.Cog):
         help="🐶 Shows a picture of a shiba",
         aliases=['shibe'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def shiba(self, ctx):
+    async def shiba(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true')
@@ -106,7 +106,7 @@ class Images(commands.Cog):
     @commands.command(
         help="Shows a picture of a axolotl and a random fact about axolotls")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def axolotl(self, ctx):
+    async def axolotl(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://axoltlapi.herokuapp.com/')
@@ -125,7 +125,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🐱 Shows a picture of a cat and a random fact about cats")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def cat(self, ctx):
+    async def cat(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/cat')
@@ -148,7 +148,7 @@ class Images(commands.Cog):
     # @commands.command(
     #     help="🐶 Shows a picture of a dog and a random fact about dogs")
     # @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    # async def dog(self, ctx):
+    # async def dog(self, ctx: CustomContext):
     #     start = time.perf_counter()
 
     #     request = await self.client.session.get('https://some-random-api.ml/img/dog')
@@ -171,7 +171,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🐶 Shows a picture of a dog and a random fact about dogs")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def dog(self, ctx):
+    async def dog(self, ctx: CustomContext):
         async with self.client.session.get('https://random.dog/woof') as response:
             if response.status != 200:
                 return await ctx.send('No dog found :(')
@@ -186,7 +186,7 @@ class Images(commands.Cog):
                 async with ctx.typing():
                     async with self.client.session.get(url) as other:
                         if other.status != 200:
-                            raise errors.UnexpectedError
+                            raise errors.UnknownError
 
                         if int(other.headers['Content-Length']) >= filesize:
                             return await ctx.send(f"The video was too big to upload\nSee it here: **{url}**")
@@ -204,7 +204,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🐼 Shows a picture of a panda and a random fact about pandas")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def panda(self, ctx):
+    async def panda(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/panda')
@@ -225,7 +225,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🦊 Shows a picture of a fox and a random fact about foxes")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def fox(self, ctx):
+    async def fox(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/fox')
@@ -246,7 +246,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🐦 Shows a picture of a bird and a random fact about birds")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def bird(self, ctx):
+    async def bird(self, ctx: CustomContext):
         start = time.perf_counter()
         
         request = await self.client.session.get('https://some-random-api.ml/img/bird')
@@ -267,7 +267,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🐨 Shows a picture of a koala and a random fact about koalas")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def koala(self, ctx):
+    async def koala(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/koala')
@@ -288,7 +288,7 @@ class Images(commands.Cog):
     @commands.command(
         help="🦘 Shows a picture of a kangaroo and a random fact about kangaroos")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def kangaroo(self, ctx):
+    async def kangaroo(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/kangaroo')
@@ -310,7 +310,7 @@ class Images(commands.Cog):
         help="🦝 Shows a picture of a raccoon and a random fact about racoons",
         aliases=['raccoon'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def racoon(self, ctx):
+    async def racoon(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/racoon')
@@ -332,7 +332,7 @@ class Images(commands.Cog):
         help="🐳 Shows a picture of a whale and a random fact about whales",
         aliases=['urmom', 'ur_mom', 'yourmom', 'your_mom'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def whale(self, ctx):
+    async def whale(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/whale')
@@ -353,7 +353,7 @@ class Images(commands.Cog):
     @commands.command(
         help="Shows a picture of a pikachu")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def pikachu(self, ctx):
+    async def pikachu(self, ctx: CustomContext):
         start = time.perf_counter()
 
         request = await self.client.session.get('https://some-random-api.ml/img/pikachu')
@@ -372,7 +372,7 @@ class Images(commands.Cog):
     @commands.command(
         help="Sends a picture of a person that doesn't exist",
         aliases=['tpdne', 'person'])
-    async def thispersondoesnotexist(self, ctx):
+    async def thispersondoesnotexist(self, ctx: CustomContext):
         async with ctx.typing():
             async with self.client.session.get('https://thispersondoesnotexist.com/image') as request:
                 request = await request.read()
@@ -385,139 +385,139 @@ class Images(commands.Cog):
     #     invoke_without_command=True,
     #     help=":frame_photo: Commands used to manipulate member's avatars",
     #     aliases=['m', 'im'])
-    # async def manipulation(self, ctx):
+    # async def manipulation(self, ctx: CustomContext):
     #     if ctx.invoked_subcommand is None:
     #         await ctx.send_help(ctx.command)
 
     @commands.command( # 1
         help="Turns the specified member's profile picture into a pat-pat gif",
         aliases=['pats', 'pat_pat', 'patspats', 'pats_pats', 'petpet', 'pet_pet'])
-    async def patpat(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def patpat(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.patpat()))
 
     @commands.command( # 2
         help="Glitches the specified member's profile picture",
         aliases=['error'])
-    async def glitch(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def glitch(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.glitch()))
 
     @commands.command( # 3
         help="Turns the specified member's avatar into pixels")
-    async def pixel(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def pixel(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.pixel()))
 
     @commands.command( # 4
         help="Makes a wanted poster of the specified member's avatar")
-    async def wanted(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def wanted(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.wanted()))
 
     @commands.command( # 5
         help="Gets the colors from a specified member's avatar")
-    async def colors(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def colors(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.colors()))
 
     @commands.command( # 6
         help="Makes the specified member's avatar triggered")
-    async def triggered(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def triggered(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.triggered()))
 
     @commands.command( # 7
         help="Puts a waving america flag on the specified member's avatar")
-    async def america(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def america(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.america()))
 
     @commands.command( # 8
         help="Puts a waving communism flag on the specified member's avatar")
-    async def communism(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def communism(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.communism()))
 
     @commands.command( # 9
         help="Explodes the specified member's avatar",
         aliases=['boom'])
-    async def bomb(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def bomb(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.bomb()))
 
     @commands.command( # 10
         help="Puts the GTA V wasted screen on the specified member's avatar")
-    async def wasted(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def wasted(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.wasted()))
 
     @commands.command( # 11
         help="Inverts the colors of the specified member's avatar")
-    async def invert(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def invert(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.invert()))
 
     @commands.command( # 12
         help="Swirls the center of the specified member's avatar")
-    async def swirl(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def swirl(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.swirl()))
 
     @commands.command( # 13
         help="Puts a triangle edge detection filter on the specified member's avatar")
-    async def triangle(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def triangle(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.triangle()))
 
     @commands.command( # 14
         help="Blurs the specified member's avatar")
-    async def blur(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def blur(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.blur()))
 
     @commands.command( # 15
         help="Gets RGB information from the specified member's avatar")
-    async def rgb(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def rgb(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.rgb()))
 
     @commands.command( # 16
         help="Make the specified member's avatar angelic",
         aliases=['angelic'])
-    async def angel(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def angel(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.angel()))
 
     @commands.command( # 17
         help="Make the specified member's avatar satanic",
         aliases=['satanic'])
-    async def satan(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def satan(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.satan()))
 
     @commands.command( # 18
         help="Make the specified member's avatar worse than hitler",
         aliases=['worse_than_hitler'])
-    async def hitler(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def hitler(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.hitler()))
 
     @commands.command( # 19
         help="Make the specified member's avatar the obamama meme of someone awarding themselves")
-    async def obama(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def obama(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.obama()))
 
     @commands.command( # 20
         help="Make the specified member's avatar bad")
-    async def bad(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def bad(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.bad()))
         
     @commands.command( # 21
         help="Puts the specified member's avatar behind bars")
-    async def jail(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def jail(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.jail()))
 
     @commands.command( # 22
         help="Puts a fedora on the specified member's avatar")
-    async def fedora(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def fedora(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.fedora()))
 
     @commands.command( # 23
         help="Deletes the specified member's avatar")
-    async def delete(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def delete(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.delete()))
 
     @commands.command( # 24
         help="Shatters the specified member's avatar like glass")
-    async def shatter(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def shatter(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.shatter()))
 
     @commands.command( # 25
         help="Deepfries the specified member's avatar")
-    async def deepfry(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def deepfry(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         await ctx.send(file=await ctx.dagpi(member, feature=imageFeatures.deepfry()))
 
     # JEYY API
@@ -527,13 +527,13 @@ class Images(commands.Cog):
     #     invoke_without_command=True,
     #     help=":frame_photo: Imagine manipulation commands that use the [JeyyAPI](https://api.jeyy.xyz/)",
     #     aliases=['jeyyapi', 'ja'])
-    # async def jeyy(self, ctx):
+    # async def jeyy(self, ctx: CustomContext):
     #     if ctx.invoked_subcommand is None:
     #         await ctx.send_help(ctx.command)
     
     @commands.command( # 1
         help="Turns the specified member's avatar into falling balls")
-    async def balls(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def balls(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -560,7 +560,7 @@ class Images(commands.Cog):
 
     @commands.command( # 2
         help="Burns the specified member's avatar.")
-    async def burn(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def burn(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -587,7 +587,7 @@ class Images(commands.Cog):
 
     @commands.command( # 3
         help="Glitches the specified member's avatar out.")
-    async def glitch(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def glitch(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -616,7 +616,7 @@ class Images(commands.Cog):
 
     @commands.command( # 4
         help="Boils the specified member's avatar.")
-    async def boil(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def boil(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -645,7 +645,7 @@ class Images(commands.Cog):
 
     @commands.command( # 5
         help="Earthquakes the specified member's avatar.")
-    async def earthquake(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def earthquake(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -674,7 +674,7 @@ class Images(commands.Cog):
 
     @commands.command( # 6
         help="Makes the specified member's avatar appear shocked.")
-    async def shock(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def shock(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -703,7 +703,7 @@ class Images(commands.Cog):
 
     @commands.command(  # 7
         help="Makes the specified member's avatar abstractic.")
-    async def abstract(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def abstract(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -732,7 +732,7 @@ class Images(commands.Cog):
 
     @commands.command( # 8
         help="Makes the specified member's avatar infinite.")
-    async def infinity(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def infinity(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -761,7 +761,7 @@ class Images(commands.Cog):
 
     @commands.command( # 9
         help="Bombs the specified member's avatar.")
-    async def bomb(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def bomb(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -790,7 +790,7 @@ class Images(commands.Cog):
 
     @commands.command(  # 10
         help="Bonks the specified member's avatar.")
-    async def bonk(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def bonk(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -820,7 +820,7 @@ class Images(commands.Cog):
     @commands.command( # 11
         help="Gives the specified member a license to be horny.",
         aliases=['horny_license', 'horny-license', 'license_horny', 'license-horny'])
-    async def hornylicense(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def hornylicense(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -847,7 +847,7 @@ class Images(commands.Cog):
             
     @commands.command(  # 12
         help="Makes the specified member's avatar cry")
-    async def sob(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def sob(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -876,7 +876,7 @@ class Images(commands.Cog):
         
     @commands.command(  # 13
         help="Puts a lamp on the specified member's avatar.")
-    async def lamp(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def lamp(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -905,7 +905,7 @@ class Images(commands.Cog):
         
     @commands.command(  # 13
         help="Turns the specified member's avatar into emojis!")
-    async def emojify(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
+    async def emojify(self, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]]):
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -955,7 +955,7 @@ e = Lever (off)    # = Lever (on)
 k = Cake           y = Poppy
 ```""",
     brief="jeyy iso 401 133 332 - 1 0 5 - 6\njeyy iso 401 133 332 - 1 0 5 - 6") # 14
-    async def iso(self, ctx, *, iso):
+    async def iso(self, ctx: CustomContext, *, iso):
         request = await self.client.session.get("https://api.jeyy.xyz/isometric", params={'iso_code': f"{iso}"})
         buffer = io.BytesIO(await request.read())
         

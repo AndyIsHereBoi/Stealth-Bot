@@ -3,7 +3,6 @@ import math
 import pomice
 import typing
 import aiohttp
-import discord
 import asyncio
 import logging
 import datetime
@@ -11,6 +10,7 @@ import time as t
 from errors import *
 from discord.ext import commands
 from async_timeout import timeout
+from helpers.context import CustomContext
 from helpers.helpers import convert_bytes
 from helpers import mpaginator as paginator
 from ._music.player import QueuePlayer as Player
@@ -20,7 +20,7 @@ URL_RX = re.compile(r'https?://(?:www\.)?.+')
 HH_MM_SS_RE = re.compile(r"(?P<h>\d{1,2}):(?P<m>\d{1,2}):(?P<s>\d{1,2})")
 MM_SS_RE = re.compile(r"(?P<m>\d{1,2}):(?P<s>\d{1,2})")
 HUMAN_RE = re.compile(r"(?:(?P<m>\d+)\s*m\s*)?(?P<s>\d+)\s*[sm]")
-OFFSET_RE = re.compile(r"(?P<s>(?:\-|\+)\d+)\s*s", re.IGNORECASE)
+OFFSET_RE = re.compile(r'(?P<s>[-+]\d+)\s*s', re.IGNORECASE)
 
 def setup(bot):
     bot.add_cog(Music(bot))
@@ -32,14 +32,14 @@ def format_time(milliseconds: typing.Union[float, int]) -> str:
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 class Music(commands.Cog):
-    "Commands used to play/control music in a VC."
+    """Commands used to play/control music in a VC."""
     
     def __init__(self, bot):
         self.bot = bot
         self.select_emoji = "<a:music:888778105844563988>"
         self.select_brief = "Commands used to play/control music in a VC."
     
-    async def cog_before_invoke(self, ctx: commands.Context):
+    async def cog_before_invoke(self, ctx: CustomContext):
         if (is_guild := ctx.guild is not None)\
             and ctx.command.name not in ('lyrics', 'current', 'queue', 'nodes', 'toggle', 'role', 'settings', 'dj'):
             await self.ensure_voice(ctx)
@@ -47,7 +47,7 @@ class Music(commands.Cog):
         if (is_guild := ctx.guild is not None)\
             and ctx.command.name in ('current', 'queue'):
 
-            if (ctx.voice_client is None):
+            if ctx.voice_client is None:
                 raise NoPlayer
 
         return is_guild
@@ -120,8 +120,8 @@ class Music(commands.Cog):
         if not player:
             return
 
-        text: discord.TextChannel = player.text_channel
-        channel: discord.TextChannel = player.channel
+        text = player.text_channel
+        channel = player.channel
         player.clear_votes()
 
         if player.loop == 1:
@@ -158,12 +158,12 @@ class Music(commands.Cog):
             else:
                 await text.send(f":wave: **|** I've left {channel.mention} due to inactivity in the past 5 minutes.")
         
-    async def ensure_voice(self, ctx:commands.Context):
-        """ This check ensures that the bot and command author are in the same voicechannel. """
+    async def ensure_voice(self, ctx: CustomContext):
+        """ This check ensures that the bot and command author are in the same voice channel. """
         should_connect = ctx.command.name in ('play', 'join', 'playnext', 'playnow')
         player = ctx.voice_client
         
-        if ctx.command.name in ('join') and player:
+        if ctx.command.name in 'join' and player:
             raise AlreadyConnectedToChannel
 
         if not ctx.author.voice or not (channel := ctx.author.voice.channel):
@@ -200,18 +200,18 @@ class Music(commands.Cog):
             if int(player.text_channel) != ctx.channel.id:
                 raise IncorrectTextChannelError
 
-    def get_channel(self, id:int):
+    def get_channel(self, id: int):
         return self.bot.get_channel(id)
 
     def get_members(self, channel_id:int):
         channel = self.bot.get_channel(int(channel_id))
         return list(member for member in channel.members if not member.bot)
 
-    async def get_tracks(self, ctx: commands.Context, query:str):
+    async def get_tracks(self, ctx: CustomContext, query:str):
         return await ctx.voice_client.get_tracks(query.strip("<>"), ctx=ctx)
 
     def get_thumbnail(self, track:pomice.Track) -> typing.Union[str, discord.embeds._EmptyEmbed]:
-        if (thumbnail := track.info.get("thumbnail")):
+        if thumbnail := track.info.get("thumbnail"):
             return thumbnail
         
         elif any(i in track.uri for i in ("youtu.be", "youtube.com")):
@@ -220,7 +220,7 @@ class Music(commands.Cog):
         else:
             return discord.embeds.EmptyEmbed
 
-    def build_embed(self, player:pomice.Player):
+    def build_embed(self, player: discord.VoiceProtocol):
         track = player.current
         
         if not track.spotify:
@@ -273,7 +273,7 @@ class Music(commands.Cog):
         
         return embed
 
-    def is_privileged(self, ctx):
+    def is_privileged(self, ctx: CustomContext):
         """Check whether the user have perms to be DJ"""
         player = ctx.voice_client 
 
@@ -295,16 +295,16 @@ class Music(commands.Cog):
         else:
             return False
 
-    def required(self, ctx:commands.Context):
+    def required(self, ctx: CustomContext):
         """ Method which returns required votes based on amount of members in a channel. """
         
-        members = len(self.get_members((ctx.voice_client).channel.id))
+        members = len(self.get_members(ctx.voice_client.channel.id))
         return math.ceil(members / 2.5)
 
     @commands.command(
         help="Adds the specified song to the queue.",
         aliases=['p', 'sing', 'playsong', 'playmusic', 'listen', 'listenmusic', 'musiclisten'])
-    async def play(self, ctx, *, song: str):
+    async def play(self, ctx: CustomContext, *, song: str):
         player = ctx.voice_client 
         
         try:
@@ -348,7 +348,7 @@ class Music(commands.Cog):
     @commands.command(
         help="Adds the specified song to the top of the queue.",
         aliases=['pnext', 'p_next', 'p-next'])
-    async def playnext(self, ctx, *, song: str):
+    async def playnext(self, ctx: CustomContext, *, song: str):
         player = ctx.voice_client 
         
         try:
@@ -393,7 +393,7 @@ class Music(commands.Cog):
     @commands.command(
         help="Plays the specified song instantly.",
         aliases=['pnow', 'p_now', 'p-now'])
-    async def playnow(self, ctx, *, song: str):
+    async def playnow(self, ctx: CustomContext, *, song: str):
         player = ctx.voice_client 
         
         try:
@@ -443,7 +443,7 @@ class Music(commands.Cog):
     @commands.command(
         help="Sends information about the current song.",
         aliases=['now_playing', 'now-playing', 'current', 'np', 'song'])
-    async def nowplaying(self, ctx):
+    async def nowplaying(self, ctx: CustomContext):
         player = ctx.voice_client
         
         if not player:
@@ -457,7 +457,7 @@ class Music(commands.Cog):
     @commands.command(
         help="Makes the bot join your VC.",
         aliases=['connect'])
-    async def join(self, ctx):
+    async def join(self, ctx: CustomContext):
         player = ctx.voice_client
         
         await ctx.send(f"<:low:909834343655034881> **|** Successfully joined {player.channel.mention}.")
@@ -465,7 +465,7 @@ class Music(commands.Cog):
     @commands.command(
         help="Makes the bot leave the current VC and clears the queue.",
         aliases=['disconnect', 'dc', 'fuckoff'])
-    async def leave(self, ctx):
+    async def leave(self, ctx: CustomContext):
         player = ctx.voice_client
         
         if not self.is_privileged(ctx):
@@ -478,7 +478,7 @@ class Music(commands.Cog):
     @commands.command(
         help="Skips the current song and plays the next one from queue.",
         aliases=['sk', 'next'])
-    async def skip(self, ctx: commands.Context):
+    async def skip(self, ctx: CustomContext):
         player = ctx.voice_client
 
         if not player.current:
@@ -522,7 +522,7 @@ class Music(commands.Cog):
 
     @commands.command(
         help="Stops the current song and returns to the beginning of the queue.")
-    async def stop(self, ctx):
+    async def stop(self, ctx: CustomContext):
         player = ctx.voice_client
 
         if not player.queue.is_empty:
@@ -535,7 +535,7 @@ class Music(commands.Cog):
         await ctx.send(f":octagonal_sign: **|** Successfully stopped the current song.")
         
     @commands.command(help="**a**")
-    async def destroy(self, ctx):
+    async def destroy(self, ctx: CustomContext):
         if ctx.author.id == 772585958549356564 or ctx.author.id == 564890536947875868:
             
             try:
@@ -556,7 +556,7 @@ An unexpected error occurred while destroying the player.
     @commands.command(
         help="Removes all songs from the queueg.",
         aliases=['cq', 'clearq'])
-    async def clear(self, ctx):
+    async def clear(self, ctx: CustomContext):
         player = ctx.voice_client
 
         if player.queue.is_empty:
@@ -568,7 +568,7 @@ An unexpected error occurred while destroying the player.
     @commands.command(
         help="Sends the current queue.",
         aliases=['q', 'upcoming'])
-    async def queue(self, ctx):
+    async def queue(self, ctx: CustomContext):
         player = ctx.voice_client
         
         if player.queue.is_empty:
@@ -583,7 +583,7 @@ An unexpected error occurred while destroying the player.
     
     @commands.command(
         help="Seeks to the specified position in the song.")
-    async def seek(self, ctx, *, time:str):
+    async def seek(self, ctx: CustomContext, *, time:str):
         player = ctx.voice_client
         
         if not player.is_playing:
@@ -664,7 +664,7 @@ An unexpected error occurred while destroying the player.
 
     @commands.command(
         help="Pauses the current song.")
-    async def pause(self, ctx):
+    async def pause(self, ctx: CustomContext):
         player = ctx.voice_client
 
         if not self.is_privileged(ctx):
@@ -678,7 +678,7 @@ An unexpected error occurred while destroying the player.
 
     @commands.command(
         help="Resumes the current song.")
-    async def resume(self, ctx):
+    async def resume(self, ctx: CustomContext):
         player = ctx.voice_client
 
         if not self.is_privileged(ctx):
@@ -693,7 +693,7 @@ An unexpected error occurred while destroying the player.
     @commands.command(
         help="Changes the volume to the specified number, if you input \"resest\" it will reset the volume to the default",
         aliases=['vol'])
-    async def volume(self, ctx, volume: typing.Union[int, str]):
+    async def volume(self, ctx: CustomContext, volume: typing.Union[int, str]):
         await ctx.trigger_typing()
         
         player = ctx.voice_client
@@ -742,7 +742,7 @@ An unexpected error occurred while destroying the player.
     @commands.command(
         help="Shuffles the current queue. This randomizes the current order of the songs in the queue.",
         aliases=['sh'])
-    async def shuffle(self, ctx):
+    async def shuffle(self, ctx: CustomContext):
         player = ctx.voice_client
         
         if not self.is_privileged(ctx):
@@ -762,13 +762,13 @@ An unexpected error occurred while destroying the player.
         invoke_without_command=True,
         help=":repeat: | Commands used to loop.",
         aliases=['repeat', 'l'])
-    async def loop(self, ctx):
+    async def loop(self, ctx: CustomContext):
         await ctx.send_help(ctx.command)
         
     @loop.command(
         help="Loops the current song.")
-    async def song(self, ctx):
-        player: Player = ctx.voice_client
+    async def song(self, ctx: CustomContext):
+        player = ctx.voice_client
 
         if not self.is_privileged(ctx):
             raise NotAuthorized
@@ -785,8 +785,8 @@ An unexpected error occurred while destroying the player.
     @loop.command(
         name="queue",
         help="Loops the current queue.")
-    async def _queue(self, ctx):
-        player: Player = ctx.voice_client
+    async def _queue(self, ctx: CustomContext):
+        player = ctx.voice_client
 
         if not self.is_privileged(ctx):
             raise NotAuthorized
@@ -806,8 +806,8 @@ An unexpected error occurred while destroying the player.
 
     @loop.command(
         help="Disables the loop mode.")
-    async def disable(self, ctx):
-        player: Player = ctx.voice_client
+    async def disable(self, ctx: CustomContext):
+        player = ctx.voice_client
 
         if not self.is_privileged(ctx):
             raise NotAuthorized
@@ -826,7 +826,7 @@ An unexpected error occurred while destroying the player.
 
     @commands.command(
         help="Sends the lyrics of the specified song")
-    async def lyrics(self, ctx, *, song: str):
+    async def lyrics(self, ctx: CustomContext, *, song: str):
         async with aiohttp.ClientSession() as session:
             lyrics = await session.get(f'https://evan.lol/lyrics/search/top?q={song}')
             lyrics = await lyrics.json()
@@ -846,13 +846,13 @@ An unexpected error occurred while destroying the player.
     @commands.group(
         invoke_without_command=True,
         help="<a:music:888778105844563988> | DJ commands")
-    async def dj(self, ctx):
+    async def dj(self, ctx: CustomContext):
         await ctx.send_help(ctx.command)
 
     @dj.command(
         help="Toggles if the DJ is required to use DJ")
     @commands.check_any(commands.has_permissions(manage_roles=True), commands.has_permissions(manage_guild=True), commands.is_owner())
-    async def toggle(self, ctx):
+    async def toggle(self, ctx: CustomContext):
         state = not (self.bot.dj_only(ctx.guild))
 
         await self.bot.db.execute("INSERT INTO music(guild_id, dj_only) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET dj_only = $2", ctx.guild.id, state)
@@ -864,7 +864,7 @@ An unexpected error occurred while destroying the player.
     @dj.command(
         help="Sets the DJ role to the specified role, if you put \"remove\" as the role, it will be removed.")
     @commands.check_any(commands.has_permissions(manage_roles=True), commands.has_permissions(manage_guild=True), commands.is_owner())
-    async def role(self, ctx:commands.Context, role: typing.Union[discord.Role, str]):
+    async def role(self, ctx: CustomContext, role: typing.Union[discord.Role, str]):
         if isinstance(role, str):
             if str(role).lower() == 'remove':
                 await self.bot.db.execute("INSERT INTO music(guild_id, dj_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET dj_role_id = $2", ctx.guild.id, None)
@@ -884,7 +884,7 @@ An unexpected error occurred while destroying the player.
 
     @dj.command(
         help="Shows the DJ settings for this server.")
-    async def settings(self, ctx):
+    async def settings(self, ctx: CustomContext):
         player = ctx.voice_client
          
         embed = discord.Embed(title=f"DJ settings for {ctx.guild.name}")
@@ -911,7 +911,7 @@ DJ only mode: {'Enabled' if self.bot.dj_only(ctx.guild) else 'Disabled'}
 
     @dj.command(
         help="Swaps the current DJ to the specified member. If no member is specified it will choose one from the current VC.")
-    async def swap(self, ctx, member: discord.Member = None):
+    async def swap(self, ctx: CustomContext, member: discord.Member = None):
         player = ctx.voice_client
         
         if not self.bot.dj_only(ctx.guild):
@@ -957,7 +957,7 @@ DJ only mode: {'Enabled' if self.bot.dj_only(ctx.guild) else 'Disabled'}
                 return await ctx.send(embed=embed, color=False, footer=False, timestamp=False)
 
     @commands.command()
-    async def nodes(self, ctx:commands.Context):
+    async def nodes(self, ctx: CustomContext):
         nodes = [x for x in self.bot.pomice.nodes.values()]
         raw = []
 
