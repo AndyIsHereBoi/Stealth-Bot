@@ -240,7 +240,7 @@ class NSFW(commands.Cog):
 
     @commands.command(
         help=":underage: Sends a picture of an hentai uniform.",
-        aliases=['nsfw_ero', 'ero_nsfw'])
+        aliases=['nsfw_uniform', 'uniform_nsfw'])
     @commands.is_nsfw()
     async def uniform(self, ctx: CustomContext, type: str = None):
         await ctx.trigger_typing()
