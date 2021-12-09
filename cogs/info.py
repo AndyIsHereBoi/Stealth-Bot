@@ -287,7 +287,7 @@ class Info(commands.Cog):
             'chai': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
             'bing': 'https://pbs.twimg.com/profile_images/1313103135414448128/0EVE9TeW.png',
             'pycord': 'https://avatars.githubusercontent.com/u/89700626?v=4',
-            'pomice': 'https://pterodactylmarket.com/images/resources/305.webp'
+            'pomice': 'https://media.discordapp.net/attachments/381963689470984203/918592368465285140/pomice.png'
         }
 
         if obj is None:

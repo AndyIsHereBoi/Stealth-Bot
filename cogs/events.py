@@ -557,6 +557,16 @@ This might also be a issue with role hierarchy, try moving my role to the top of
             icon_url = None
             message = "I couldn't find that extension."
 
+        elif isinstance(error, IndexError):
+            name = "Python error"
+            icon_url = None
+            message = error
+
+        elif isinstance(error, KeyError):
+            name = "Python error"
+            icon_url = None
+            message = error
+
         else:
             name = "Unexpected error"
             icon_url = None
