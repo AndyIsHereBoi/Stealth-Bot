@@ -836,14 +836,16 @@ New nickname: `{new}`
         brief="slowmode 3h, 5m, 2s\nslowmode 5h1m35s\nslowmode")
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
-    async def slowmode(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel], *, duration: time_inputs.ShortTime = None):
+    async def slowmode(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel], *, duration: typing.Optional[typing.Union[time_inputs.ShortTime, str]] = None):
         channel = channel if channel and channel.permissions_for(ctx.author).manage_channels and channel.permissions_for(ctx.me).manage_channels else ctx.channel
 
-        if not duration:
+        if not duration or isinstance(duration, str):
             await channel.edit(slowmode_delay=0)
-            
-            await channel.send(f"The slowmode has been removed from this channel.")
-            return await ctx.send(f"Removed slowmode from {channel.mention}.")
+
+            embed = discord.Embed(description=f"Slowmode has been disabled in {channel.mention}.")
+            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+            return await ctx.send(embed=embed, footer=False)
 
         created_at = ctx.message.created_at
         delta: datetime.timedelta = duration.dt > (created_at + datetime.timedelta(hours=6))
@@ -856,10 +858,10 @@ New nickname: `{new}`
 
         human_delay = helpers.human_timedelta(duration.dt, source=created_at)
         
-        embed = discord.Embed(description=f"Messages in {channel.mention} can now be sent every {human_delay}")
+        embed = discord.Embed(description=f"Messages in {channel.mention} can now be sent every {human_delay}.")
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-        await ctx.send(embed=embed, footer=False)
+        return await ctx.send(embed=embed, footer=False)
 
     @commands.command(help="Gives a member a role", aliases=['give_role'])
     @commands.has_permissions(manage_roles=True)
