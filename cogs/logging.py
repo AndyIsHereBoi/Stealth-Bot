@@ -1,7 +1,6 @@
 import discord
 
 from discord.ext import commands
-from helpers.context import CustomContext
 
 def setup(client):
     client.add_cog(Logging(client))
@@ -105,7 +104,7 @@ class Logging(commands.Cog):
                 
                 channel = self.client.get_channel(database['logs_channel_id'])
                 await channel.send(embed=embed)
-                
+
         except TypeError: #if  no records found for that guild
             pass
         
@@ -354,7 +353,7 @@ Uses: {invite.uses}
                 embed.add_field(name=f"Color", value=f"{role.color}")
                 embed.add_field(name=f"Position", value=f"{role.position}")
                 embed.add_field(name=f"Mentionable?", value=f"{'<:greenTick:895688440690147370>' if role.mentionable else '<:redTick:895688440568508518>'}")
-                embed.add_field(name=f"Show seperately?", value=f"{'<:greenTick:895688440690147370>' if role.hoist else '<:redTick:895688440568508518>'}")
+                embed.add_field(name=f"Show separately?", value=f"{'<:greenTick:895688440690147370>' if role.hoist else '<:redTick:895688440568508518>'}")
                 
                 channel = self.client.get_channel(database['logs_channel_id'])
                 await channel.send(embed=embed)
@@ -379,7 +378,7 @@ Uses: {invite.uses}
                 embed.add_field(name=f"Color", value=f"{role.color}")
                 embed.add_field(name=f"Position", value=f"{role.position}")
                 embed.add_field(name=f"Mentionable?", value=f"{'<:greenTick:895688440690147370>' if role.mentionable else '<:redTick:895688440568508518>'}")
-                embed.add_field(name=f"Show seperately?", value=f"{'<:greenTick:895688440690147370>' if role.hoist else '<:redTick:895688440568508518>'}")
+                embed.add_field(name=f"Show separately?", value=f"{'<:greenTick:895688440690147370>' if role.hoist else '<:redTick:895688440568508518>'}")
                 
                 channel = self.client.get_channel(database['logs_channel_id'])
                 await channel.send(embed=embed)
@@ -433,7 +432,7 @@ Uses: {invite.uses}
                     
                 hoist_update = ''
                 if before.hoist != after.hoist:
-                    hoist_update = f"Show seperately: {'<:greenTick:895688440690147370>' if before.hoist else '<:redTick:895688440568508518>'} > {'<:greenTick:895688440690147370>' if after.hoist else '<:redTick:895688440568508518>'}"
+                    hoist_update = f"Show separately: {'<:greenTick:895688440690147370>' if before.hoist else '<:redTick:895688440568508518>'} > {'<:greenTick:895688440690147370>' if after.hoist else '<:redTick:895688440568508518>'}"
                     deliver = True
                 
                 ping_update = ''
@@ -532,7 +531,7 @@ Uses: {invite.uses}
                         await channel.send(embed=embed)
                         
                     if before.deaf:
-                        embed = discord.Embed(title=f"Member undeafened by a moderator", color=discord.Color.green())
+                        embed = discord.Embed(title=f"Member un-deafened by a moderator", color=discord.Color.green())
                         embed.add_field(name=f"Member", value=f"{member} ({member.id})", inline=False)
                         embed.set_author(name=f"{member}", icon_url=f"{member.avatar.url}")
                         
@@ -549,7 +548,7 @@ Uses: {invite.uses}
                         await channel.send(embed=embed)
                         
                     if before.mute:
-                        embed = discord.Embed(title=f"Member unmuted by a moderator", color=discord.Color.green())
+                        embed = discord.Embed(title=f"Member un-muted by a moderator", color=discord.Color.green())
                         embed.add_field(name=f"Member", value=f"{member} ({member.id})", inline=False)
                         embed.set_author(name=f"{member}", icon_url=f"{member.avatar.url}")
                         

@@ -142,12 +142,8 @@ If you would like to set a custom welcome message do `{ctx.prefix}welcome messag
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def disable(self, ctx):
-        await self.client.db.execute(
-            "INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2",
-            ctx.guild.id, None)
-        await self.client.db.execute(
-            "INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2",
-            ctx.guild.id, None)
+        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, None)
+        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, None)
 
         embed = discord.Embed(title="Welcome module disabled", description=f"""
 The welcome module has been disabled for this server.
@@ -189,9 +185,7 @@ To use placeholders, surround them with `[]`. (e.g. `[server]`)
         if len(message) > 500:
             return await ctx.send(f"Your message exceeded the 500-character limit!")
 
-        await self.client.db.execute(
-            "INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2",
-            ctx.guild.id, message)
+        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, message)
 
         embed = discord.Embed(title="Welcome message updated", description=f"""
 The welcome message for this server has been set to: {message}
@@ -207,8 +201,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not database['welcome_channel_id']:
-            return await ctx.send(
-                f"You need to set-up a welcome channel first!\nTo do that do `{ctx.prefix}welcome enable <channel>`")
+            return await ctx.send(f"You need to set-up a welcome channel first!\nTo do that do `{ctx.prefix}welcome enable <channel>`")
 
         if not database['welcome_message']:
             message = f"Welcome to **[server]**, **[full-user]**!"
@@ -217,12 +210,8 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
             message = database['welcome_message']
 
         message = message.replace("[server]", f"{ctx.guild.name}")
-
-        message = message.replace("[user]", f"{ctx.author.display_name}").replace("[full-user]", f"{ctx.author}").replace(
-            "[user-mention]", f"{ctx.author.mention}")
-
+        message = message.replace("[user]", f"{ctx.author.display_name}").replace("[full-user]", f"{ctx.author}").replace("[user-mention]", f"{ctx.author.mention}")
         message = message.replace("[count]", f"{self.make_ordinal(ctx.guild.member_count)}")
-
         message = message.replace("[code]", f"123456789").replace("[full-code]", f"discord.gg/123456789").replace("[full-url]", f"https://discord.gg/123456789").replace("[inviter]", f"John").replace("[full-inviter]", f"John#1234").replace("[inviter-mention]", f"@John")
 
         await ctx.send(message)

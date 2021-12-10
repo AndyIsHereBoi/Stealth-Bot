@@ -125,6 +125,25 @@ class CustomContext(commands.Context):
         return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
 
     @staticmethod
+    def uptime(bot):
+        delta_uptime = discord.utils.utcnow() - bot.launch_time
+        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+
+        def remove_s(string):
+            if re.match(r"\d+", string).group() == "1":
+                return string[:-1]
+            return string
+
+        days = remove_s(f"{days}d")
+        hours = remove_s(f"{hours}h")
+        minutes = remove_s(f"{minutes}m")
+        seconds = remove_s(f"{seconds}s")
+
+        return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
+
+    @staticmethod
     def get_last_commits(count=3):
         def format_commit(commit):
             short, _, _ = commit.message.partition('\n')
