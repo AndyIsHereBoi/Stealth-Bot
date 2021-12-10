@@ -63,6 +63,13 @@ class UrbanDictionaryPageSource(menus.ListPageSource):
 
         return embed
 
+def fancify(text, *, style: list, normal: list = None):
+    normal = normal or ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    sub = dict(zip(normal, style))
+    pattern = '|'.join(sorted(re.escape(k) for k in sub))
+
+    return re.sub(pattern, lambda m: sub.get(m.group(0)), text, flags=re.IGNORECASE)
+
 
 class Fun(commands.Cog):
     """Fun commands like meme, hug and more!"""
@@ -772,3 +779,15 @@ class Fun(commands.Cog):
     #                     f"{ctx.author.name} broke {member.name}'s neck."]
 
     #         await ctx.send(f"{random.choice(responses)}")
+
+    @commands.command(
+        help="Fancifies the given text 𝓵𝓲𝓴𝓮 𝓽𝓱𝓲𝓼.",
+        aliases=['fancy', 'ff'])
+    async def fancify(self, ctx, *, text) -> discord.Message:
+        return await ctx.send(fancify(text, style=['𝓪', '𝓫', '𝓬', '𝓭', '𝓮', '𝓯', '𝓰', '𝓱', '𝓲', '𝓳', '𝓴', '𝓵', '𝓶', '𝓷', '𝓸', '𝓹', '𝓺', '𝓻', '𝓼', '𝓽', '𝓾', '𝓿', '𝔀', '𝔁', '𝔂', '𝔃']))
+
+    @commands.command(
+        help="Makes the given text thicker 𝗹𝗶𝗸𝗲 𝘁𝗵𝗶𝘀.",
+        aliases=['thick', 'thicc'])
+    async def thickify(self, ctx, *, text) -> discord.Message:
+        return await ctx.send(fancify(text, style=['𝗔', '𝗕', '𝗖', '𝗗', '𝗘', '𝗙', '𝗚', '𝗛', '𝗜', '𝗝', '𝗞', '𝗟', '𝗠', '𝗡', '𝗢', '𝗣', '𝗤', '𝗥', '𝗦', '𝗧', '𝗨', '𝗩', '𝗪', '𝗫', '𝗬', '𝗭', '𝗮', '𝗯', '𝗰', '𝗱', '𝗲', '𝗳', '𝗴', '𝗵', '𝗶', '𝗷', '𝗸', '𝗹', '𝗺', '𝗻', '𝗼', '𝗽', '𝗾', '𝗿', '𝘀', '𝘁', '𝘂', '𝘃', '𝘄', '𝘅', '𝘆', '𝘇', '𝟭', '𝟮', '𝟯', '𝟰', '𝟱', '𝟲', '𝟳', '𝟴', '𝟵', '𝟬'], normal=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']))

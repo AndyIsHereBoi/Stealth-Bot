@@ -210,7 +210,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, ban_members=True)
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def bans(self, ctx: CustomContext):
+    async def bans(self, ctx: CustomContext) -> discord.Message:
         guild = ctx.guild
 
         guildBans = await guild.bans()
