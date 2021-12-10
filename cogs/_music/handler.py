@@ -11,7 +11,7 @@ from typing import (AsyncIterator, Iterable, Iterator, List, Optional, Union)
 __all__ = (
     "Queue",
     "QueueEmpty",
-    "QueueException"
+    "QueueException",
     "QueueFull",
     "WaitQueue",
 )
