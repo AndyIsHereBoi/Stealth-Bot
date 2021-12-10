@@ -304,8 +304,14 @@ class Music(commands.Cog):
     @commands.command(
         help="Adds the specified song to the queue.",
         aliases=['p', 'sing', 'playsong', 'playmusic', 'listen', 'listenmusic', 'musiclisten'])
-    async def play(self, ctx: CustomContext, *, song: str):
-        player = ctx.voice_client 
+    async def play(self, ctx: CustomContext, *, song: typing.Optional[str] = None):
+        player = ctx.voice_client
+
+        if song is None and discord.utils.find(lambda act: isinstance(act, discord.Spotify), ctx.author.activities):
+            song = discord.utils.find(lambda act: isinstance(act, discord.Spotify), ctx.author.activities).track_url
+
+        elif song is None and not discord.utils.find(lambda act: isinstance(act, discord.Spotify), ctx.author.activities):
+            return await ctx.send(f"You need to specify a song to play.")
         
         try:
             results = await self.get_tracks(ctx, song)
