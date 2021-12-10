@@ -842,7 +842,7 @@ New nickname: `{new}`
         if not duration or isinstance(duration, str):
             await channel.edit(slowmode_delay=0)
 
-            embed = discord.Embed(description=f"Slowmode has been disabled in {channel.mention}.")
+            embed = discord.Embed(description=f"Slow-mode has been disabled in {channel.mention}.")
             embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
             return await ctx.send(embed=embed, footer=False)
@@ -851,7 +851,7 @@ New nickname: `{new}`
         delta: datetime.timedelta = duration.dt > (created_at + datetime.timedelta(hours=6))
         
         if delta:
-            return await ctx.send("The slowmode cannot be more than 6 hours!")
+            return await ctx.send("The slow-mode cannot be more than 6 hours!")
         
         seconds = (duration.dt - ctx.message.created_at).seconds
         await channel.edit(slowmode_delay=int(seconds))
