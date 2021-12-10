@@ -931,7 +931,7 @@ With the reason being: {info['reason']}
         if not message.guild:
             return
 
-        if message.guild.id == 799330949686231050:
+        if message.guild.id == 799330949686231050 and message.channel.categiry_in in [799406595838312498, 799640351996510229, 800030353527799848]:
             if not message.author.bot:
                 if message.mentions:
                     users = []
