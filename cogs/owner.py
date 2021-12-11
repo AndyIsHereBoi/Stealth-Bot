@@ -519,7 +519,7 @@ Average: {average_latency}
         nl = "\n"
 
         embed = discord.Embed(title="Reloaded all extensions", description=f"""
-**Successfully reloaded**: {len(success)}/{len(extensions)} extensions.
+**Successfully reloaded**: {len(success)}/{len(everything)} extensions.
 
 {nl.join(reloaded)}
         """)
