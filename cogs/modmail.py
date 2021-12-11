@@ -37,7 +37,7 @@ class ModMail(commands.Cog):
 
     @commands.Cog.listener('on_message')
     async def on_mail(self, message: discord.Message):
-        if message.guild or message.author == self.client.user or self.client.dev_mode is True:
+        if message.guild or message.author == self.client.user:
             return
 
         ctx = await self.client.get_context(message)
