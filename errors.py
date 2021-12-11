@@ -1,4 +1,4 @@
-import discord
+
 from discord.ext import commands
 
 class UnknownError(commands.CheckFailure):
@@ -150,3 +150,5 @@ class TrackFailed(commands.CheckFailure):
 class MuteRoleNotFound(commands.CheckFailure):
     pass
 
+class MuteRoleAlreadyExists(commands.CheckFailure):
+    pass

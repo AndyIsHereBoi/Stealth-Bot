@@ -332,7 +332,7 @@ class Events(commands.Cog):
         elif isinstance(error, errors.MuteRoleAlreadyExists):
             name = "Mute role error"
             icon_url = None
-            message = f"This server already has a mute-role.\nTo change that, use `{ctx.prefix}mute-role <role>`."
+            message = f"This server already has a mute-role.\nTo remove it, use `{ctx.prefix}mute-role remove`."
         
         #### NORMAL ERRORS ####
 

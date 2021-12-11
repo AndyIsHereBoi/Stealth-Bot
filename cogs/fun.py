@@ -690,37 +690,19 @@ class Fun(commands.Cog):
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
-        roast = await self.client.dagpi.roast()
 
-        await ctx.send(f"{member.mention} {roast}")
+        await ctx.send(f"{member.mention}, {await self.client.dagpi.roast()}")
 
     @commands.command(
         help="Sends a random joke")
     async def joke(self, ctx: CustomContext):
-        joke = await self.client.dagpi.joke()
-
-        await ctx.send(f"{joke}")
+        await ctx.send(await self.client.dagpi.joke())
 
     @commands.command(
         help="Sends a random yo mama joke",
         aliases=['yomom', 'yo_mama', 'yo-mama', 'yo-mom', 'yo_mom'])
     async def yomama(self, ctx: CustomContext):
-        yomama = await self.client.dagpi.yomama()
-
-        await ctx.send(f"{yomama}")
-
-    @commands.command(
-        help=":rainbow_flag: Catches someone gay",
-        aliases=['cag'])
-    async def catch(self, ctx: CustomContext, member: discord.Member = None):
-        upper_hand = await ctx.send("https://media.discordapp.net/attachments/879251951714467840/896293818096291840/Sv6kz8f.png", reply=False)
-
-        message = await self.client.wait_for("message", check=lambda m: m.channel == ctx.channel and m.author != ctx.me)
-        if (member and message.author != member) or message.author == ctx.author:
-            return await upper_hand.delete()
-
-        await ctx.send("https://cdn.discordapp.com/attachments/879251951714467840/896297890396389377/wvUPp3d.png",
-                       reply=False)
+        await ctx.send(await self.client.dagpi.yomama())
 
     # @commands.command(
     #     help="<:oof:787677985468579880> OOF's the person you mentioned",

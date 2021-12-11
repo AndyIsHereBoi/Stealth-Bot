@@ -266,7 +266,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     async def muterole_create(self, ctx: CustomContext):
         starting_time = time.monotonic()
 
-        mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
+        mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if mute_role:
             mute_role = ctx.guild.get_role(mute_role)
