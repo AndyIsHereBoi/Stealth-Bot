@@ -41,12 +41,6 @@ class DeleteButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.message.delete()
 
-    def __init__(self, label: str, emoji: str, button_style: discord.ButtonStyle):
-        super().__init__(style=button_style, label=label, emoji=emoji)
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.message.delete()
-
 
 class Confirm(discord.ui.View):
     def __init__(self, buttons: typing.Tuple[typing.Tuple[str]], timeout: int = 30):
