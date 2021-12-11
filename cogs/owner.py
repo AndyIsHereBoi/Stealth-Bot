@@ -24,6 +24,7 @@ import importlib
 from jishaku.paginators import WrappedPaginator, PaginatorInterface
 from jishaku.codeblocks import codeblock_converter
 from helpers.context import CustomContext
+from jishaku.modules import ExtensionConverter
 import io
 import contextlib
 
@@ -370,7 +371,7 @@ Average: {average_latency}
     @dev.command(
         help="Reloads the specified extensions. If you want to reload all extensions, use `~` as the argument.",
         aliases=['r'])
-    async def reload(self, ctx: CustomContext, *extensions: jishaku.modules.ExtensionConverter) -> discord.Message:
+    async def reload(self, ctx: CustomContext, *extensions: ExtensionConverter) -> discord.Message:
         everything = []
 
         reload_fail = []
