@@ -221,7 +221,7 @@ class CustomContext(commands.Context):
         return len(bot.guilds)
 
     async def send(self, content: str = None, embed: discord.Embed = None, reminders: bool = True,
-                   reply: bool = True, footer: bool = True, timestamp: bool = True, color: bool = True,
+                   reply: bool = True, footer: bool = True, timestamp: bool = True, color: bool = Tyyrue,
                    reference: typing.Union[discord.Message, discord.MessageReference] = None,
                    view = None, **kwargs):
 

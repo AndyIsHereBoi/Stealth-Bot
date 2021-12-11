@@ -257,8 +257,8 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
         await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, None)
 
         embed = discord.Embed(title="Mute role removed", description="The mute-role for this server has been removed.", color=discord.Color.green())
-        return await ctx.send(f"Removed this server's mute role!",
-                              allowed_mentions=discord.AllowedMentions().none())
+
+        return await ctx.send(embed=embed)
 
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)

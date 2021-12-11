@@ -98,7 +98,15 @@ class Owner(commands.Cog):
         self.select_emoji = "<:owner_crown:845946530452209734>"
         self.select_brief = "Commands that only the developer of this bot can use."
 
-    @commands.command(
+    @commands.group(
+        invoke_without_commands=True,
+        help="All developer commands",
+        aliases=['d', 'developer'])
+    async def dev(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @dev.command(
         help="Shows information about the system the bot is hosted on",
         aliases=['sys'])
     @commands.is_owner()
@@ -233,7 +241,7 @@ Average: {average_latency}
 
         await message.edit("Received system information!", embed=embed)
 
-    @commands.command(
+    @dev.command(
         help="Evaluates code",
         aliases=['eval'])
     async def _eval(self, ctx: CustomContext, *, body: str):
@@ -303,7 +311,7 @@ Average: {average_latency}
         else:
             return await ctx.send("fuck off")
 
-    @commands.command(
+    @dev.command(
         help="Loads the specified extension")
     @commands.is_owner()
     async def load(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
@@ -341,7 +349,7 @@ Average: {average_latency}
         else:
             await ctx.send(embed=embed)
 
-    @commands.command(
+    @dev.command(
         help="Unloads the specified extension")
     @commands.is_owner()
     async def unload(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
@@ -379,7 +387,7 @@ Average: {average_latency}
         else:
             await ctx.send(embed=embed)
 
-    @commands.command(
+    @dev.command(
         help="Reloads the specified extension")
     @commands.is_owner()
     async def reload(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
@@ -417,7 +425,7 @@ Average: {average_latency}
         else:
             await ctx.send(embed=embed)
 
-    @commands.command(
+    @dev.command(
         help="Reloads all extensions.",
         aliases=['rall', 'reloadall', 'reload-all'])
     @commands.is_owner()
@@ -483,7 +491,7 @@ Average: {average_latency}
         else:
             await ctx.send(embed=embed)
 
-    @commands.command(
+    @dev.command(
         help="Update the bot.",
         aliases=['upd', 'gitpull', 'pull'])
     @commands.is_owner()
@@ -494,7 +502,7 @@ Average: {average_latency}
         command = self.client.get_command('rall')
         await ctx.invoke(command)
 
-    @commands.command(
+    @dev.command(
         help="Adds a member to the acknowledgments list",
         aliases=['ack'])
     @commands.is_owner()
@@ -511,7 +519,7 @@ Average: {average_latency}
             return await ctx.send(
                 f"Successfully deleted {member.mention if isinstance(member, discord.Member) else member} from the acknowledgements list.")
 
-    @commands.command(
+    @dev.command(
         help="Shutdowns the bot",
         aliases=['shutdown_bot'])
     @commands.is_owner()
@@ -528,7 +536,7 @@ Average: {average_latency}
         else:
             await ctx.send("Okay, I won't.")
 
-    @commands.command(
+    @dev.command(
         help="Restarts the bot.",
         aliases=['reboot', 'restartbot', 'restart-bot'])
     @commands.is_owner()
@@ -551,7 +559,7 @@ Average: {average_latency}
         else:
             return await ctx.send("Okay, I won't.")
 
-    @commands.command(
+    @dev.command(
         help="Toggles the no-prefix mode on/off",
         aliases=["no_prefix", "silentprefix", "silent_prefix"])
     @commands.is_owner()
@@ -564,7 +572,7 @@ Average: {average_latency}
             self.client.no_prefix = True
             await ctx.send("Successfully turned on no-prefix mode.")
 
-    @commands.command(
+    @dev.command(
         help="Toggles the bot-maintenance mode on/off",
         aliases=["bot_maintenance", "maintenancebot", "maintenance_bot", 'botmaintenance'])
     @commands.is_owner()
