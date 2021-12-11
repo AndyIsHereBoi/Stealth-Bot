@@ -4,7 +4,6 @@ import copy
 import yaml
 import random
 import errors
-import typing
 import difflib
 import aiohttp
 import discord
@@ -613,48 +612,6 @@ Message: {ctx.message.content[0:1700]}
             response = await self.client.rs.get_ai_response(discord.utils.remove_markdown(message.content))
             
             await message.reply(response[0]['message'] if response else 'No response...')
-            
-    @commands.Cog.listener('on_message')
-    async def dm(self, message: discord.Message):
-        if message.author.bot:
-            return
-        
-        if message.guild:
-            return
-        
-        category = self.client.get_channel(912066444232118323)
-        if str(message.author.id) not in [c.name for c in category.channels]:
-            channel = await category.create_text_channel(name=message.author.id, topic=f"{message.author} **|** {message.author.mention}")
-            await channel.send(message.content)
-            
-        else:
-            channel = discord.utils.get(category.channels, name=str(message.author.id), topic=f"{message.author} **|** {message.author.mention}")
-            await channel.send(message.content)
-            
-    @commands.Cog.listener('on_message')
-    async def dm_reply(self, message: discord.Message):
-        if message.author.bot:
-            return
-        
-        if not message.guild:
-            return
-        
-        if message.channel.category_id == 912066444232118323:
-            user = self.client.get_user(int(message.channel.name))
-            try:
-                await user.send(message)
-                
-            except:
-                await message.channel.send(f"I couldn't DM {user.mention}.")
-                
-    @commands.Cog.listener('on_reaction_add')
-    async def test(self, reaction: discord.Reaction, user: typing.Union[discord.Member, discord.User]):
-        if user.id == 555818548291829792:
-            try:
-                await reaction.remove(user=user)
-                
-            except Exception as e:
-                return await reaction.message.channel.send(f"Fuck {e}")
             
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):

@@ -1,30 +1,26 @@
 # Imports
 
+import os
+import re
+import time
+import yaml
+import topgg
+import prsaw
+import typing
+import pomice
+import errors
+import asyncpg
 import discord
 import logging
-import os
 import aiohttp
-import random
-import errors
-import yaml
-import time
-import random
-import traceback
-import re
-import prsaw
-import topgg
-from discord.ext import commands, ipc
-import asyncpg
-import typing
 import asyncpraw
-from discord import Interaction
+import traceback
+
 from typing import Optional
-from asyncdagpi import Client, ImageFeatures
-import pomice
-import datetime
-import pygit2
-import itertools
+from discord.ext import commands, ipc
 from helpers.context import CustomContext
+from asyncdagpi import Client, ImageFeatures
+from collections import defaultdict
 
 PRE: tuple = ("sb!",)
 
@@ -150,6 +146,7 @@ class StealthBot(commands.AutoShardedBot):
         self.dj_modes = {}
         self.dj_roles = {}
         self.disable_commands_guilds = {}
+        self.dm_webhooks = defaultdict(str)
 
         # Useless stuff
         self.brain_cells = 0
