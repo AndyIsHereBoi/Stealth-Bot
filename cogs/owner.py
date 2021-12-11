@@ -425,7 +425,7 @@ Average: {average_latency}
     @dev.command()
     async def pf(self, ctx: CustomContext, *, query: str):
         body = cleanup_code(query)
-        result = await self._eval(ctx, body=f"return await client.db.fetch(f\"\"\"{body}\"\"\")", return_result=True)
+        result = await self._eval(ctx, body=f"return await bot.db.fetch(f\"\"\"{body}\"\"\")", return_result=True)
 
         if not result:
             return await ctx.send("No results found...")
