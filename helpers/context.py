@@ -33,6 +33,19 @@ class CancelButton(discord.ui.Button):
         view.value = False
         view.stop()
 
+class DeleteButton(discord.ui.Button):
+    def __init__(self, label: str, emoji: str, button_style: discord.ButtonStyle):
+        super().__init__(style=button_style, label=label, emoji=emoji)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.message.delete()
+
+    def __init__(self, label: str, emoji: str, button_style: discord.ButtonStyle):
+        super().__init__(style=button_style, label=label, emoji=emoji)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.message.delete()
+
 
 class Confirm(discord.ui.View):
     def __init__(self, buttons: typing.Tuple[typing.Tuple[str]], timeout: int = 30):
@@ -50,6 +63,40 @@ class Confirm(discord.ui.View):
                                    button_style=(
                                            buttons[1][2] or discord.ButtonStyle.red
                                    )))
+
+    async def interaction_check(self, interaction: Interaction):
+        if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
+            return True
+        messages = [
+            "Oh no you can't do that! This belongs to **{user}**",
+            'This is **{user}**\'s confirmation, sorry! 💖',
+            '😒 Does this look yours? **No**. This is **{user}**\'s confirmation button',
+            '<a:stopit:891139227327295519>',
+            'HEYYYY!!!!! this is **{user}**\'s menu.',
+            'Sorry but you can\'t mess with **{user}**\' menu QnQ',
+            'No. just no. This is **{user}**\'s menu.',
+            '<:blobstop:749111017778184302>' * 3,
+            'You don\'t look like {user} do you...',
+            '🤨 Thats not yours! Thats **{user}**\'s',
+            '🧐 Whomst! you\'re not **{user}**',
+            '_out!_ 👋'
+        ]
+        await interaction.response.send_message(random.choice(messages).format(user=self.ctx.author.display_name),
+                                                ephemeral=True)
+
+        return False
+
+class Delete(discord.ui.View):
+    def __init__(self, buttons: typing.Tuple[typing.Tuple[str]], timeout: int = 30):
+        super().__init__(timeout=timeout)
+        self.message = None
+        self.value = None
+        self.ctx: CustomContext = None
+        self.add_item(DeleteButton(emoji=buttons[0][0],
+                                    label=buttons[0][1],
+                                    button_style=(
+                                            buttons[0][2] or discord.ButtonStyle.red
+                                    )))
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
@@ -233,7 +280,8 @@ class CustomContext(commands.Context):
                 content = f"{answer}\n\n{str(content) if content else ''}"
 
         try:
-            return await super().send(content=content, embed=embed, reference=reference, **kwargs)
+            view = Delete(('🗑️', None, discord.ButtonStyle.red))
+            return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
 
         except discord.HTTPException:
             return await super().send(content=content, embed=embed, reference=None, **kwargs)
