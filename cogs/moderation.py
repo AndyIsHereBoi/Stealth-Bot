@@ -77,8 +77,12 @@ class Moderation(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+        self.temporary_mutes.start()
         self.select_emoji = "<:staff:858326975869485077>"
         self.select_brief = "Commands useful for staff members of the server."
+
+    def cog_unload(self):
+        self.temporary_mutes.cancel()
 
     @staticmethod
     async def do_removal(ctx, limit: int, predicate, *, before=None, after=None, bulk: bool = True):
@@ -279,7 +283,7 @@ class Moderation(commands.Cog):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
 
-        embed = discord.Embed(description=f"Successfully banned `{member}` for `{reason}`")
+        embed = discord.Embed(description=f":hammer: Successfully banned `{member}` for `{reason}`")
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed, footer=False)
@@ -320,7 +324,7 @@ class Moderation(commands.Cog):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
 
-        embed = discord.Embed(description=f"Successfully soft-banned `{member}` for `{reason}`")
+        embed = discord.Embed(description=f":hammer: Successfully soft-banned `{member}` for `{reason}`")
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed, footer=False)
@@ -359,7 +363,7 @@ class Moderation(commands.Cog):
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
             
-        embed = discord.Embed(description=f"Successfully kicked `{member}` for `{reason}`")
+        embed = discord.Embed(description=f":boot: Successfully kicked `{member}` for `{reason}`")
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed, footer=False)

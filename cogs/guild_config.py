@@ -230,7 +230,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
 
                 return await ctx.send(embed=embed, color=False)
 
-            mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1"", ctx.guild.id)
+            mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
             if not mute_role:
                 raise errors.MuteRoleNotFound
@@ -239,24 +239,24 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
             if not isinstance(role, discord.Role):
                 raise errors.MuteRoleNotFound
 
-            return await ctx.send(f"This server's mute role is {role.mention}"
-                                  f"\nChange it with the `muterole [new_role]` command",
-                                  allowed_mentions=discord.AllowedMentions().none())
+            embed = discord.Embed(ittle="Mute role", description=f"""
+The mute-role for this server is: {role.mention}
+To change the mute-role do `{ctx.prefix}mute-role <role>`.
+And to remove it, do `{ctx.prefix}mute-role remove`.
+            """, color=discord.Color.green())
 
+            return await ctx.send(embed=embed, color=False)
+
+    @muterole.command(
+        name="remove",
+        help="Un-sets the mute-role for the server.\nNote that this will not delete the role from the server. It'll only remove it from the bot's database.\nIf you want to delete it, do `mute-role delete` instead.",
+        aliases=['unset'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    @muterole.command(name="remove", aliases=["unset"])
     async def muterole_remove(self, ctx: CustomContext):
-        """
-        Unsets the mute role for the server,
-        note that this will NOT delete the role, but only remove it from the bot's database!
-        If you want to delete it, do "%PRE%muterole delete" instead
-        """
-        await self.bot.db.execute(
-            "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
-            "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
-            ctx.guild.id, None)
+        await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, None)
 
+        embed = discord.Embed(title="Mute role removed", description="The mute-role for this server has been removed.", color=discord.Color.green())
         return await ctx.send(f"Removed this server's mute role!",
                               allowed_mentions=discord.AllowedMentions().none())
 
