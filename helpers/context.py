@@ -88,21 +88,14 @@ class Confirm(discord.ui.View):
         return False
 
 class Delete(discord.ui.View):
-    def __init__(self, buttons: typing.Tuple[typing.Tuple[str]], timeout: int = 30):
+    def __init__(self, timeout: int = 30):
         super().__init__(timeout=timeout)
         self.message = None
         self.value = None
         self.ctx: CustomContext = None
-        self.add_item(DeleteButton(emoji=buttons[0][0],
-                                    label=buttons[0][1],
-                                    button_style=(
-                                            buttons[0][2] or discord.ButtonStyle.green
-                                    )))
-        self.add_item(CancelButton(emoji=buttons[1][0],
-                                   label=buttons[1][1],
-                                   button_style=(
-                                           buttons[1][2] or discord.ButtonStyle.red
-                                   )))
+        self.add_item(DeleteButton(emoji='🗑️',
+                                   label='',
+                                   button_style=discord.ButtonStyle.red))
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
@@ -229,7 +222,8 @@ class CustomContext(commands.Context):
 
     async def send(self, content: str = None, embed: discord.Embed = None, reminders: bool = True,
                    reply: bool = True, footer: bool = True, timestamp: bool = True, color: bool = True,
-                   reference: typing.Union[discord.Message, discord.MessageReference] = None, **kwargs):
+                   reference: typing.Union[discord.Message, discord.MessageReference] = None,
+                   view = None, **kwargs):
 
         reference = (reference or self.message.reference or self.message) if reply is True else reference
 
@@ -285,10 +279,9 @@ class CustomContext(commands.Context):
             if number == 1:
                 content = f"{answer}\n\n{str(content) if content else ''}"
 
-        view = Delete(buttons=(
-            (None, 'Confirm', discord.ButtonStyle.green),
-            (None, 'Cancel', discord.ButtonStyle.red)
-        ), timeout=35)
+        if not view:
+            view = Delete(timeout=60)
+
         try:
             return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
 
