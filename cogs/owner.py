@@ -301,7 +301,7 @@ Average: {average_latency}
     @dev.command(
         help="Evaluates code",
         aliases=['eval'])
-    async def _eval(self, ctx: CustomContext, *, body: str):
+    async def _eval(self, ctx: CustomContext, *, body: str, return_result: bool = False):
         if ctx.author.id == 564890536947875868 or ctx.author.id == 530472612871143476 or ctx.author.id == 523452718413643788:
             env = {
                 'client': self.client,
