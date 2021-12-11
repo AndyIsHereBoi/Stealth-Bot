@@ -890,7 +890,7 @@ With the reason being: {info['reason']}
         self.client.edited_messages[before.guild.id]["after_content"] = after.content
         self.client.edited_messages[before.guild.id]["after_author"] = after.author
 
-        await self.client.process_commands(before)
+        await self.client.process_commands(after)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
