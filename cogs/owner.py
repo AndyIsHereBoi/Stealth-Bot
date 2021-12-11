@@ -500,7 +500,7 @@ Average: {average_latency}
             extensions = [['jishaku']]
 
         for extension in itertools.chain(*extensions):
-            method, icon = ((self.client.reload_extension, ":repeat:") if extension in self.client.extensions else (self.client.load_extension, ":mailbox:"))
+            method, icon = ((self.client.reload_extension, ":repeat: T") if extension in self.client.extensions else (self.client.load_extension, ":mailbox:"))
 
             try:
                 method(extension)
