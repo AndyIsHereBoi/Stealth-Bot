@@ -298,75 +298,90 @@ Average: {average_latency}
 
         await message.edit("Received system information!", embed=embed)
 
-    @dev.command(
-        help="Evaluates code",
-        aliases=['eval'])
+    @commands.command(pass_context=True, hidden=True, name='eval', aliases=['ev'])
+    @commands.is_owner()
     async def _eval(self, ctx: CustomContext, *, body: str, return_result: bool = False):
-        if ctx.author.id == 564890536947875868 or ctx.author.id == 530472612871143476 or ctx.author.id == 523452718413643788:
-            env = {
-                'client': self.client,
-                'bot': self.client,
-                'dad': ctx.author,
+        """ Evaluates arbitrary python code """
+        env = {
+            'bot': self.client,
+            '_b': self.client,
+            'ctx': ctx,
+            'channel': ctx.channel,
+            '_c': ctx.channel,
+            'author': ctx.author,
+            '_a': ctx.author,
+            'guild': ctx.guild,
+            '_g': ctx.guild,
+            'message': ctx.message,
+            '_m': ctx.message,
+            'reference': getattr(ctx.message.reference, 'resolved', None),
+            '_r': getattr(ctx.message.reference, 'resolved', None),
+            '_get': discord.utils.get,
+            '_find': discord.utils.find,
+            '_now': discord.utils.utcnow,
+        }
+        env.update(globals())
 
-                'ctx': ctx,
-                'context': ctx,
+        body = cleanup_code(body)
+        stdout = io.StringIO()
+        to_send: str = None
 
-                'author': ctx.author,
-                'channel': ctx.channel,
-                'server': ctx.guild,
-                'guild': ctx.guild,
-                'owner': ctx.guild.owner,
-                'serverowner': ctx.guild.owner,
-                'server_owner': ctx.guild.owner,
-                'guildowner': ctx.guild.owner,
-                'guild_owner': ctx.guild.owner,
+        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
 
-                '_ls': self._last_result,
-            }
-
-            env.update(globals())
-
-            body = cleanup_code(body)
-            stdout = io.StringIO()
-
-            to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
-
+        try:
+            exec(to_compile, env)
+        except Exception as e:
             try:
-                exec(to_compile, env)
-            except Exception as e:
-                try:
-                    await ctx.message.add_reaction('<:redTick:596576672149667840>')
-                except (discord.Forbidden, discord.HTTPException):
-                    pass
-                return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+                await ctx.message.add_reaction('⚠')
+            except (discord.Forbidden, discord.HTTPException):
+                pass
+            to_send = f'{e.__class__.__name__}: {e}'
+            if len(to_send) > 1880:
+                return await ctx.send(file=discord.File(io.StringIO(to_send), filename='output.py'))
+            await ctx.send(f'```py\n{to_send}\n```')
+            return
 
-            func = env['func']
+        func = env['func']
+        # noinspection PyBroadException
+        try:
+            with contextlib.redirect_stdout(stdout):
+                ret = await func()
+        except Exception:
+            value = stdout.getvalue()
             try:
-                with contextlib.redirect_stdout(stdout):
-                    ret = await func()
-            except Exception:
-                value = stdout.getvalue()
-                try:
-                    await ctx.message.add_reaction('<:redTick:596576672149667840>')
-                except (discord.Forbidden, discord.HTTPException):
-                    pass
-                await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
-            else:
-                value = stdout.getvalue()
-                try:
-                    await ctx.message.add_reaction('<:greenTick:596576670815879169>')
-                except (discord.Forbidden, discord.HTTPException):
-                    pass
-
-                if ret is None:
-                    if value:
-                        await ctx.send(f'```py\n{value}\n```')
-                else:
-                    self._last_result = ret
-                    await ctx.send(f'```py\n{value}{ret}\n```')
+                await ctx.message.add_reaction('⚠')
+            except (discord.Forbidden, discord.HTTPException):
+                pass
+            to_send = f'\n{value}{traceback.format_exc()}'
+            if len(to_send) > 1880:
+                await ctx.send(file=discord.File(io.StringIO(to_send), filename='output.py'))
+                return
+            await ctx.send(f'```py\n{to_send}\n```')
+            return
 
         else:
-            return await ctx.send("fuck off")
+            value = stdout.getvalue()
+            try:
+                await ctx.message.add_reaction('\u2705')
+            except (discord.Forbidden, discord.HTTPException):
+                pass
+
+            if not return_result:
+                if ret is None:
+                    if value:
+                        to_send = f'{value}'
+                else:
+                    self._last_result = ret
+                    to_send = f'{value}{ret}'
+                if to_send:
+                    to_send = to_send.replace(self.client.http.token, '[discord token redacted]')
+                    if len(to_send) > 1985:
+                        await ctx.send(file=discord.File(io.StringIO(to_send), filename='output.py'))
+                    else:
+                        await ctx.send(f"```py\n{to_send}\n```")
+            else:
+                return ret
+
 
     @dev.command(
         help="Reloads the specified extensions. If you want to reload all extensions, use `~` as the argument.",
