@@ -1132,7 +1132,7 @@ You may want to fix that using the `mute_role fix` command.
         if duration.dt < (created_at + datetime.timedelta(minutes=1)):
             return await ctx.send("You can't temp-mute someone for less than a minute!")
 
-        delta = helpers.human_timedelta(duration.dt, source=created_at
+        delta = helpers.human_timedelta(duration.dt, source=created_at)
 
         try:
             await member.add_roles(role, reason=f"Temporary mute by {ctx.author} ({ctx.author.id})")
