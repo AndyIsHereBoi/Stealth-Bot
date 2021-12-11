@@ -314,191 +314,13 @@ Average: {average_latency}
             return await ctx.send("fuck off")
 
     @dev.command(
-        help="Loads the specified extension")
-    @commands.is_owner()
-    async def load(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
-        extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
-
-        successful = []
-        failed = []
-
-        try:
-            self.client.load_extension(f"cogs.{extension}")
-            successful.append(f"{ctx.tick(True)} {extension}")
-
-        except discord.ext.commands.ExtensionFailed as e:
-            failed.append(f"{ctx.tick(False)} {extension}")
-            traceback_string = f"""
-```py
-{''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
-```
-                        """
-
-            await ctx.author.send(f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
-
-        nl = "\n"
-
-        embed = discord.Embed(title=f":arrow_up: Loaded {extension}", description=f"""
-{nl.join(successful)}
-
-{nl.join(failed)}
-{'I have private messaged you the errors.' if failed else ''}
-                            """)
-
-        if mode and mode.lower() == "silent":
-            await ctx.author.send(embed=embed)
-
-        else:
-            await ctx.send(embed=embed)
-
-    @dev.command(
-        help="Unloads the specified extension")
-    @commands.is_owner()
-    async def unload(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
-        extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
-
-        successful = []
-        failed = []
-
-        try:
-            self.client.unload_extension(f"cogs.{extension}")
-            successful.append(f"{ctx.tick(True)} {extension}")
-
-        except discord.ext.commands.ExtensionFailed as e:
-            failed.append(f"{ctx.tick(False)} {extension}")
-            traceback_string = f"""
-```py
-{''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
-```
-                        """
-
-            await ctx.author.send(f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
-
-        nl = "\n"
-
-        embed = discord.Embed(title=f":arrow_down: Unloaded {extension}", description=f"""
-{nl.join(successful)}
-
-{nl.join(failed)}
-{'I have private messaged you the errors.' if failed else ''}
-                            """)
-
-        if mode and mode.lower() == "silent":
-            await ctx.author.send(embed=embed)
-
-        else:
-            await ctx.send(embed=embed)
-
-    @dev.command(
-        help="Reloads the specified extension")
-    @commands.is_owner()
-    async def reload(self, ctx: CustomContext, extension: str, mode: typing.Optional[str]):
-        extension = extension.replace("cogs.", "").replace("./", "").replace(".py", "")
-
-        successful = []
-        failed = []
-
-        try:
-            self.client.reload_extension(f"cogs.{extension}")
-            successful.append(f"{ctx.tick(True)} {extension}")
-
-        except discord.ext.commands.ExtensionFailed as e:
-            failed.append(f"{ctx.tick(False)} {extension}")
-            traceback_string = f"""
-```py
-{''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
-```
-                        """
-
-            await ctx.author.send(f"{ctx.tick(False)} {extension[:-3]} Traceback:", file=io.StringIO(traceback_string))
-
-        nl = "\n"
-
-        embed = discord.Embed(title=f":repeat: Reloaded {extension}", description=f"""
-{nl.join(successful)}
-
-{nl.join(failed)}
-{'I have private messaged you the errors.' if failed else ''}
-                            """)
-
-        if mode and mode.lower() == "silent":
-            await ctx.author.send(embed=embed)
-
-        else:
-            await ctx.send(embed=embed)
-
-    @dev.command(
-        help="Reloads all extensions.",
-        aliases=['rall', 'reloadall', 'reload-all'])
-    @commands.is_owner()
-    async def reload_all(self, ctx: CustomContext, mode: typing.Optional[str] = None):
+        help="Reloads the specified extensions. If you want to reload all extensions, use `~` as the argument.",
+        aliases=['r'])
+    async def reload(self, ctx: CustomContext, *extensions: jishaku.modules.ExtensionConverter) -> discord.Message:
         everything = []
-        successful = []
-        successfulH = []
-        failed = []
 
-        for file in os.listdir('./cogs'):
-            if file.endswith('.py'):
-                everything.append(file)
-
-                try:
-                    self.client.reload_extension(f"cogs.{file[:-3]}")
-                    successful.append(f"{ctx.tick(True)} {file}")
-
-                except discord.ext.commands.ExtensionFailed as e:
-                    failed.append(f"{ctx.tick(False)} {file}")
-                    traceback_string = f"""
-```py
-{''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
-```
-                                """
-
-                    await ctx.author.send(f"{ctx.tick(False)} {file[:-3]} Traceback:", file=io.StringIO(traceback_string))
-
-        for file in os.listdir('./helpers'):
-            if file.endswith('.py'):
-                module = importlib.import_module(f"helpers.{file[:-3]}")
-                everything.append(file)
-
-                try:
-                    importlib.reload(module)
-                    successfulH.append(f"{ctx.tick(True)} {file}")
-
-                except discord.ext.commands.ExtensionFailed as e:
-                    failed.append(f"{ctx.tick(False)} {file}")
-                    traceback_string = f"""
-```py
-{''.join(traceback.format_exception(etype=None, value=e, tb=e.__traceback__))}
-```
-                                """
-
-                    await ctx.author.send(f"{ctx.tick(False)} {file[:-3]} Traceback:", file=io.StringIO(traceback_string))
-
-        nl = "\n"
-
-        embed = discord.Embed(title=f":repeat: Reloaded all extensions", description=f"""
-**Successfully reloaded**: {len(successful) + len(successfulH)}/{len(everything)} extensions.
-
-{nl.join(successful)}
-
-{nl.join(successfulH)}
-
-{nl.join(failed)}
-{'I have private messaged you the errors.' if failed else ''}
-                            """)
-
-        if mode and mode.lower() == "silent":
-            await ctx.author.send(embed=embed)
-
-        else:
-            await ctx.send(embed=embed)
-
-    @dev.command()
-    async def test(self, ctx: CustomContext, *extensions: jishaku.modules.ExtensionConverter):
-        failed = []
-        success = []
-        reloaded = []
-        everything = []
+        reload_fail = []
+        reload_success = []
 
         for extension in itertools.chain(*extensions):
             everything.append(f"{extension}")
@@ -508,24 +330,24 @@ Average: {average_latency}
                 method(extension)
 
             except Exception as exc:
-                failed.append(f"{extension}")
                 traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
-                reloaded.append(f"{icon}:warning: `{extension}`\n```py\n{traceback_data}\n```")
+                reload_fail.append(f":warning: `{extension}`\n```py\n{traceback_data}\n```")
 
             else:
-                success.append(f"{extension}")
-                reloaded.append(f"{icon} `{extension}`")
+                reload_success.append(f"{icon} `{extension}`")
 
         nl = "\n"
 
-        embed = discord.Embed(title="Reloaded all extensions", description=f"""
-**Successfully reloaded**: {len(success)}/{len(everything)} extensions.
+        embed = discord.Embed(description=f"""
+**Successfully reloaded**: {len(reload_success)}/{len(everything)} extensions.
 
-{nl.join(reloaded)}
+{nl.join(reload_success)}
+
+{no.join(reload_fail)}
         """)
 
-        if failed:
-            embed.set_footer(text=f"{len(failed)} extensions failed")
+        if reload_fail:
+            embed.set_footer(text=f"{len(reload_fail)} extensions failed")
             return await ctx.send(embed=embed, footer=False)
 
         return await ctx.send(embed=embed)
