@@ -100,7 +100,7 @@ class Owner(commands.Cog):
 
     @commands.group(
         invoke_without_commands=True,
-        help="All developer commands",
+        help="<:ayb_developer:913472701551747132> All developer commands",
         aliases=['d', 'developer'])
     async def dev(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -591,9 +591,9 @@ Average: {average_latency}
 
             await ctx.send(embed=embed)
 
-    @commands.group(
+    @dev.group(
         invoke_without_command=True,
-        help="<:scroll:904038785921187911> | Commands that the owner can use to prevent someone from using this bot",
+        help="<:scroll:904038785921187911> Commands that the owner can use to prevent someone from using this bot",
         aliases=['bl'])
     @commands.is_owner()
     async def blacklist(self, ctx: CustomContext):
@@ -665,8 +665,7 @@ Average: {average_latency}
 
         await paginator.start(ctx)
 
-    @commands.group(
-        invoke_without_command=True,
+    @dev.command(
         name="commands",
         help="Shows all used commands",
         aliases=['ch', 'cmds'])
