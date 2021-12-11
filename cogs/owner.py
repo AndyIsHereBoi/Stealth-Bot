@@ -498,6 +498,7 @@ Average: {average_latency}
         failed = []
         success = []
         reloaded = []
+        everything = []
 
         for extension in itertools.chain(*extensions):
             everything.append(f"{extension}")
