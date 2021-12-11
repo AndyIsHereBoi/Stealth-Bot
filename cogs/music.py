@@ -4,7 +4,7 @@ import pomice
 import typing
 import aiohttp
 import asyncio
-import logger
+import logging
 import datetime
 import time as t
 from errors import *
