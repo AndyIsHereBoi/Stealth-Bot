@@ -494,23 +494,20 @@ Average: {average_latency}
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def test(self, ctx: commands.Context, *extensions: jishaku.modules.ExtensionConverter):
+    async def test(self, ctx: CustomContext, *extensions: jishaku.modules.ExtensionConverter):
         paginator = WrappedPaginator(prefix='', suffix='')
         if ctx.invoked_with == 'reload' and not extensions:
             extensions = [['jishaku']]
 
         for extension in itertools.chain(*extensions):
-            method, icon = (
-                (self.client.reload_extension, "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}")
-                if extension in self.client.extensions else
-                (self.client.load_extension, "\N{INBOX TRAY}")
-            )
+            method, icon = ((self.client.reload_extension, ":repeat:") if extension in self.client.extensions else (self.client.load_extension, ":mailbox:"))
+
             try:
                 method(extension)
 
             except Exception as exc:
                 traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
-                paginator.add_line(f"{icon}\N{WARNING SIGN} `{extension}`\n``​`py\n{traceback_data}\n``​`", empty=True)
+                paginator.add_line(f"{icon}:warning: `{extension}`\n```py\n{traceback_data}\n```", empty=True)
 
             else:
                 paginator.add_line(f"{icon} `{extension}`", empty=True)
