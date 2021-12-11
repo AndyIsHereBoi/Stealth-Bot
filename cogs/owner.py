@@ -493,11 +493,11 @@ Average: {average_latency}
         else:
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @dev.command()
     async def test(self, ctx: CustomContext, *extensions: jishaku.modules.ExtensionConverter):
-        paginator = WrappedPaginator(prefix='', suffix='')
-        if ctx.invoked_with == 'reload' and not extensions:
-            extensions = [['jishaku']]
+        failed = []
+        success = []
+        reloaded = []
 
         for extension in itertools.chain(*extensions):
             method, icon = ((self.client.reload_extension, ":repeat: T") if extension in self.client.extensions else (self.client.load_extension, ":mailbox:"))
@@ -506,14 +506,27 @@ Average: {average_latency}
                 method(extension)
 
             except Exception as exc:
+                failed.append(f"{extension}")
                 traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
-                paginator.add_line(f"{icon}:warning: `{extension}`\n```py\n{traceback_data}\n```")
+                reloaded.append(f"{icon}:warning: `{extension}`\n```py\n{traceback_data}\n```")
 
             else:
-                paginator.add_line(f"{icon} `{extension}`")
+                success.append(f"{extension}")
+                reloaded.append(f"{icon} `{extension}`")
 
-        for page in paginator.pages:
-            await ctx.send(page)
+        nl = "\n"
+
+        embed = discord.Embed(title="Reloaded all extensions", description=f"""
+**Successfully reloaded**: {len(success)}/{len(extensions)} extensions.
+
+{nl.join(reloaded)}
+        """)
+
+        if failed:
+            embed.set_footer(text=f"{len(failed)} extensions failed")
+            return await ctx.send(embed=embed, footer=False)
+
+        return await ctx.send(embed=embed)
 
     @dev.command(
         help="Update the bot.",
