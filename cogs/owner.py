@@ -10,10 +10,12 @@ import shutil
 import pathlib
 import typing
 import asyncio
+import itertools
 import asyncbing
 import psutil
 import random
 import pomice
+import jishaku
 from discord.ext import commands, menus
 from discord.ext.menus.views import ViewMenuPages
 import importlib
@@ -491,16 +493,41 @@ Average: {average_latency}
         else:
             await ctx.send(embed=embed)
 
+    @commands.command()
+    async def test(self, ctx: commands.Context, *extensions: jishaku.modules.ExtensionConverter):
+        paginator = WrappedPaginator(prefix='', suffix='')
+        if ctx.invoked_with == 'reload' and not extensions:
+            extensions = [['jishaku']]
+
+        for extension in itertools.chain(*extensions):
+            method, icon = (
+                (self.client.reload_extension, "\N{CLOCKWISE RIGHTWARDS AND LEFTWARDS OPEN CIRCLE ARROWS}")
+                if extension in self.client.extensions else
+                (self.client.load_extension, "\N{INBOX TRAY}")
+            )
+            try:
+                method(extension)
+
+            except Exception as exc:
+                traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
+                paginator.add_line(f"{icon}\N{WARNING SIGN} `{extension}`\n``​`py\n{traceback_data}\n``​`", empty=True)
+
+            else:
+                paginator.add_line(f"{icon} `{extension}`", empty=True)
+
+        for page in paginator.pages:
+            await ctx.send(page)
+
     @dev.command(
         help="Update the bot.",
         aliases=['upd', 'gitpull', 'pull'])
     @commands.is_owner()
     async def update(self, ctx: CustomContext):
-        command = self.client.get_command('jsk git')
-        await ctx.invoke(command, argument=codeblock_converter('pull'))
+        command = self.client.get_command("jsk git")
+        await ctx.invoke(command, argument=codeblock_converter("pull"))
 
-        command = self.client.get_command('rall')
-        await ctx.invoke(command)
+        command = self.client.get_command('jsk reload')
+        await ctx.invoke(command, argument="~")
 
     @dev.command(
         help="Adds a member to the acknowledgments list",
