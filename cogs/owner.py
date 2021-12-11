@@ -507,10 +507,10 @@ Average: {average_latency}
 
             except Exception as exc:
                 traceback_data = ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__, 1))
-                paginator.add_line(f"{icon}:warning: `{extension}`\n```py\n{traceback_data}\n```", empty=True)
+                paginator.add_line(f"{icon}:warning: `{extension}`\n```py\n{traceback_data}\n```")
 
             else:
-                paginator.add_line(f"{icon} `{extension}`", empty=True)
+                paginator.add_line(f"{icon} `{extension}`")
 
         for page in paginator.pages:
             await ctx.send(page)
