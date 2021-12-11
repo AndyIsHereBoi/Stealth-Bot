@@ -500,6 +500,7 @@ Average: {average_latency}
         reloaded = []
 
         for extension in itertools.chain(*extensions):
+            everything.append(f"{extension}")
             method, icon = ((self.client.reload_extension, ":repeat: T") if extension in self.client.extensions else (self.client.load_extension, ":mailbox:"))
 
             try:
