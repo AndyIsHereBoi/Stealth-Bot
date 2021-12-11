@@ -1,4 +1,4 @@
-
+import discord
 from discord.ext import commands
 
 class UnknownError(commands.CheckFailure):
