@@ -33,6 +33,7 @@ class CancelButton(discord.ui.Button):
         view.value = False
         view.stop()
 
+
 class DeleteButton(discord.ui.Button):
     def __init__(self, label: str, emoji: str, button_style: discord.ButtonStyle):
         super().__init__(style=button_style, label=label, emoji=emoji)
@@ -95,8 +96,13 @@ class Delete(discord.ui.View):
         self.add_item(DeleteButton(emoji=buttons[0][0],
                                     label=buttons[0][1],
                                     button_style=(
-                                            buttons[0][2] or discord.ButtonStyle.red
+                                            buttons[0][2] or discord.ButtonStyle.green
                                     )))
+        self.add_item(CancelButton(emoji=buttons[1][0],
+                                   label=buttons[1][1],
+                                   button_style=(
+                                           buttons[1][2] or discord.ButtonStyle.red
+                                   )))
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
@@ -279,12 +285,14 @@ class CustomContext(commands.Context):
             if number == 1:
                 content = f"{answer}\n\n{str(content) if content else ''}"
 
+        view = Delete(buttons=(
+            (None, 'Confirm', discord.ButtonStyle.green),
+            (None, 'Cancel', discord.ButtonStyle.red)
+        ), timeout=35)
         try:
-            view = Delete(('🗑️', 'Tset', discord.ButtonStyle.red))
             return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
 
         except discord.HTTPException:
-            view = Delete(('🗑️', 'Tset', discord.ButtonStyle.red))
             return await super().send(content=content, embed=embed, reference=None, view=view, **kwargs)
 
     async def confirm(self, message: str = "Do you want to confirm?", embed: discord.Embed = None,
