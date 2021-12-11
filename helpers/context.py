@@ -284,7 +284,8 @@ class CustomContext(commands.Context):
             return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
 
         except discord.HTTPException:
-            return await super().send(content=content, embed=embed, reference=None, **kwargs)
+            view = Delete(('🗑️', None, discord.ButtonStyle.red))
+            return await super().send(content=content, embed=embed, reference=None, view=view, **kwargs)
 
     async def confirm(self, message: str = "Do you want to confirm?", embed: discord.Embed = None,
                       # added embed so it's possible to use ctx.confirm with an embed instead of a lame class normal message - P3ter
