@@ -324,6 +324,11 @@ class Events(commands.Cog):
             icon_url = None
             message = f"This server doesn't have a mute-role.\nTo change that, use `{ctx.prefix}mute-role <role>`."
 
+        elif isinstance(error, errors.MuteRoleAlreadyExists):
+            name = "Mute role error"
+            icon_url = None
+            message = f"This server already has a mute-role.\nTo remove it, use `{ctx.prefix}mute-role remove`."
+
         #### NORMAL ERRORS ####
 
         elif isinstance(error, errors.Forbidden):
@@ -478,6 +483,11 @@ This might also be a issue with role hierarchy, try moving my role to the top of
             name = "Bad argument"
             icon_url = None
             message = "The argument you provided was invalid."
+
+        elif isinstance(error, commands.BadUnionArgument):
+            name = "Bad union argument"
+            icon_url = None
+            message = f"The union argument you provided was invalid.({error})"
 
         elif isinstance(error, commands.MemberNotFound):
             name = "Unknown member"
