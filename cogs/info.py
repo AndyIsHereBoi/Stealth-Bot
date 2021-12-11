@@ -166,6 +166,7 @@ class TodoListEmbedPage(menus.ListPageSource):
         color = random.choice(colors)
         embed = discord.Embed(title=self.title, description="\n".join(entries), timestamp=discord.utils.utcnow(), color=color)
         embed.set_footer(text=f"Requested by: {self.author.name}", icon_url=self.author.avatar.url)
+
         return embed
 
 
