@@ -280,11 +280,11 @@ class CustomContext(commands.Context):
                 content = f"{answer}\n\n{str(content) if content else ''}"
 
         try:
-            view = Delete(('🗑️', None, discord.ButtonStyle.red))
+            view = Delete(('🗑️', 'Tset', discord.ButtonStyle.red))
             return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
 
         except discord.HTTPException:
-            view = Delete(('🗑️', None, discord.ButtonStyle.red))
+            view = Delete(('🗑️', 'Tset', discord.ButtonStyle.red))
             return await super().send(content=content, embed=embed, reference=None, view=view, **kwargs)
 
     async def confirm(self, message: str = "Do you want to confirm?", embed: discord.Embed = None,
