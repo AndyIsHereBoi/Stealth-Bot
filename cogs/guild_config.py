@@ -55,34 +55,30 @@ This is the logging module. The logging module can log various actions in your s
         await ctx.send(embed=embed)
 
     @log.command(
+        name="enable",
         help="Changes the logging channel to the specified channel. If no channel is specified it will default to the current one.",
         aliases=['set', 'add'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def enable(self, ctx, channel: discord.TextChannel = None):
+    async def log_enable(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
 
-        await self.client.db.execute(
-            "INSERT INTO guilds (guild_id, logs_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET logs_channel_id = $2",
-            ctx.guild.id, channel.id)
+        await self.client.db.execute("INSERT INTO guilds (guild_id, logs_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET logs_channel_id = $2", ctx.guild.id, channel.id)
 
-        embed = discord.Embed(title="Logs channel updated",
-                              description=f"The logs channel for this server has been set to {channel.mention}!",
-                              color=discord.Color.green())
+        embed = discord.Embed(title="Logs channel updated", description=f"The logs channel for this server has been set to {channel.mention}!", color=discord.Color.green())
         await ctx.send(embed=embed, color=False)
 
     @log.command(
+        name="disbale",
         help="Disables the logging module for the current server.",
         aliases=['remove'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def disable(self, ctx):
+    async def log_disable(self, ctx):
         await self.client.db.execute("INSERT INTO guilds (guild_id, logs_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET logs_channel_id = $2", ctx.guild.id, None)
 
-        embed = discord.Embed(title="Logging module disabled",
-                              description=f"The logging module for this server has been disabled!",
-                              color=discord.Color.red())
+        embed = discord.Embed(title="Logging module disabled", description=f"The logging module for this server has been disabled!", color=discord.Color.red())
         await ctx.send(embed=embed, color=False)
 
     # Welcome commands
@@ -116,17 +112,16 @@ This is the welcome module. This module can log when a user joins the server and
         await ctx.send(embed=embed)
 
     @welcome.command(
+        name="enable",
         help="Changes the welcome channel to the specified channel. If no channel is specified it will default to the current one.",
         aliases=['set', 'add'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def enable(self, ctx, channel: discord.TextChannel = None):
+    async def welcome_enable(self, ctx, channel: discord.TextChannel = None):
         if not channel:
             channel = ctx.channel
 
-        await self.client.db.execute(
-            "INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2",
-            ctx.guild.id, channel.id)
+        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, channel.id)
 
         embed = discord.Embed(title="Welcome channel updated", description=f"""
 The welcome channel for this server has been set to {channel.mention}!
@@ -137,11 +132,12 @@ If you would like to set a custom welcome message do `{ctx.prefix}welcome messag
         await ctx.send(embed=embed, color=False)
 
     @welcome.command(
+        name="disable",
         help="Disables the welcome module for the current server.",
         aliases=['remove', 'delete'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def disable(self, ctx):
+    async def welcome_disable(self, ctx):
         await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, None)
         await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, None)
 
@@ -154,6 +150,7 @@ I've also deleted the welcome message for this server.
         await ctx.send(embed=embed, color=False)
 
     @welcome.command(
+        name="message",
         help="""
 Changes the welcome message to the specified message.
 You can also use all of these placeholders:
@@ -175,7 +172,7 @@ To use placeholders, surround them with `[]`. (e.g. `[server]`)
         aliases=['msg', 'messages'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def message(self, ctx, *, message):
+    async def welcome_message(self, ctx, *, message):
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not database['welcome_channel_id']:
@@ -218,25 +215,22 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
 
     # Mute commands
 
-    # Add mute role
-    @commands.group(invoke_without_command=True)
+    @commands.group(
+        invoke_without_command=True,
+        help="Changes the mute-role for the server. If no role is specified it will show the current mute-role.",
+        aliases=['mute-role', 'mute_role'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def muterole(self, ctx: CustomContext, new_role: discord.Role = None):
-        """
-        Sets the mute-role. If no role is specified, shows the current mute role.
-        """
+    async def muterole(self, ctx: CustomContext, role: discord.Role = None):
         if ctx.invoked_subcommand is None:
-            if new_role:
-                await self.client.db.execute(
-                    "INSERT INTO prefixes(guild_id, muted_id) VALUES ($1, $2) "
-                    "ON CONFLICT (guild_id) DO UPDATE SET muted_id = $2",
-                    ctx.guild.id, new_role.id)
+            if role:
+                await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, role.id)
 
-                return await ctx.send(f"Updated the muted role to {new_role.mention}!",
-                                      allowed_mentions=discord.AllowedMentions().none())
+                embed = discord.Embed(title="Mute role updated", description=f"The mute-role for this server has been changed to {role.mention}", color=discord.Color.green())
 
-            mute_role = await self.client.db.fetchval('SELECT muted_id FROM prefixes WHERE guild_id = $1', ctx.guild.id)
+                return await ctx.send(embed=embed, color=False)
+
+            mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1"", ctx.guild.id)
 
             if not mute_role:
                 raise errors.MuteRoleNotFound
@@ -259,8 +253,8 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
         If you want to delete it, do "%PRE%muterole delete" instead
         """
         await self.bot.db.execute(
-            "INSERT INTO prefixes(guild_id, muted_id) VALUES ($1, $2) "
-            "ON CONFLICT (guild_id) DO UPDATE SET muted_id = $2",
+            "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
+            "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
             ctx.guild.id, None)
 
         return await ctx.send(f"Removed this server's mute role!",
@@ -272,7 +266,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
     async def muterole_create(self, ctx: CustomContext):
         starting_time = time.monotonic()
 
-        mute_role = await self.bot.db.fetchval('SELECT muted_id FROM prefixes WHERE guild_id = $1', ctx.guild.id)
+        mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
 
         if mute_role:
             mute_role = ctx.guild.get_role(mute_role)
@@ -291,8 +285,8 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
                                                reason=f"DuckBot mute-role creation. Requested "
                                                       f"by {ctx.author} ({ctx.author.id})")
             await self.bot.db.execute(
-                "INSERT INTO prefixes(guild_id, muted_id) VALUES ($1, $2) "
-                "ON CONFLICT (guild_id) DO UPDATE SET muted_id = $2",
+                "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
+                "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
                 ctx.guild.id, role.id)
 
             modified = 0
@@ -324,15 +318,15 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
         Deletes the server's mute role if it exists.
         # If you want to keep the role but not
         """
-        mute_role = await self.bot.db.fetchval('SELECT muted_id FROM prefixes WHERE guild_id = $1', ctx.guild.id)
+        mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
         if not mute_role:
             raise errors.MuteRoleNotFound
 
         role = ctx.guild.get_role(int(mute_role))
         if not isinstance(role, discord.Role):
             await self.bot.db.execute(
-                "INSERT INTO prefixes(guild_id, muted_id) VALUES ($1, $2) "
-                "ON CONFLICT (guild_id) DO UPDATE SET muted_id = $2",
+                "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
+                "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
                 ctx.guild.id, None)
 
             return await ctx.send("It seems like the muted role was already deleted, or I can't find it right now!"
@@ -351,8 +345,8 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
         except discord.HTTPException:
             return await ctx.send("Something went wrong while deleting the muted role!")
         await self.bot.db.execute(
-            "INSERT INTO prefixes(guild_id, muted_id) VALUES ($1, $2) "
-            "ON CONFLICT (guild_id) DO UPDATE SET muted_id = $2",
+            "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
+            "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
             ctx.guild.id, None)
         await ctx.send("🚮")
 
@@ -362,7 +356,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
     async def muterole_fix(self, ctx: CustomContext):
         async with ctx.typing():
             starting_time = time.monotonic()
-            mute_role = await self.bot.db.fetchval('SELECT muted_id FROM prefixes WHERE guild_id = $1', ctx.guild.id)
+            mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
 
             if not mute_role:
                 raise errors.MuteRoleNotFound

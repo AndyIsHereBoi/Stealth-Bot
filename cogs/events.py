@@ -321,6 +321,13 @@ class Events(commands.Cog):
             name = "Music error"
             icon_url = None
             message = f"There was an error playing that song, skipping to next song."
+
+        #### MUTE ROLE ERRORS ###
+
+        elif isinstance(error, errors.MuteRoleNotFound):
+            name = "Mute role error"
+            icon_url = None
+            message = f"This server doesn't have a mute-role.\nTo change that, use `{ctx.prefix}mute-role <role>`."
         
         #### NORMAL ERRORS ####
 

@@ -1129,11 +1129,10 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
     @todo.command(
         name="list",
-        help="Sends a list of your tasks.")
-    async def _list(self, ctx: CustomContext):
-        todos = await self.client.db.fetch(
-            "SELECT text, creation_date, jump_url FROM todo WHERE user_id = $1 ORDER BY creation_date ASC",
-            ctx.author.id)
+        help="Sends a list of your tasks.",
+        aliases=['show', 'view'])
+    async def todo_list(self, ctx: CustomContext):
+        todos = await self.client.db.fetch("SELECT text, creation_date, jump_url FROM todo WHERE user_id = $1 ORDER BY creation_date ASC", ctx.author.id)
 
         if not todos:
             raise errors.EmptyTodoList
@@ -1144,40 +1143,44 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         for todo in todos:
             number = number + 1
             todoList.append(
-                f"**[{number}]({todo['jump_url']})**. {todo['text']} ({discord.utils.format_dt(todo['creation_date'], style='R')})")
+                f"**[{number}]({todo['jump_url']})**. **({discord.utils.format_dt(todo['creation_date'], style='R')}):** {todo['text']}")
 
         title = f"{ctx.author.name}'s todo list"
 
-        paginator = ViewMenuPages(source=TodoListEmbedPage(title=title, author=ctx.author, data=todoList),
-                                  clear_reactions_after=True)
+        paginator = ViewMenuPages(source=TodoListEmbedPage(title=title, author=ctx.author, data=todoList), clear_reactions_after=True)
         page = await paginator._source.get_page(0)
         kwargs = await paginator._get_kwargs_from_page(page)
+
         if paginator.build_view():
             paginator.message = await ctx.send(embed=kwargs['embed'], view=paginator.build_view())
+
         else:
             paginator.message = await ctx.send(embed=kwargs['embed'])
+
         await paginator.start(ctx)
 
     @todo.command(
-        help="Deletes all tasks from your todo list.")
-    async def clear(self, ctx: CustomContext):
+        name="clear",
+        help="Deletes all tasks from your todo list.",
+        aliases=['nuke'])
+    async def todo_clear(self, ctx: CustomContext):
         confirm = await ctx.confirm("Are you sure you want to clear your todo list?\n*This action cannot be undone*")
 
         if confirm is True:
-            todos = await self.client.db.fetchval(
-                "WITH deleted AS (DELETE FROM todo WHERE user_id = $1 RETURNING *) SELECT count(*) FROM deleted;",
-                ctx.author.id)
+            todos = await self.client.db.fetchval("WITH deleted AS (DELETE FROM todo WHERE user_id = $1 RETURNING *) SELECT count(*) FROM deleted;", ctx.author.id)
 
-            return await ctx.send(content=f"Successfully removed {todos} tasks.", view=None)
+            embed = discord.Embed(title="Cleared your todo list.", description=f"{todos} tasks were removed.")
 
-        await ctx.send(content="Okay, I didn't remove any tasks.", view=None)
+            return await ctx.send(embed=embed)
+
+        await ctx.send("Okay, cancelled.")
 
     @todo.command(
-        help="Removes the specified task from your todo list")
-    async def remove(self, ctx: CustomContext, index: int):
-        todos = await self.client.db.fetch(
-            "SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC",
-            ctx.author.id)
+        name="remove",
+        help="Removes the specified task from your todo list",
+        aliases=['delete', 'del', 'rm'])
+    async def todo_remove(self, ctx: CustomContext, index: int):
+        todos = await self.client.db.fetch("SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC", ctx.author.id)
 
         try:
             to_delete = todos[index - 1]
@@ -1185,20 +1188,18 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         except:
             return await ctx.send(f"I couldn't find a task with index {index}")
 
-        await self.client.db.execute("DELETE FROM todo WHERE (user_id, text) = ($1, $2)", ctx.author.id,
-                                     to_delete['text'])
+        await self.client.db.execute("DELETE FROM todo WHERE (user_id, text) = ($1, $2)", ctx.author.id, to_delete['text'])
 
-        embed = discord.Embed(title=f"Successfully removed task number **{index}**:",
-                              description=f"{to_delete['text']} ({discord.utils.format_dt(to_delete['creation_date'], style='R')})")
+        embed = discord.Embed(title=f"Successfully removed task number **{index}**:", description=f"({discord.utils.format_dt(to_delete['creation_date'], style='R')}) {to_delete['text']}")
 
         return await ctx.send(embed=embed)
 
     @todo.command(
-        help="Edits the specified task")
-    async def edit(self, ctx: CustomContext, index: int, *, text):
-        todos = await self.client.db.fetch(
-            "SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC",
-            ctx.author.id)
+        name="edit",
+        help="Edits the specified task",
+        aliases=['change', 'modify'])
+    async def todo_edit(self, ctx: CustomContext, index: int, *, text):
+        todos = await self.client.db.fetch("SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC", ctx.author.id)
 
         try:
             to_edit = todos[index - 1]
@@ -1206,15 +1207,11 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         except KeyError:
             return await ctx.send(f"I couldn't find a task with index {index}")
 
-        old = await self.client.db.fetchrow(
-            "SELECT text, creation_date, jump_url FROM todo WHERE (user_id, text) = ($1, $2)", ctx.author.id,
-            to_edit['text'])
-        await self.client.db.execute(
-            "UPDATE todo SET text = $1, jump_url = $2, creation_date = $3 WHERE (user_id, text) = ($4, $5)",
-            f"{text} (edited)", ctx.message.jump_url, ctx.message.created_at, ctx.author.id, to_edit['text'])
-        new = await self.client.db.fetchrow(
-            "SELECT text, creation_date, jump_url FROM todo WHERE (user_id, text) = ($1, $2)", ctx.author.id,
-            f"{text} (edited)")
+        old = await self.client.db.fetchrow("SELECT text, creation_date, jump_url FROM todo WHERE (user_id, text) = ($1, $2)", ctx.author.id, to_edit['text'])
+
+        await self.client.db.execute( "UPDATE todo SET text = $1, jump_url = $2, creation_date = $3 WHERE (user_id, text) = ($4, $5)", f"{text} (edited)", ctx.message.jump_url, ctx.message.created_at, ctx.author.id, to_edit['text'])
+
+        new = await self.client.db.fetchrow("SELECT text, creation_date, jump_url FROM todo WHERE (user_id, text) = ($1, $2)", ctx.author.id, f"{text} (edited)")
 
         embed = discord.Embed(title=f"Successfully edited task number **{index}**:", description=f"""
 __**Old**__

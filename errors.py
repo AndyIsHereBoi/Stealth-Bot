@@ -142,3 +142,11 @@ class LoopDisabled(commands.CheckFailure):
 
 class TrackFailed(commands.CheckFailure):
     pass
+
+########################################################################################################################
+##### MUTE ROLE ERRORS #####
+########################################################################################################################
+
+class MuteRoleNotFound(commands.CheckFailure):
+    pass
+
