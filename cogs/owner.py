@@ -6,6 +6,8 @@ import asyncpg
 import tabulate
 import traceback
 import sys
+import math
+from collections import defaultdict
 import shutil
 import pathlib
 import typing
@@ -28,6 +30,58 @@ import contextlib
 
 def setup(client):
     client.add_cog(Owner(client))
+
+def format_table(db_res):
+    result_dict = defaultdict(list)
+    for x in db_res:
+        for key, value in x.items():
+            result_dict[key].append(value)
+
+    def key(i):
+        return len(i)
+
+    # I just wrote some weird code and it worked lmfao
+    total_length = [
+        (len(max([str(column_name)] + [str(row) for row in rows], key=key)) + 2)
+        for column_name, rows in result_dict.items()
+    ]
+    result = (
+        "┍" + ("┯".join("━" * times for times in total_length)) + "┑" + "\n│"
+    )
+    columns = [str(col) for col in result_dict.keys()]
+    rows = [list() for _, _1 in enumerate(list(result_dict.values())[0])]
+    for row in result_dict.values():
+        for index, item in enumerate(row):
+            rows[index].append(item)
+
+    column_lengths = list()
+    for index, column in enumerate(columns):
+        column_length = (
+            len(max([str(column)] + [str(row[index]) for row in rows], key=key)) + 2
+        )
+        column_lengths.append(column_length)
+        before = math.ceil((column_length - len(column)) / 2)
+        after = math.floor((column_length - len(column)) / 2)
+        result += (" " * before) + column + (" " * after) + "│"
+    result += (
+        "\n" + "┝" + ("┿".join("━" * times for times in total_length)) + "┥\n│"
+    )
+
+    for row in rows:
+        for index, item in enumerate(row):
+            before = math.ceil((column_lengths[index] - len(str(item))) / 2)
+            after = math.floor((column_lengths[index] - len(str(item))) / 2)
+            result += (" " * before) + str(item) + (" " * after) + "│"
+        result += (
+            "\n" + "┝" + ("┿".join("━" * times for times in total_length)) + "┥\n│"
+        )
+
+    result = "\n".join(result.split("\n")[:-2])
+    result += (
+        "\n" + "┕" + ("┷".join("━" * times for times in total_length)) + "┙"
+    )
+
+    return result
 
 
 # bytes pretty-printing
@@ -339,7 +393,7 @@ Average: {average_latency}
         nl = "\n"
 
         embed = discord.Embed(description=f"""
-**Successfully reloaded**: {len(reload_success)}/{len(everything)} extensions.
+**Successfully reloaded**: {len(reload_success)}/{len(everything)} extension{'s' if len(everything) >= 1 else ''}.
 
 {nl.join(reload_success)}
 
@@ -347,10 +401,23 @@ Average: {average_latency}
         """)
 
         if reload_fail:
-            embed.set_footer(text=f"{len(reload_fail)} extensions failed")
+            embed.set_footer(text=f"{len(reload_fail)} extension{'s' if len(reload_fail) >= 1 else ''} failed")
             return await ctx.send(embed=embed, footer=False)
 
         return await ctx.send(embed=embed)
+
+    @dev.command()
+    async def pf(self, ctx: CustomContext, *, query: str):
+        body = cleanup_code(query)
+        result = await self._eval(ctx, body=f"return await client.db.fetch(f\"\"\"{body}\"\"\")", return_result=True)
+
+        if not result:
+            return await ctx.send("No results found...")
+
+        else:
+            result = format_table(result)
+            embed = discord.Embed(description=f"```py\n{result}\n```")
+            await ctx.send(embed=embed)
 
     @dev.command(
         help="Update the bot.",
