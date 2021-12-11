@@ -343,7 +343,7 @@ Average: {average_latency}
 
 {nl.join(reload_success)}
 
-{no.join(reload_fail)}
+{nl.join(reload_fail)}
         """)
 
         if reload_fail:
