@@ -268,7 +268,7 @@ class CustomContext(commands.Context):
                 content = f"{answer}\n\n{str(content) if content else ''}"
 
         if not view:
-            view = Delete(timeout=60)
+            view = Delete()
 
         try:
             return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
