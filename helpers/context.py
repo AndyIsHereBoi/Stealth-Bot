@@ -76,11 +76,11 @@ class Confirm(discord.ui.View):
 class Delete(discord.ui.View):
     def __init__(self, *, timeout=180):
         super().__init__(timeout=timeout)
+        self.message = None
 
     @discord.ui.button(emoji="🗑️", style=discord.ButtonStyle.gray)
     async def delete_button(self, child: discord.ui.Button, interaction: discord.Interaction):
-        for child in self.children:
-            child.disabled=True
+        await interaction.message.delete()
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
