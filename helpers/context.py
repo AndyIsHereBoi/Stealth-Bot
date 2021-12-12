@@ -39,6 +39,7 @@ class DeleteButton(discord.ui.Button):
         super().__init__(style=discord.ButtonStyle.danger, emoji="🗑️")
 
     async def callback(self, interaction: discord.Interaction):
+        return await interaction.response.send_message("HELLO")
         await interaction.message.delete()
         if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
             await self.ctx.message.delete()
