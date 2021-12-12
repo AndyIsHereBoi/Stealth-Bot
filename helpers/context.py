@@ -217,7 +217,7 @@ class CustomContext(commands.Context):
     async def send(self, content: str = None, embed: discord.Embed = None, reminders: bool = True,
                    reply: bool = True, footer: bool = True, timestamp: bool = True, color: bool = True,
                    reference: typing.Union[discord.Message, discord.MessageReference] = None,
-                   view = None, **kwargs):
+                   view = None, **kwargs) -> discord.Message:
 
         reference = (reference or self.message.reference or self.message) if reply is True else reference
 

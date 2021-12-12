@@ -395,7 +395,7 @@ class Info(commands.Cog):
         value = '\n'.join(f'{lookup[index]}: <@!{author_id}> ({uses} bot uses)'
                           for (index, (author_id, uses)) in enumerate(records)) or 'No command users.'
         embed.add_field(name='Top Command Users Today', value=value, inline=True)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, footer=False, timestamp=False)
 
     @staticmethod
     async def show_member_stats(ctx, member):
@@ -1231,7 +1231,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @commands.command(
         help="Shows how many servers the bot is in.",
         aliases=['guilds'])
-    async def servers(self, ctx: CustomContext):
+    async def servers(self, ctx: CustomContext) -> discord.Message:
         embed = discord.Embed(title=f"I'm in `{len(self.client.guilds)}` servers.")
 
         await ctx.send(embed=embed)
@@ -1239,35 +1239,33 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
     @commands.command(
         help="Shows how many messages the bot has seen since the last restart.",
         aliases=['msg', 'msgs', 'message'])
-    async def messages(self, ctx: CustomContext):
-        embed = discord.Embed(
-            title=f"I've seen a total of `{self.client.messages_count}` messages and `{self.client.edited_messages_count}` edits.")
+    async def messages(self, ctx: CustomContext) -> discord.Message:
+        embed = discord.Embed(title=f"I've seen a total of `{self.client.messages_count}` messages and `{self.client.edited_messages_count}` edits.")
 
         await ctx.send(embed=embed)
 
     @commands.group(
-        help="<:scroll:904038785921187911> | Todo commands.")
+        help="<:scroll:904038785921187911> Todo commands.",
+        aliases=['tasks'])
     async def todo(self, ctx: CustomContext):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @todo.command(
-        help="Adds the specified task to your todo list.")
-    async def add(self, ctx: CustomContext, *, text):
-        todo = await self.client.db.fetchrow(
-            "INSERT INTO todo (user_id, text, jump_url, creation_date) VALUES ($1, $2, $3, $4) "
-            "ON CONFLICT (user_id, text) DO UPDATE SET user_id = $1 RETURNING jump_url, creation_date",
-            ctx.author.id, text, ctx.message.jump_url, ctx.message.created_at)
+        name="add",
+        help="Adds the specified task to your todo list.",
+        aliases=['create', 'new', 'make'])
+    async def todo_add(self, ctx: CustomContext, *, text) -> discord.Message:
+        todo = await self.client.db.fetchrow("INSERT INTO todo (user_id, text, jump_url, creation_date) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, text) DO UPDATE SET user_id = $1 RETURNING jump_url, creation_date", ctx.author.id, text, ctx.message.jump_url, ctx.message.created_at)
 
         if todo['creation_date'] != ctx.message.created_at:
-            embed = discord.Embed(title="That's already in your todo list!", url=f"{todo['jump_url']}",
-                                  description=f"[Added here]({todo['jump_url']})")
+            embed = discord.Embed(title="That's already in your todo list!", url=f"{todo['jump_url']}", description=f"[Added here]({todo['jump_url']})")
 
             return await ctx.send(embed=embed)
 
         embed = discord.Embed(title="Added to your todo list:", description=text)
 
-        await ctx.send(embed=embed)
+        return await ctx.send(embed=embed)
 
     @todo.command(
         name="list",
@@ -1284,8 +1282,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
         for todo in todos:
             number = number + 1
-            todoList.append(
-                f"**[{number}]({todo['jump_url']})**. **({discord.utils.format_dt(todo['creation_date'], style='R')}):** {todo['text']}")
+            todoList.append(f"**[{number}]({todo['jump_url']})**. **({discord.utils.format_dt(todo['creation_date'], style='R')}):** {todo['text']}")
 
         title = f"{ctx.author.name}'s todo list"
 
@@ -1305,7 +1302,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         name="clear",
         help="Deletes all tasks from your todo list.",
         aliases=['nuke'])
-    async def todo_clear(self, ctx: CustomContext):
+    async def todo_clear(self, ctx: CustomContext) -> discord.Message:
         confirm = await ctx.confirm("Are you sure you want to clear your todo list?\n*This action cannot be undone*")
 
         if confirm is True:
@@ -1315,13 +1312,13 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
 
             return await ctx.send(embed=embed)
 
-        await ctx.send("Okay, cancelled.")
+        return await ctx.send("Okay, cancelled.")
 
     @todo.command(
         name="remove",
         help="Removes the specified task from your todo list",
         aliases=['delete', 'del', 'rm'])
-    async def todo_remove(self, ctx: CustomContext, index: int):
+    async def todo_remove(self, ctx: CustomContext, index: int) -> discord.Message:
         todos = await self.client.db.fetch("SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC", ctx.author.id)
 
         try:
@@ -1340,7 +1337,7 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         name="edit",
         help="Edits the specified task",
         aliases=['change', 'modify'])
-    async def todo_edit(self, ctx: CustomContext, index: int, *, text):
+    async def todo_edit(self, ctx: CustomContext, index: int, *, text) -> discord.Message:
         todos = await self.client.db.fetch("SELECT text, jump_url, creation_date FROM todo WHERE user_id = $1 ORDER BY creation_date ASC", ctx.author.id)
 
         try:
