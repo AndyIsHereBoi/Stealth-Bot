@@ -263,10 +263,10 @@ class CustomContext(commands.Context):
             if number == 1:
                 content = f"{answer}\n\n{str(content) if content else ''}"
         try:
-            return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
+            return await super().send(content=content, embed=embed, reference=reference, **kwargs)
 
         except discord.HTTPException:
-            return await super().send(content=content, embed=embed, reference=None, view=view, **kwargs)
+            return await super().send(content=content, embed=embed, reference=None, **kwargs)
 
     async def confirm(self, message: str = "Do you want to confirm?", embed: discord.Embed = None,
                       # added embed so it's possible to use ctx.confirm with an embed instead of a lame class normal message - P3ter
