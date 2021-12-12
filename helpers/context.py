@@ -224,7 +224,7 @@ class CustomContext(commands.Context):
                 embed.color = color
 
         if reminders:
-            answer = f"{star_emoji} Help **Stealth Bot** grow by voting on top.gg: **<https://top.gg/bot/760179628122964008>**"
+            answer = f"{random.choice(star_emoji)} Help **Stealth Bot** grow by voting on top.gg: **<https://top.gg/bot/760179628122964008>**"
             number = random.randint(1, 5)
 
             content = content
