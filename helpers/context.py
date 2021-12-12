@@ -176,8 +176,7 @@ class CustomContext(commands.Context):
 
     async def send(self, content: str = None, embed: discord.Embed = None, reminders: bool = True,
                    reply: bool = True, footer: bool = True, timestamp: bool = True, color: bool = True,
-                   reference: typing.Union[discord.Message, discord.MessageReference] = None,
-                   view = None, **kwargs) -> discord.Message:
+                   reference: typing.Union[discord.Message, discord.MessageReference] = None, **kwargs) -> discord.Message:
 
         reference = (reference or self.message.reference or self.message) if reply is True else reference
 
@@ -239,49 +238,70 @@ class CustomContext(commands.Context):
         except discord.HTTPException:
             return await super().send(content=content, embed=embed, reference=None, **kwargs)
 
-    async def confirm(self, message: str = "Do you want to confirm?", embed: discord.Embed = None,
-                      # added embed so it's possible to use ctx.confirm with an embed instead of a lame class normal message - P3ter
+    async def confirm(self, message: str = 'Do you want to confirm?',
                       buttons: typing.Tuple[typing.Union[discord.PartialEmoji, str],
                                             str, discord.ButtonStyle] = None, timeout: int = 30,
-                      delete_after_confirm: bool = False, delete_after_timeout: bool = False,
-                      delete_after_cancel: bool = None):
+                      delete_after_confirm: bool = False,
+                      delete_after_timeout: bool = False,
+                      delete_after_cancel: bool = None,
+                      return_message: bool = False) \
+            -> typing.Union[bool, typing.Tuple[bool, discord.Message]]:
+        """ A confirmation menu. """
+
         delete_after_cancel = delete_after_cancel if delete_after_cancel is not None else delete_after_confirm
+
         view = Confirm(buttons=buttons or (
             (None, 'Confirm', discord.ButtonStyle.green),
             (None, 'Cancel', discord.ButtonStyle.red)
         ), timeout=timeout)
         view.ctx = self
-        if embed and message:  # checks if there was BOTH embed and message and if there wasnt:
-            message = await self.send(message, view=view, embed=embed)
-        elif embed:  # checks if there was an embed and if there wasnt:
-            message = await self.send(view=view, embed=embed)
-        else:  # sends the message alone and if it was None it sends the default one "Do you want to confirm?"
-            message = await self.send(message, view=view)
+        message = await self.send(message, view=view)
         await view.wait()
-
+        if False in (delete_after_cancel, delete_after_confirm, delete_after_timeout):
+            view.children = [view.children[0]]
+            for c in view.children:
+                c.disabled = True
+                if view.value is False:
+                    c.label = 'Cancelled!'
+                    c.emoji = None
+                    c.style = discord.ButtonStyle.red
+                elif view.value is True:
+                    c.label = 'Confirmed!'
+                    c.emoji = None
+                    c.style = discord.ButtonStyle.green
+                else:
+                    c.label = 'Timed out!'
+                    c.emoji = '⏰'
+                    c.style = discord.ButtonStyle.gray
+        view.stop()
         if view.value is None:
+
             try:
-                (await message.edit(view=None)) if \
-                    delete_after_timeout is False else (await message.delete())
+                if return_message is False:
+                    (await message.edit(view=view)) if delete_after_timeout is False else (await message.delete())
             except (discord.Forbidden, discord.HTTPException):
                 pass
-            return False
+            return (None, message) if delete_after_timeout is False and return_message is True else None
 
         elif view.value:
+
             try:
-                (await message.edit(view=None)) if \
-                    delete_after_confirm is False else (await message.delete())
+                if return_message is False:
+                    (await message.edit(view=view)) if delete_after_confirm is False else (await message.delete())
             except (discord.Forbidden, discord.HTTPException):
                 pass
-            return True
+            return (True, message) if delete_after_confirm is False and return_message is True else True
 
         else:
+
             try:
-                (await message.edit(view=None)) if \
-                    delete_after_cancel is False else (await message.delete())
+                if return_message is False:
+                    (await message.edit(view=view)) if delete_after_cancel is False else (await message.delete())
             except (discord.Forbidden, discord.HTTPException):
                 pass
-            return False
+
+            return (False, message) if delete_after_cancel is False and return_message is True else False
+
 
     async def trigger_typing(self) -> None:
         try:
