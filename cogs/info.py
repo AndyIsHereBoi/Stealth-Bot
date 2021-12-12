@@ -803,13 +803,13 @@ Link: [Click here]({emoji.url})
 <:servers:895688440690147371> Guild: {emoji.guild} ({emoji.id})
 Created by: {fetchedEmoji.user if fetchedEmoji.user else 'Unavailable'}
 <:invite:895688440639799347> Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
-            """, inline=True)
+            """, inline=False)
 
             embed.add_field(name=f"__**Other**__", value=f"""
 Available: {'Yes' if emoji.available else 'No'}
 Managed: {'Yes' if emoji.managed else 'No'}
 Animated: {'Yes' if emoji.animated else 'No'}
-            """)
+            """, inline=True)
 
             embed.set_image(url=emoji.url)
 
