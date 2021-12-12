@@ -130,7 +130,7 @@ class StealthBot(commands.AutoShardedBot):
         self.session = aiohttp.ClientSession(loop=self.loop)
 
         # Custom stuff
-        self.chatbot_channels = [913851034416324658, 913851042079338586, 914643410357473310]
+        self.chatbot_channels = [913851034416324658, 913851042079338586, 919603110220005437]
         self.no_prefix = False
         self.maintenance = False
         self.launch_time = discord.utils.utcnow()
