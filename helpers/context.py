@@ -73,39 +73,13 @@ class Confirm(discord.ui.View):
 
         return False
 
-
 class Delete(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=35)
-        self.message = None
-        self.value = None
-        self.ctx: CustomContext = None
+    def __init__(self, *, timeout=180):
+        super().__init__(timeout=timeout)
 
     @discord.ui.button(label="Button",style=discord.ButtonStyle.gray)
     async def gray_button(self,button:discord.ui.Button,interaction:discord.Interaction):
         await interaction.response.edit_message(content=f"This is an edited button response!")
-
-    async def interaction_check(self, interaction: Interaction):
-        if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
-            return True
-        messages = [
-            "Oh no you can't do that! This belongs to **{user}**",
-            'This is **{user}**\'s confirmation, sorry! 💖',
-            '😒 Does this look yours? **No**. This is **{user}**\'s confirmation button',
-            '<a:stopit:891139227327295519>',
-            'HEYYYY!!!!! this is **{user}**\'s menu.',
-            'Sorry but you can\'t mess with **{user}**\' menu QnQ',
-            'No. just no. This is **{user}**\'s menu.',
-            '<:blobstop:749111017778184302>' * 3,
-            'You don\'t look like {user} do you...',
-            '🤨 Thats not yours! Thats **{user}**\'s',
-            '🧐 Whomst! you\'re not **{user}**',
-            '_out!_ 👋'
-        ]
-        await interaction.response.send_message(random.choice(messages).format(user=self.ctx.author.display_name),
-                                                ephemeral=True)
-
-        return False
 
 
 class CustomContext(commands.Context):
