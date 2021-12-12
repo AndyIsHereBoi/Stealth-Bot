@@ -816,7 +816,7 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
             item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🔗", label="Emoji", url=emoji.url)
             view.add_item(item=item)
 
-            await ctx.send(embed=embed, view=view)
+            return await ctx.send(embed=embed, view=view)
 
         elif isinstance(emoji, discord.PartialEmoji):
             embed = discord.Embed(title=f"{emoji.name}", url=emoji.url)
@@ -824,6 +824,7 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
             embed.add_field(name=f"__**General**__", value=f"""
 <:greyTick:596576672900186113> ID: {emoji.id}
 :link: Link: [Click here]({emoji.url})
+Usage: {emoji}
                         """, inline=True)
 
             embed.add_field(name=f"__**Emoji**__", value=f"""
@@ -840,7 +841,7 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
             item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🔗", label="Emoji", url=emoji.url)
             view.add_item(item=item)
 
-            await ctx.send(embed=embed, view=view)
+            return await ctx.send(embed=embed, view=view)
         else:
             raise errors.UnknownError
 
