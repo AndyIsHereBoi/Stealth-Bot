@@ -89,9 +89,7 @@ class Delete(discord.ui.View):
         self.message = None
         self.value = None
         self.ctx: CustomContext = None
-        self.add_item(DeleteButton(emoji='🗑️',
-                                   label='',
-                                   button_style=discord.ButtonStyle.red))
+        self.add_item(DeleteButton())
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
