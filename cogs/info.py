@@ -460,7 +460,7 @@ class Info(commands.Cog):
     @commands.group(
         help="Shows you the most used commands by the specified user, if no user is specified it will show the guild's most used commands",
         aliases=['commandstats'],
-        brief="stats Jake\nstats\nstats @Clown",
+        brief="stats Jake\nstats\nstats @Clown")
     async def stats(self, ctx, *, member: discord.Member = None):
         if member is None:
             await self.show_guild_stats(ctx)
