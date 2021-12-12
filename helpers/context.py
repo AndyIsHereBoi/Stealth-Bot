@@ -38,11 +38,15 @@ class DeleteButton(discord.ui.Button):
     def __init__(self):
         super().__init__(style=discord.ButtonStyle.danger, emoji="🗑️")
 
-    async def callback(self, interaction: discord.Interaction):
-        return await interaction.response.send_message("HELLO")
-        await interaction.message.delete()
-        if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
-            await self.ctx.message.delete()
+    @discord.ui.button(label="Button",style=discord.ButtonStyle.gray)
+    async def gray_button(self,button:discord.ui.Button,interaction:discord.Interaction):
+        await interaction.response.edit_message(content=f"This is an edited button response!")
+
+    # async def callback(self, interaction: discord.Interaction):
+    #     return await interaction.response.send_message("HELLO")
+    #     await interaction.message.delete()
+    #     if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
+    #         await self.ctx.message.delete()
 
 
 class Confirm(discord.ui.View):
