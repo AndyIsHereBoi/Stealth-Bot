@@ -78,10 +78,9 @@ class Delete(discord.ui.View):
         super().__init__(timeout=timeout)
 
     @discord.ui.button(emoji="🗑️", style=discord.ButtonStyle.gray)
-    async def delete_button(self,button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.message.delete()
-        if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
-            await self.ctx.message.delete()
+    async def delete_button(self, child: discord.ui.Button, interaction: discord.Interaction):
+        for child in self.children:
+            child.disabled=True
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
