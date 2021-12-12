@@ -74,9 +74,9 @@ class Confirm(discord.ui.View):
         return False
 
 class Delete(discord.ui.View):
-    def __init__(self, *, timeout=180):
+    def __init__(self, *, ctx, timeout=180):
         super().__init__(timeout=timeout)
-        self.message = None
+        self.ctx = ctx
 
     @discord.ui.button(emoji="🗑️", style=discord.ButtonStyle.gray)
     async def delete_button(self, child: discord.ui.Button, interaction: discord.Interaction):
@@ -264,7 +264,7 @@ class CustomContext(commands.Context):
                 content = f"{answer}\n\n{str(content) if content else ''}"
 
         if not view:
-            view = Delete()
+            view = Delete(ctx=self)
 
         try:
             return await super().send(content=content, embed=embed, reference=reference, view=view, **kwargs)
