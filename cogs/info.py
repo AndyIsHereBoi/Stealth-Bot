@@ -598,7 +598,7 @@ class Info(commands.Cog):
                                     url=spotify.track_url)
             view.add_item(item=item)
 
-            await ctx.send(f"**{member}** is listening to **{spotify.title}** by **{artists}**", file=discord.File(buffer, 'spotify.png'), view=view)
+            await ctx.send(f"{f'**You** are' if member.id == ctx.author.id else f'{member.mention} is'} listening to **{spotify.title}** by **{artists}**", file=discord.File(buffer, 'spotify.png'), view=view)
 
     @commands.command(
         slash_command=True,
