@@ -34,21 +34,6 @@ class CancelButton(discord.ui.Button):
         view.stop()
 
 
-class DeleteButton(discord.ui.Button):
-    def __init__(self):
-        super().__init__(timeout=35)
-
-    @discord.ui.button(label="Button",style=discord.ButtonStyle.gray)
-    async def gray_button(self,button:discord.ui.Button,interaction:discord.Interaction):
-        await interaction.response.edit_message(content=f"This is an edited button response!")
-
-    # async def callback(self, interaction: discord.Interaction):
-    #     return await interaction.response.send_message("HELLO")
-    #     await interaction.message.delete()
-    #     if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
-    #         await self.ctx.message.delete()
-
-
 class Confirm(discord.ui.View):
     def __init__(self, buttons: typing.Tuple[typing.Tuple[str]], timeout: int = 30):
         super().__init__(timeout=timeout)
@@ -88,13 +73,17 @@ class Confirm(discord.ui.View):
 
         return False
 
+
 class Delete(discord.ui.View):
-    def __init__(self, timeout: int = 30):
-        super().__init__(timeout=timeout)
+    def __init__(self):
+        super().__init__(timeout=35)
         self.message = None
         self.value = None
         self.ctx: CustomContext = None
-        self.add_item(DeleteButton())
+
+    @discord.ui.button(label="Button",style=discord.ButtonStyle.gray)
+    async def gray_button(self,button:discord.ui.Button,interaction:discord.Interaction):
+        await interaction.response.edit_message(content=f"This is an edited button response!")
 
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
