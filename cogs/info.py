@@ -458,6 +458,7 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.group(
+        invoke_without_command=True,
         help="Shows you the most used commands by the specified user, if no user is specified it will show the guild's most used commands",
         aliases=['commandstats'],
         brief="stats Jake\nstats\nstats @Clown")
@@ -468,8 +469,10 @@ class Info(commands.Cog):
         else:
             await self.show_member_stats(ctx, member)
 
-    @stats.command(name='global')
-    @commands.is_owner()
+    @stats.command(
+        name="global",
+        help="Shows you the most used commands.",
+        aliases=['all'])
     async def stats_global(self, ctx):
         query = "SELECT COUNT(*) FROM commands;"
         total = await self.client.db.fetchrow(query)
