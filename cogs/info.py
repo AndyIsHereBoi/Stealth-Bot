@@ -457,13 +457,81 @@ class Info(commands.Cog):
         embed.add_field(name='Most Used Commands Today', value=value, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['commandstats'])
+    @commands.group(
+        help="Shows you the most used commands by the specified user, if no user is specified it will show the guild's most used commands",
+        aliases=['commandstats'],
+        brief="stats Jake\nstats\nstats @Clown",
     async def stats(self, ctx, *, member: discord.Member = None):
-        """Shows command stats for the server, or a user. """
         if member is None:
             await self.show_guild_stats(ctx)
+
         else:
             await self.show_member_stats(ctx, member)
+
+    @stats.command(name='global')
+    @commands.is_owner()
+    async def stats_global(self, ctx):
+        query = "SELECT COUNT(*) FROM commands;"
+        total = await self.client.db.fetchrow(query)
+
+        e = discord.Embed(title='Command Stats', colour=discord.Colour.blurple())
+        e.description = f'{total[0]} commands used.'
+
+        lookup = (
+            '\N{FIRST PLACE MEDAL}',
+            '\N{SECOND PLACE MEDAL}',
+            '\N{THIRD PLACE MEDAL}',
+            '\N{SPORTS MEDAL}',
+            '\N{SPORTS MEDAL}'
+        )
+
+        query = """SELECT command, COUNT(*) AS "uses"
+                   FROM commands
+                   GROUP BY command
+                   ORDER BY "uses" DESC
+                   LIMIT 5;
+                """
+
+        records = await self.client.db.fetch(query)
+        value = '\n'.join(f'{lookup[index]}: {command} ({uses} uses)' for (index, (command, uses)) in enumerate(records))
+        e.add_field(name='Top Commands', value=value, inline=False)
+
+        query = """SELECT guild_id, COUNT(*) AS "uses"
+                   FROM commands
+                   GROUP BY guild_id
+                   ORDER BY "uses" DESC
+                   LIMIT 5;
+                """
+
+        records = await self.client.db.fetch(query)
+        value = []
+        for (index, (guild_id, uses)) in enumerate(records):
+            if guild_id is None:
+                guild = 'Private Message'
+            else:
+                guild = self.client.get_guild(guild_id) or f'<Unknown {guild_id}>'
+
+            emoji = lookup[index]
+            value.append(f'{emoji}: {guild} ({uses} uses)')
+
+        e.add_field(name='Top Guilds', value='\n'.join(value), inline=False)
+
+        query = """SELECT user_id, COUNT(*) AS "uses"
+                   FROM commands
+                   GROUP BY user_id
+                   ORDER BY "uses" DESC
+                   LIMIT 5;
+                """
+
+        records = await self.client.db.fetch(query)
+        value = []
+        for (index, (author_id, uses)) in enumerate(records):
+            user = self.client.get_user(author_id) or f'<Unknown {author_id}>'
+            emoji = lookup[index]
+            value.append(f'{emoji}: {user} ({uses} uses)')
+
+        e.add_field(name='Top Users', value='\n'.join(value), inline=False)
+        await ctx.send(embed=e)
 
     @commands.command()
     async def covid(self, ctx: CustomContext, country: str = None):
