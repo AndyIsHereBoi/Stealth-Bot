@@ -1239,52 +1239,41 @@ Jump URL: [Click here]({message.jump_url} 'Jump URL')
         aliases=['pong'])
     async def ping(self, ctx: CustomContext):
         pings = []
+        number = 0
 
-        typings = time.monotonic()
+        typing_start = time.monotonic()
         await ctx.trigger_typing()
-
-        typinge = time.monotonic()
-        typingms = (typinge - typings) * 1000
-        pings.append(typingms)
+        typing_end = time.monotonic()
+        typing_ms = (typing_end - typing_start) * 1000
+        pings.append(typing_ms)
 
         start = time.perf_counter()
-
-        discords = time.monotonic()
-        url = "https://discord.com/"
-        async with self.client.session.get(url) as resp:
-            if resp.status == 200:
-                discorde = time.monotonic()
-                discordms = (discorde - discords) * 1000
-                pings.append(discordms)
-            else:
-                discordms = 0
-
-        latencyms = self.client.latency * 1000
-        pings.append(latencyms)
-
-        pend = time.perf_counter()
-        psqlms = (pend - start) * 1000
-        pings.append(psqlms)
-
+        message = await ctx.send("Getting ping...")
         end = time.perf_counter()
-        messagems = (end - start) * 1000
-        pings.append(messagems)
+        message_ms = (end - start) * 1000
+        pings.append(message_ms)
 
-        ping = 0
-        for x in pings:
-            ping += x
+        latency_ms = self.client.latency * 1000
+        pings.append(latency_ms)
 
-        averagems = ping / len(pings)
+        postgres_start = time.perf_counter()
+        await self.client.db.fetch("SELECT 1")
+        postgres_end = time.perf_counter()
+        postgres_ms = (postgres_end - postgres_start) * 1000
+        pings.append(postgres_ms)
+
+        for ms in pings:
+            number += ms
+        average = number / len(pings)
 
         embed = discord.Embed(title="🏓 Pong")
-        embed.add_field(name=f":globe_with_meridians: Websocket latency", value=f"{round(latencyms)}ms{' ' * (9 - len(str(round(latencyms, 3))))}", inline=True)
-        embed.add_field(name=f"<a:typing:597589448607399949> Typing latency", value=f"{round(typingms)}ms{' ' * (9 - len(str(round(typingms, 3))))}", inline=True)
-        embed.add_field(name=f":speech_balloon: Message latency", value=f"{round(messagems)}ms{' ' * (9 - len(str(round(messagems, 3))))}", inline=True)
-        embed.add_field(name=f"<:psql:896134588961800294> Database latency", value=f"{round(psqlms)}ms{' ' * (9 - len(str(round(psqlms, 3))))}", inline=True)
-        embed.add_field(name=f"<:discord:877926570512236564> Discord latency", value=f"{round(discordms)}ms{' ' * (9 - len(str(round(discordms, 3))))}", inline=True)
-        embed.add_field(name=f":infinity: Average latency", value=f"{round(averagems)}ms{' ' * (9 - len(str(round(averagems, 3))))}")
+        embed.add_field(name=f":globe_with_meridians: Websocket latency", value=f"{round(latency_ms)}ms{' ' * (9 - len(str(round(latency_ms, 3))))}", inline=True)
+        embed.add_field(name=f"<a:typing:597589448607399949> Typing latency", value=f"{round(typing_ms)}ms{' ' * (9 - len(str(round(typing_ms, 3))))}", inline=True)
+        embed.add_field(name=f":speech_balloon: Message latency", value=f"{round(message_ms)}ms{' ' * (9 - len(str(round(message_ms, 3))))}", inline=True)
+        embed.add_field(name=f"<:psql:896134588961800294> Database latency", value=f"{round(postgres_ms)}ms{' ' * (9 - len(str(round(postgres_ms, 3))))}", inline=True)
+        embed.add_field(name=f":infinity: Average latency", value=f"{round(average)}ms{' ' * (9 - len(str(round(average, 3))))}")
 
-        await ctx.send(embed=embed)
+        await ctx.send(content="Received ping!", embed=embed)
 
     @commands.command(
         help="Shows the uptime of the bot.",

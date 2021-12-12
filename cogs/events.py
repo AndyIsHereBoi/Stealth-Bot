@@ -627,9 +627,6 @@ Message: {ctx.message.content[0:1700]}
             
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
-        self.client.commands_used = self.client.commands_used + 1
-        # self.api.command_run(ctx)
-        
         if ctx.guild.id in self.client.disable_commands_guilds:
             try:
                 if self.client.disable_commands_guilds[ctx.guild.id] is True:
