@@ -568,7 +568,9 @@ class Info(commands.Cog):
         help="Shows info about the song the specified member is currently listening to. If no member is specified it will default to the author of the message.",
         aliases=['sp'],
         brief="spotify\nspotify @Jake\nspotify 80088516616269824")
-    async def spotify(self, ctx: CustomContext, member: discord.Member = None):
+    async def spotify(self, ctx: CustomContext, member: discord.Member = None) -> discord.Message:
+        await ctx.trigger_typing()
+
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
@@ -580,25 +582,14 @@ class Info(commands.Cog):
         if spotify is None:
             raise errors.NoSpotifyStatus
 
-        params = {
-            'title': spotify.title,
-            'cover_url': spotify.album_cover_url,
-            'duration_seconds': spotify.duration.seconds,
-            'start_timestamp': spotify.start.timestamp(),
-            'artists': spotify.artists
-        }
+        response = await self.client.session.get("https://api.jeyy.xyz/discord/spotify", params={'title': spotify.title, 'cover_url': spotify.album_cover_url, 'duration_seconds': spotify.duration.seconds, 'start_timestamp': spotify.start.timestamp(), 'artists': spotify.artists})
+        buffer = io.BytesIO(await response.read())
 
-        async with self.client.session.get("https://api.jeyy.xyz/discord/spotify", params=params) as response:
-            buffer = io.BytesIO(await response.read())
-            artists = ', '.join(spotify.artists)
+        view = discord.ui.View()
+        item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="<:spotify:899263771342700574>", label=f"listen on spotify", url=spotify.track_url)
+        view.add_item(item=item)
 
-            view = discord.ui.View()
-            style = discord.ButtonStyle.gray
-            item = discord.ui.Button(style=style, emoji="<:spotify:899263771342700574>", label=f"listen on spotify",
-                                    url=spotify.track_url)
-            view.add_item(item=item)
-
-            await ctx.send(f"{f'**You** are' if member.id == ctx.author.id else f'{member.mention} is'} listening to **{spotify.title}** by **{artists}**", file=discord.File(buffer, 'spotify.png'), view=view)
+        return await ctx.send(f"{f'**You** are' if member.id == ctx.author.id else f'{member.mention} is'} listening to **{spotify.title}** by **{', '.join(spotify.artists)}**", file=discord.File(buffer, 'spotify.png'), view=view)
 
     @commands.command(
         slash_command=True,
@@ -607,7 +598,7 @@ class Info(commands.Cog):
         aliases=['ui', 'user', 'member', 'memberinfo'],
         brief="userinfo\nuserinfo @Andy\nuserinfo Jake#9999")
     @commands.cooldown(1, 5, BucketType.member)
-    async def userinfo(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
+    async def userinfo(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None) -> discord.Message:
         await ctx.trigger_typing()
 
         if member is None:
@@ -691,7 +682,7 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
                                          url=discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities).track_url, row=2)
                 view.add_item(item=item)
 
-            await ctx.send(embed=embed, view=view)
+            return await ctx.send(embed=embed, view=view)
 
         elif isinstance(member, discord.User):
 
@@ -724,7 +715,7 @@ Banner: {helpers.get_member_banner_urls(member)}
     # {helpers.get_join_order(member, ctx.guild)}
             # """, inline=False)
 
-            await ctx.send(embed=embed)
+            return await ctx.send(embed=embed)
 
         else:
             raise errors.UnknownError
@@ -732,10 +723,9 @@ Banner: {helpers.get_member_banner_urls(member)}
     @commands.command(
         help="Shows information about the specified server. If no server is specified it will default to the current server.",
         aliases=['si', 'guild', 'guildinfo'])
-    async def serverinfo(self, ctx: CustomContext, guild: int = None):
+    async def serverinfo(self, ctx: CustomContext) -> discord.Message:
         await ctx.trigger_typing()
-
-        guild = self.client.get_guild(guild if guild else ctx.guild.id)
+        guild = ctx.guild
 
         embed = discord.Embed(title=guild.name if guild.name else 'No name', description=f"""
 <:greyTick:596576672900186113> ID: {guild.id}
@@ -790,80 +780,66 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
         """, inline=False)
 
         if guild.icon:
-            embed.set_thumbnail(url=guild.icon)
+            embed.set_thumbnail(url=guild.icon.url)
 
-        await ctx.send(embed=embed)
+        return await ctx.send(embed=embed)
 
     @commands.command(
         help="<:emoji_ghost:658538492321595393> Shows information about a emoji. If the emoji is from a server the bot is in it will show more information. If it's not it will send a bit less information.",
         aliases=['ei', 'emoteinfo', 'emoinfo', 'eminfo', 'emojinfo', 'einfo', 'emoji', 'emote'],
         brief="emojiinfo :bonk:")
-    async def emojiinfo(self, ctx: CustomContext, emoji: typing.Union[discord.Emoji, discord.PartialEmoji]):
+    async def emojiinfo(self, ctx: CustomContext, emoji: typing.Union[discord.Emoji, discord.PartialEmoji]) -> discord.Message:
         if isinstance(emoji, discord.Emoji):
             fetchedEmoji = await ctx.guild.fetch_emoji(emoji.id)
-            url = f"{emoji.url}"
-            available = "No"
-            managed = "No"
-            animated = "No"
-            user = f"{fetchedEmoji.user}"
+
+            embed = discord.Embed(title=f"{emoji.name}", url=emoji.url)
+
+            embed.add_field(name=f"__**General**__", value=f"""
+<:greyTick:596576672900186113> ID: {emoji.id}
+Link: [Click here]({emoji.url})
+            """, inline=True)
+
+            embed.add_field(name=f"__**Emoji**__", value=f"""
+<:servers:895688440690147371> Guild: {emoji.guild} ({emoji.id})
+Created by: {fetchedEmoji.user if fetchedEmoji.user else 'Unavailable'}
+<:invite:895688440639799347> Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
+            """, inline=True)
+
+            embed.add_field(name=f"__**Other**__", value=f"""
+Available: {'Yes' if emoji.available else 'No'}
+Managed: {'Yes' if emoji.managed else 'No'}
+Animated: {'Yes' if emoji.animated else 'No'}
+            """)
+
+            embed.set_image(url=emoji.url)
 
             view = discord.ui.View()
-            style = discord.ButtonStyle.gray
-            item = discord.ui.Button(style=style, emoji="🔗", label="Emoji link", url=url)
+            item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🔗", label="Emoji", url=emoji.url)
             view.add_item(item=item)
-
-            if fetchedEmoji.user is None:
-                user = "Couldn't get user"
-
-            if emoji.available:
-                available = "Yes"
-
-            if emoji.managed:
-                managed = "Yes"
-
-            if emoji.animated:
-                animated = "Yes"
-
-            embed = discord.Embed(title=f"{emoji.name}", description=f"""
-Name: {emoji.name}
-<:greyTick:596576672900186113> ID: {emoji.id}
-
-Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
-:link: Link: [Click here]({url})
-
-Created by: {user}
-<:servers:895688440690147371> Guild: {emoji.guild} ({emoji.id})
-
-Available?: {available}
-<:twitch:889903398672035910> Managed?: {managed}
-<:emoji_ghost:658538492321595393> Animated?: {animated}
-                                """)
-            embed.set_image(url=emoji.url)
 
             await ctx.send(embed=embed, view=view)
 
         elif isinstance(emoji, discord.PartialEmoji):
-            url = f"{emoji.url}"
-            animated = "No"
+            embed = discord.Embed(title=f"{emoji.name}", url=emoji.url)
+
+            embed.add_field(name=f"__**General**__", value=f"""
+<:greyTick:596576672900186113> ID: {emoji.id}
+Link: [Click here]({emoji.url})
+                        """, inline=True)
+
+            embed.add_field(name=f"__**Emoji**__", value=f"""
+<:invite:895688440639799347> Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
+                        """, inline=True)
+
+            embed.add_field(name=f"__**Other**__", value=f"""
+Animated: {'Yes' if emoji.animated else 'No'}
+                        """, inline=True)
+
+            embed.set_image(url=emoji.url)
 
             view = discord.ui.View()
-            style = discord.ButtonStyle.gray
-            item = discord.ui.Button(style=style, emoji="🔗", label="Emoji link", url=url)
+            item = discord.ui.Button(style=discord.ButtonStyle.gray, emoji="🔗", label="Emoji", url=emoji.url)
             view.add_item(item=item)
-
-            if emoji.animated:
-                animated = "Yes"
-
-            embed = discord.Embed(title=f"{emoji.name}", description=f"""
-Name: {emoji.name}
-<:greyTick:596576672900186113> ID: {emoji.id}
-
-Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
-:link: Link: [Click here]({url})
-
-<:emoji_ghost:658538492321595393> Animated?: {animated}
-                                """)
-            embed.set_image(url=emoji.url)
 
             await ctx.send(embed=embed, view=view)
         else:
