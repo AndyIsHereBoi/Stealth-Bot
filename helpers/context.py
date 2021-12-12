@@ -14,7 +14,7 @@ target_type = typing.Union[discord.Member, discord.User, discord.PartialEmoji, d
 
 class ConfirmButton(discord.ui.Button):
     def __init__(self, label: str, emoji: str, button_style: discord.ButtonStyle):
-        super().__init__(style=button_style, label=label, emoji=emoji)
+        super().__init__(style=button_style, label=label, emoji=emoji, )
 
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
@@ -51,20 +51,20 @@ class Confirm(discord.ui.View):
                                            buttons[1][2] or discord.ButtonStyle.red
                                    )))
 
-    async def interaction_check(self, interaction: Interaction):
+    async def interaction_check(self, interaction: Interaction) -> bool:
         if interaction.user and interaction.user.id in (self.ctx.bot.owner_id, self.ctx.author.id):
             return True
         messages = [
             "Oh no you can't do that! This belongs to **{user}**",
-            'This is **{user}**\'s confirmation, sorry! 💖',
+            'This is **{user}**\'s confirmation, sorry! 💢',
             '😒 Does this look yours? **No**. This is **{user}**\'s confirmation button',
-            '<a:stopit:891139227327295519>',
+            f'STOP IT GET SOME HELP',
             'HEYYYY!!!!! this is **{user}**\'s menu.',
-            'Sorry but you can\'t mess with **{user}**\' menu QnQ',
+            'Sorry but you can\'t mess with **{user}**\' menu :(',
             'No. just no. This is **{user}**\'s menu.',
-            '<:blobstop:749111017778184302>' * 3,
+            'Stop.',
             'You don\'t look like {user} do you...',
-            '🤨 Thats not yours! Thats **{user}**\'s',
+            '🤨 That\'s not yours! That\'s **{user}**\'s menu',
             '🧐 Whomst! you\'re not **{user}**',
             '_out!_ 👋'
         ]
