@@ -35,8 +35,8 @@ class CancelButton(discord.ui.Button):
 
 
 class DeleteButton(discord.ui.Button):
-    def __init__(self, label: str, emoji: str, button_style: discord.ButtonStyle):
-        super().__init__(style=button_style, label=label, emoji=emoji)
+    def __init__(self):
+        super().__init__(style=discord.ButtonStyle.danger, emoji="🗑️")
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.message.delete()
