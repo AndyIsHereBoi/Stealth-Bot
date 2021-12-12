@@ -829,7 +829,7 @@ Link: [Click here]({emoji.url})
 
             embed.add_field(name=f"__**Emoji**__", value=f"""
 <:invite:895688440639799347> Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
-                        """, inline=True)
+                        """, inline=False)
 
             embed.add_field(name=f"__**Other**__", value=f"""
 Animated: {'Yes' if emoji.animated else 'No'}
