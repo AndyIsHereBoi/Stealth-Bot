@@ -36,7 +36,7 @@ class CancelButton(discord.ui.Button):
 
 class DeleteButton(discord.ui.Button):
     def __init__(self):
-        super().__init__(style=discord.ButtonStyle.danger, emoji="🗑️")
+        super().__init__(timeout=35)
 
     @discord.ui.button(label="Button",style=discord.ButtonStyle.gray)
     async def gray_button(self,button:discord.ui.Button,interaction:discord.Interaction):
