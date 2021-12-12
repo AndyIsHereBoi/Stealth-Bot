@@ -40,6 +40,8 @@ class DeleteButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.message.delete()
+        if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
+            await self.ctx.message.delete()
 
 
 class Confirm(discord.ui.View):
