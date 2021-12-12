@@ -796,19 +796,18 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
 
             embed.add_field(name=f"__**General**__", value=f"""
 <:greyTick:596576672900186113> ID: {emoji.id}
-Link: [Click here]({emoji.url})
+:link: Link: [Click here]({emoji.url})
             """, inline=True)
 
             embed.add_field(name=f"__**Emoji**__", value=f"""
 <:servers:895688440690147371> Guild: {emoji.guild} ({emoji.id})
-Created by: {fetchedEmoji.user if fetchedEmoji.user else 'Unavailable'}
+<:owner_crown:895688440610422901> Created by: {fetchedEmoji.user if fetchedEmoji.user else 'Unavailable'}
 <:invite:895688440639799347> Created at: {discord.utils.format_dt(emoji.created_at, style="f")} ({discord.utils.format_dt(emoji.created_at, style="R")})
             """, inline=False)
 
             embed.add_field(name=f"__**Other**__", value=f"""
-Available: {'Yes' if emoji.available else 'No'}
-Managed: {'Yes' if emoji.managed else 'No'}
-Animated: {'Yes' if emoji.animated else 'No'}
+:gear: Available: {'Yes' if emoji.available else 'No'}
+<:emoji_ghost:919657977957474404> Animated: {'Yes' if emoji.animated else 'No'}
             """, inline=True)
 
             embed.set_image(url=emoji.url)
@@ -824,7 +823,7 @@ Animated: {'Yes' if emoji.animated else 'No'}
 
             embed.add_field(name=f"__**General**__", value=f"""
 <:greyTick:596576672900186113> ID: {emoji.id}
-Link: [Click here]({emoji.url})
+:link: Link: [Click here]({emoji.url})
                         """, inline=True)
 
             embed.add_field(name=f"__**Emoji**__", value=f"""
@@ -832,7 +831,7 @@ Link: [Click here]({emoji.url})
                         """, inline=False)
 
             embed.add_field(name=f"__**Other**__", value=f"""
-Animated: {'Yes' if emoji.animated else 'No'}
+<:emoji_ghost:919657977957474404> Animated: {'Yes' if emoji.animated else 'No'}
                         """, inline=True)
 
             embed.set_image(url=emoji.url)
