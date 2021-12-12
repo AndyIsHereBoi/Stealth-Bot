@@ -155,15 +155,15 @@ def get_member_badges(member, fetched_member):
         text.append("Hypesquad")
     
     if flags['hypesquad_bravery']:
-        emotes.append("<:bravery:895688440513974362>")
+        emotes.append("<:bravery:919659862030450758>")
         text.append("Hypesquad bravery")
 
     if flags['hypesquad_brilliance']:
-        emotes.append("<:brilliance:895688440132284457>")
+        emotes.append("<:brilliance:919659887984791563>")
         text.append("Hypesquad brilliance")
 
     if flags['hypesquad_balance']:
-        emotes.append("<:balance:895688440207777843>")
+        emotes.append("<:balance:919659908331368478>")
         text.append("Hypesquad balance")
         
     # Bug hunter

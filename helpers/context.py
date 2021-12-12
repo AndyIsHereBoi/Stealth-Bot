@@ -184,25 +184,25 @@ class CustomContext(commands.Context):
             colors = [0x910023, 0xA523FF]
             emotes = []
             unicode_emotes = []
-            star_emoji = ":star:"
+            star_emoji = [":star:", ":star2:"]
 
         elif self.bot.theme == "halloween":
             colors = [0xFF9A00, 0x000000, 0x09FF00, 0xC900FF, 0xFBFAF4]
             emotes = [':ghost:', ':jack_o_lantern:']
             unicode_emotes = ['👻', '🎃']
-            star_emoji = random.choice(emotes)
+            star_emoji = ['<a:pumpkinhappy:919661769683771432>', '<a:pumpkindead:919662049322221610>', '<:ghostlove:919662188451495966>', '']
 
         elif self.bot.theme == "christmas":
             colors = [0xB3000C, 0xE40010, 0xD8D8D8, 0x1FD537, 0x1FD537]
-            emotes = [':santa:', ':christmas_tree:', ':deer:', ':gift:']
-            unicode_emotes = ['🎅', '🎄', '🦌', '🎁']
-            star_emoji = ":star2:"
+            emotes = [':santa:', ':christmas_tree:', ':deer:', ':gift:', ':snowflake:']
+            unicode_emotes = ['🎅', '🎄', '🦌', '🎁', '❄']
+            star_emoji = ['<:blurple_sparkle:919660492086202438>', '<:red_sparkle:919660756478353500>', '<:pink_sparkle:919660699674902528>', '<:yellow_sparkle:919660787847528478>', '<:green_sparkle:919660572310667294>']
 
         else:
             colors = [0x910023, 0xA523FF]
             emotes = []
             unicode_emotes = []
-            star_emoji = ":star:"
+            star_emoji = [":star:", ":star2:"]
 
         if embed:
 
