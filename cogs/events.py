@@ -760,7 +760,7 @@ Content:
                 return await message.reply(random.choice(responses))
 
             else:
-                return
+                return await message.reply(random.choice(responses))
             
     @commands.Cog.listener('on_message')
     async def on_suggestion(self, message: discord.Message):
