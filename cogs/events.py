@@ -757,10 +757,10 @@ Content:
                         ]
 
             if scanned:
-                return await message.reply(random.choice(responses))
+                return await message.reply(random.choice(responses), mention_author=False)
 
             else:
-                return await message.reply(random.choice(responses))
+                return await message.reply(random.choice(responses), mention_author=True)
             
     @commands.Cog.listener('on_message')
     async def on_suggestion(self, message: discord.Message):
