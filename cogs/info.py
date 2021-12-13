@@ -567,7 +567,7 @@ class Info(commands.Cog):
         coviddata = await self.client.session.get(f"https://disease.sh/v3/covid-19/states/{state}")
         data = await coviddata.json()
 
-        embed = discord.Embed(title=f"COVID-19 - {data.get('state')}", description=f"""
+        embed = discord.Embed(title=f"COVID-19 - {state.title()}", description=f"""
 :mag_right: Total: {data.get('cases'):,}
 :ambulance: Recovered: {data.get('recovered'):,}
 :skull_crossbones: Deaths: {data.get('deaths'):,}
