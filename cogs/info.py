@@ -558,9 +558,28 @@ class Info(commands.Cog):
 :thermometer_face: Active: {data.get('active'):,}
 :scream: Critical: {data.get('critical'):,}
 :syringe: Tests: {data.get('tests'):,}
-{data.get('flag') if country else 'https://images-ext-1.discordapp.net/external/vSPP_4a9WMkettFFBXUTIqlCfqyxWlFEHHmszqCMPq0/https/upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Western_Hemisphere_transparent_background.png/1200px-Earth_Western_Hemisphere_transparent_background.png?width=671&height=671'}
                                 """)
-        # embed.set_thumbnail(url=f"{data.get('flag') if country else 'https://images-ext-1.discordapp.net/external/vSPP_4a9WMkettFFBXUTIqlCfqyxWlFEHHmszqCMPq0/https/upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Western_Hemisphere_transparent_background.png/1200px-Earth_Western_Hemisphere_transparent_background.png?width=671&height=671'}")
+
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['covid_s', 'covids', 'covid_states'])
+    async def covid_state(self, ctx: CustomContext, state: str):
+        coviddata = await self.client.session.get(f"https://disease.sh/v3/covid-19/states/{state}")
+        data = await coviddata.json()
+
+        embed = discord.Embed(title=f"COVID-19 - {data.get('state') if state else 'World'}", description=f"""
+:mag_right: Total: {data.get('cases'):,}
+:ambulance: Recovered: {data.get('recovered'):,}
+:skull_crossbones: Deaths: {data.get('deaths'):,}
+
+:triangular_flag_on_post: Today (Deaths): {data.get('todayDeaths'):,}
+:flag_white: Today (Cases): {data.get('todayCases'):,}
+:flag_black: Today (Recovered): {data.get('todayRecovered'):,}
+
+:thermometer_face: Active: {data.get('active'):,}
+:scream: Critical: {data.get('critical'):,}
+:syringe: Tests: {data.get('tests'):,}
+                                """)
 
         await ctx.send(embed=embed)
 
