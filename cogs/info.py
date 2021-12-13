@@ -563,11 +563,16 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['covid_s', 'covids', 'covid_states'])
-    async def covid_state(self, ctx: CustomContext, state: str):
-        coviddata = await self.client.session.get(f"https://disease.sh/v3/covid-19/states/{state}")
+    async def covid_state(self, ctx: CustomContext, state: str = None):
+        url = f"https://disease.sh/v3/covid-19/states/{state}"
+
+        if state is None:
+            url = f"https://disease.sh/v3/covid-19/all"
+
+        coviddata = await self.client.session.get(url)
         data = await coviddata.json()
 
-        embed = discord.Embed(title=f"COVID-19 - {state.title()}", description=f"""
+        embed = discord.Embed(title=f"COVID-19", description=f"""
 :mag_right: Total: {data.get('cases'):,}
 :ambulance: Recovered: {data.get('recovered'):,}
 :skull_crossbones: Deaths: {data.get('deaths'):,}
