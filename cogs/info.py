@@ -611,7 +611,7 @@ Safe: {'Yes' if is_safe else 'No'}
         """)
         embed.add_field(name="<:status_dnd:596576774364856321> Unsafe score:", value=f"{unsafe}%")
         embed.add_field(name="<:status_online:596576749790429200> Safe score", value=f"{safe}%")
-        embed.set_image(url=member.display_avatar_url)
+        embed.set_image(url=member.display_avatar.url)
 
         return await ctx.send(embed=embed)
 
