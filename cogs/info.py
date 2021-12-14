@@ -583,7 +583,7 @@ class Info(commands.Cog):
         help="Checks the specified member's avatar for any innapropriate content.",
         aliases=['nsfw_check', 'nsfw-check', 'nsfwcheck'],
         brief="check\ncheck @Jake")
-    async def check(self, ctx: CustomContext, member: typing.Optional[discord.Member, discord.User] = None) -> discord.Message:
+    async def check(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None) -> discord.Message:
         await ctx.trigger_typing()
 
         if member is None:
