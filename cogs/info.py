@@ -589,7 +589,7 @@ class Info(commands.Cog):
         current = data['current']
 
         embed.add_field(name=f"__**Location**__", value=f"""
-Name: {data['name']}
+Name: {location['name']}
 Region: {location['region']}
 Country: {location['country']}
         """, inline=True)
