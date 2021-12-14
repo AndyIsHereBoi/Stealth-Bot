@@ -579,6 +579,11 @@ class Info(commands.Cog):
 
         return await ctx.send(f"{f'**You** are' if member.id == ctx.author.id else f'{member.mention} is'} listening to **{spotify.title}** by **{', '.join(spotify.artists)}**", file=discord.File(buffer, 'spotify.png'), view=view)
 
+    @commands.command()
+    async def test(self, ctx: CustomContext):
+        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': 'RWg1ohrsS8y8xNCFwNOkpVw2BYrdKfQrVy-wqiOZsAQhY3jHHr5b1-dDyJGKop1ZmHQ'}, params={'url': ctx.author.avatar.url})
+        return await ctx.send(request.json())
+
     @commands.command(
         slash_command=True,
         message_command=True,
