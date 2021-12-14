@@ -582,7 +582,7 @@ class Info(commands.Cog):
     @commands.command()
     async def test(self, ctx: CustomContext):
         request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': 'RWg1ohrsS8y8xNCFwNOkpVw2BYrdKfQrVy-wqiOZsAQhY3jHHr5b1-dDyJGKop1ZmHQ'}, params={'url': ctx.author.avatar.url})
-        return await ctx.send(request.json())
+        return await ctx.send(await request.json())
 
     @commands.command(
         slash_command=True,
