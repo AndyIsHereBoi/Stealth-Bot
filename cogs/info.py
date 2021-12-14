@@ -579,10 +579,40 @@ class Info(commands.Cog):
 
         return await ctx.send(f"{f'**You** are' if member.id == ctx.author.id else f'{member.mention} is'} listening to **{spotify.title}** by **{', '.join(spotify.artists)}**", file=discord.File(buffer, 'spotify.png'), view=view)
 
-    @commands.command()
-    async def test(self, ctx: CustomContext):
-        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': 'RWg1ohrsS8y8xNCFwNOkpVw2BYrdKfQrVy-wqiOZsAQhY3jHHr5b1-dDyJGKop1ZmHQ'}, params={'url': ctx.author.avatar.url})
-        return await ctx.send(await request.json())
+    @commands.command(
+        help="Checks the specified member's avatar for any innapropriate content.",
+        aliases=['nsfw_check', 'nsfw-check', 'nsfwcheck'],
+        brief="check\ncheck @Jake")
+    async def check(self, ctx: CustomContext, member: typing.Optional[discord.Member, discord.User] = None) -> discord.Message:
+        await ctx.trigger_typing()
+
+        if member is None:
+            if ctx.message.reference:
+                member = ctx.message.reference.resolved.author
+            else:
+                member = ctx.author
+
+        if not member.display_avatar:
+            return await ctx.send(f"{'You have' if member.id == ctx.author.id else f'{member.mention} has'} no avatar.")
+
+        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': 'RWg1ohrsS8y8xNCFwNOkpVw2BYrdKfQrVy-wqiOZsAQhY3jHHr5b1-dDyJGKop1ZmHQ'}, params={'url': ctx.author.display_avatar.url})
+        json = await request.json()
+
+        safe = round(100 - json['nsfw_score'] * 100, 2)
+        safe = int(safe) if safe % 1 == 0 else safe
+        unsafe = round(json['nsfw_score'] * 100, 2)
+        unsafe = int(unsafe) if unsafe % 1 == 0 else unsafe
+
+        is_safe = not bool(json['labels']) and safe > unsafe
+
+        embed = discord.Embed(title="NSFW Check", description=f"""
+Safe: {'Yes' if is_safe else 'No'}    
+{f'Labels: {", ".join(json["labels"])}' if json['labels'] else ''}    
+        """)
+        embed.add_field(name="<:status_dnd:596576774364856321> Unsafe score:", value=f"{unsafe}%")
+        embed.add_field(name="<:status_online:596576749790429200> Safe score", value=f"{safe}%")
+
+        return await ctx.send(embed=embed)
 
     @commands.command(
         slash_command=True,
