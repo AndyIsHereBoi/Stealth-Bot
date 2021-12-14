@@ -582,40 +582,36 @@ class Info(commands.Cog):
     @commands.command()
     async def weather(self, ctx, location: str) -> discord.Message:
         request = await self.client.session.get(f"http://api.weatherapi.com/v1/current.json?key=dbcb3d2bdd904b49baf161924211412&q={location}")
-        data = request.json()
+        data = await request.json()
 
-        if data != {"error": {"code": 1006, "message": "No matching location found."}}:
-            embed = discord.Embed(title=f"Weather in {location.title()}")
-            location = data['location']
-            current = data['current']
+        embed = discord.Embed(title=f"Weather in {location.title()}")
+        location = data['location']
+        current = data['current']
 
-            embed.add_field(name=f"__**Location**__", value=f"""
+        embed.add_field(name=f"__**Location**__", value=f"""
 Name: {data['name']}
 Region: {location['region']}
 Country: {location['country']}
-            """, inline=True)
+        """, inline=True)
 
-            embed.add_field(name=f"__**Weather**__", value=f"""
+        embed.add_field(name=f"__**Weather**__", value=f"""
 Current time: {discord.utils.format_dt(location['localtime'])}
 Weather: 
 Temperature: {round(current['temp_c'])} °C **|** {round(current['temp_f'])} °F
-            """, inline=True)
+        """, inline=True)
 
-            embed.add_field(name=f"__**Wind**__", value=f"""
+        embed.add_field(name=f"__**Wind**__", value=f"""
 Wind direction: {current['wind_dir']}
 Wind speed: {current['wind_mph']} mph
-            """, inline=True)
+        """, inline=True)
 
-            embed.add_field(name=f"__**Other**__", value=f"""
+        embed.add_field(name=f"__**Other**__", value=f"""
 Humidity: {current['humidity']}%
 Cloud: {current['cloud']}%
 UV index: {current['uv']}
-            """, inline=False)
+        """, inline=False)
 
-            return await ctx.send(embed=embed)
-
-        else:
-            return await ctx.send("Fuck")
+        return await ctx.send(embed=embed)
 
     @commands.command(
         help="Checks the specified member's avatar for any innapropriate content.",
