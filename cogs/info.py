@@ -595,7 +595,7 @@ Country: {location['country']}
         """, inline=True)
 
         embed.add_field(name=f"__**Weather**__", value=f"""
-Current time: {discord.utils.format_dt(location['localtime'])}
+Current time: {location['localtime']}
 Weather: 
 Temperature: {round(current['temp_c'])} °C **|** {round(current['temp_f'])} °F
         """, inline=True)
