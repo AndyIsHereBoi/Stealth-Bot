@@ -776,23 +776,27 @@ Content:
 
     @commands.Cog.listener('on_message')
     async def send_emote(self, message: discord.Message):
-        if not message.author.id == 555818548291829792:
+        if not message.guild or message.author.bot:
             return
 
-        character = "\u200b"
-        content = message.content
-        emojis = re.findall(r';(?P<name>[a-zA-Z0-9]{1,32}?);', message.content)
+        if message.author.id == 555818548291829792 or message.author.id == 564890536947875868:
+            character = "\u200b"
+            content = message.content
+            emojis = re.findall(r';(?P<name>[a-zA-Z0-9]{1,32}?);', message.content)
 
-        for em_name in emojis:
-            emoji = discord.utils.find(lambda em: em.name.lower() == em_name.lower(), self.client.emojis)
+            for em_name in emojis:
+                emoji = discord.utils.find(lambda em: em.name.lower() == em_name.lower(), self.client.emojis)
 
-            if not emoji or not emoji.is_usable():
-                emoji = None
+                if not emoji or not emoji.is_usable():
+                    emoji = None
 
-            content = content.replace(f';{em_name};', f'{str(emoji or f";{character}{em_name}{character};")}', 1)
+                content = content.replace(f';{em_name};', f'{str(emoji or f";{character}{em_name}{character};")}', 1)
 
-        if content.replace(character, '') != message.content:
-            await message.channel.send(content)
+            if content.replace(character, '') != message.content:
+                await message.channel.send(content)
+
+        else:
+            return
 
     @commands.Cog.listener('on_message')
     async def on_afk_user_message(self, message: discord.Message):
