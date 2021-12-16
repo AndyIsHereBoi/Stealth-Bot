@@ -205,16 +205,11 @@ class CustomContext(commands.Context):
             star_emoji = [":star:", ":star2:"]
 
         if embed:
-
             if footer:
-                embed.set_footer(
-                    text=f"{f'{random.choice(unicode_emotes)} ' if unicode_emotes else ''}Requested by {self.author}",
-                    icon_url=self.author.display_avatar.url)
+                embed.set_footer(text=f"{f'{random.choice(unicode_emotes)} ' if unicode_emotes else ''}Requested by {self.author}", icon_url=self.author.display_avatar.url)
 
             if not footer and embed.footer:
-                embed.set_footer(
-                    text=f"{f'{random.choice(unicode_emotes)} ' if unicode_emotes else ''}{embed.footer.text}",
-                    icon_url=embed.footer.icon_url if embed.footer.icon_url else discord.Embed.Empty)
+                embed.set_footer(text=f"{f'{random.choice(unicode_emotes)} ' if unicode_emotes else ''}{embed.footer.text}", icon_url=embed.footer.icon_url if embed.footer.icon_url else discord.Embed.Empty)
 
             if timestamp:
                 embed.timestamp = discord.utils.utcnow()
@@ -224,13 +219,13 @@ class CustomContext(commands.Context):
                 embed.color = color
 
         if reminders:
-            answer = f"{random.choice(star_emoji)} Help **Stealth Bot** grow by voting on top.gg: **<https://top.gg/bot/760179628122964008>**"
-            number = random.randint(1, 5)
+            answers = [f"{random.choice(star_emoji)} Help **Stealth Bot** grow by voting on top.gg: **<https://top.gg/bot/760179628122964008>**", f'{random.choice(star_emoji)} Feature not working like it\'s supposed to? Join our support server: **<https://discord.gg/MrBcA6PZPw>**', f'{random.choice(star_emoji)} Got a question? DM me and the developer will respond as fast as they can!']
+            number = random.randint(1, 10)
 
             content = content
 
             if number == 1:
-                content = f"{answer}\n\n{str(content) if content else ''}"
+                content = f"{random.choice(answers)}\n\n{str(content) if content else ''}"
 
         try:
             return await super().send(content=content, embed=embed, reference=reference, **kwargs)

@@ -130,8 +130,28 @@ def get_ram_total():
 def get_ram_usage_pct():
     return psutil.virtual_memory().percent
 
+class EvalJobCancelView(discord.ui.View):
+    def __init__(self, bot, *, cog: commands.Cog, user_message: discord.Message, ctx: CustomContext):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.ctx = ctx
+        self.cog = cog
+        self.user_message = user_message
 
-class BlacklitedUsersEmbedPage(menus.ListPageSource):
+    @discord.ui.button(label='repeat', emoji='🔁')
+    async def re_run(self, _, inter):
+        await self.cog._eval_edit(self.ctx, self.user_message.content, inter.message)
+
+
+    @discord.ui.button(emoji='🗑', label='End session')
+    async def end_session(self, _, inter):
+        await inter.message.delete()
+        self.stop()
+
+    async def interaction_check(self, interaction) -> bool:
+        return interaction.user and (await self.bot.is_owner(interaction.user))
+
+class BlacklistedUsersEmbedPage(menus.ListPageSource):
     def __init__(self, data):
         self.data = data
         super().__init__(data, per_page=20)
@@ -162,6 +182,123 @@ class Owner(commands.Cog):
     async def dev(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
+
+    @commands.max_concurrency(1, commands.BucketType.channel)
+    @dev.command(name='code-space', aliases=['codespace', 'cs', 'python', 'py', 'i'])
+    async def dev_cs(self, ctx: CustomContext):
+        """ Starts a code-space session for this channel """
+        message: discord.Message = await self.client.wait_for('message', check=lambda m: m.author == ctx.author, timeout=None)
+        if message.content == 'cancel':
+            return await message.add_reaction('✖')
+        bot_message = await message.reply('```py\ngenerating output...\n```', view=EvalJobCancelView(self.client, cog=self, user_message=message, ctx=ctx))
+        await self._eval_edit(ctx, message.content, bot_message)
+        bot = self.client
+        while True:
+            done, pending = await asyncio.wait([
+                bot.loop.create_task(bot.wait_for('message', check=lambda m: m.author == ctx.author and m.channel == ctx.channel, timeout=None)),
+                bot.loop.create_task(bot.wait_for('message_edit', check=lambda b, a: b.author == ctx.author and a.channel == ctx.channel, timeout=None)),
+                bot.loop.create_task(bot.wait_for('raw_message_delete', check=lambda p: p.message_id == bot_message.id, timeout=None))
+            ], return_when=asyncio.FIRST_COMPLETED)
+            try:
+                stuff = done.pop().result()
+                if isinstance(stuff, discord.Message):
+                    try:
+                        if stuff.content == 'cancel':
+                            await message.add_reaction('✅')
+                            await bot_message.edit(view=None)
+                            await stuff.add_reaction('✅')
+                            return
+                        else:
+                            await stuff.add_reaction('📤')
+                    except Exception as e:
+                        await stuff.reply(f'{e}')
+                elif isinstance(stuff, discord.RawMessageDeleteEvent):
+                    return await message.add_reaction('✅')
+                else:
+                    _, after = stuff
+                    if after.content == 'cancel':
+                        await bot_message.add_reaction('✅')
+                        return
+                    await self._eval_edit(ctx, after.content, bot_message)
+            except Exception as e:
+                return await ctx.send(f'{e}')
+            for future in done:
+                future.exception()
+            for future in pending:
+                future.cancel()
+
+    async def _eval_edit(self, ctx: CustomContext, body, to_edit: discord.Message):
+        """ Evaluates code and edits the message """
+        env = {
+            'bot': self.client,
+            '_b': self.client,
+            'client': self.client,
+            'ctx': ctx,
+            'channel': ctx.channel,
+            '_c': ctx.channel,
+            'author': ctx.author,
+            '_a': ctx.author,
+            'guild': ctx.guild,
+            '_g': ctx.guild,
+            'message': ctx.message,
+            '_m': ctx.message,
+            '_': self._last_result,
+            'reference': getattr(ctx.message.reference, 'resolved', None),
+            '_r': getattr(ctx.message.reference, 'resolved', None),
+            '_get': discord.utils.get,
+            '_find': discord.utils.find,
+            '_now': discord.utils.utcnow,
+        }
+        env.update(globals())
+
+        body = cleanup_code(body)
+        stdout = io.StringIO()
+
+        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
+
+        try:
+            exec(to_compile, env)
+        except Exception as e:
+            to_send = f'{e.__class__.__name__}: {e}'
+            if len(to_send) > 1985:
+                gist = await self.client.create_gist(filename='output.py', description='Eval output', content=to_send, public=False)
+                await ctx.trigger_typing()
+                return await to_edit.edit(content=f"**Output too long:**\n<{gist}>")
+            await to_edit.edit(content=f'```py\n{to_send}\n```')
+            return
+
+        func = env['func']
+        # noinspection PyBroadException
+        try:
+            with contextlib.redirect_stdout(stdout):
+                ret = await func()
+        except Exception:
+            value = stdout.getvalue()
+            to_send = f'\n{value}{traceback.format_exc()}'
+            if len(to_send) > 1985:
+                gist = await self.client.create_gist(filename='output.py', description='Eval output', content=to_send, public=False)
+                await to_edit.edit(content=f"**Output too long:**\n<{gist}>")
+                return
+            await to_edit.edit(content=f'```py\n{to_send}\n```')
+            return
+
+        else:
+            value = stdout.getvalue()
+            if ret is None:
+                if value:
+                    to_send = f'{value}'
+                else:
+                    to_send = 'No output.'
+            else:
+                self._last_result = ret
+                to_send = f'{value}{ret}'
+            if to_send:
+                to_send = to_send.replace(self.client.http.token, '[discord token redacted]')
+                if len(to_send) > 1985:
+                    gist = await self.client.create_gist(filename='output.py', description='Eval output', content=to_send, public=False)
+                    await to_edit.edit(content=f"**Output too long:**\n<{gist}>")
+                else:
+                    await to_edit.edit(content=f'```py\n{to_send}\n```')
 
     @dev.command(
         help="Shows information about the system the bot is hosted on",
@@ -597,7 +734,7 @@ Average: {average_latency}
 
             blacklistedUsers.append(f"{user.name} **|** {user.id} **|** [Hover over for reason]({ctx.message.jump_url} '{reason}')")
 
-        paginator = ViewMenuPages(source=BlacklitedUsersEmbedPage(blacklistedUsers), clear_reactions_after=True)
+        paginator = ViewMenuPages(source=BlacklistedUsersEmbedPage(blacklistedUsers), clear_reactions_after=True)
         page = await paginator._source.get_page(0)
         kwargs = await paginator._get_kwargs_from_page(page)
 
