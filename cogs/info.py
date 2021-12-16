@@ -546,9 +546,34 @@ class Info(commands.Cog):
         coviddata = await self.client.session.get(url)
         data = await coviddata.json()
 
-        embed = discord.Embed(title=f"COVID-19 - ", description=f"""
-{data}
-                                """)
+        embed = discord.Embed(title=f"COVID-19 - {data['country'] if data['country'] else 'Global'}")
+
+        embed.add_field(name=f"__**Total**__", value=f"""
+Cases: {data['cases']:,}
+Deaths: {data['deaths']:,}
+Recovered: {data['recovered']:,}
+Active: {data['active']:,}
+Critical: {data['critical']:,}
+Tests: {data['tests']:,}
+        """, inline=True)
+
+        embed.add_field(name=f"__**Today**__", value=f"""
+Cases: {data['todayCases']:,}
+Deaths: {data['todayDeaths']:,}
+Recovered: {data['todayRecovered']:,}
+        """, inline=True)
+
+        embed.add_field(name=f"__**Per million**__", value=f"""
+Cases: {data['casesPerOneMillion']:,}
+Deaths: {data['deathsPerOneMillion']:,}
+Tests: {data['testsPerOneMillion']:,}
+        """)
+
+        embed.add_field(name=f"__**Other**__", value=f"""
+Updated: {discord.utils.format_dt(data['updated'], 'R')}
+Population: {data['population']:;}
+Continent: {data['continent'] if data['continent'] else 'Unknown'}
+        """)
 
         await ctx.send(embed=embed)
 
