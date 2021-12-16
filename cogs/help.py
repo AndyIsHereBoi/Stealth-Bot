@@ -199,6 +199,7 @@ class HelpView(discord.ui.View):
 
             self.category_select.add_option(label=label, value=label, emoji=emoji, description=brief)
 
+
     def build_main_page(self):
         delta_uptime = discord.utils.utcnow() - self.ctx.bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
