@@ -1167,15 +1167,21 @@ Permissions: {role.permissions}
             if len(content) > 25:
                 content = f"[Hover over to see the content]({message.jump_url} '{message.clean_content}')"
 
-            embed = discord.Embed(title=f"First message in #{channel.name}", url=f"{message.jump_url}", description=f"""
-ID: {message.id}
+            embed = discord.Embed(title=f"First message in #{channel.name}", url=f"{message.jump_url}")
 
-Content: {content}
-Author: {message.author} **|** {message.author.mention} **|** {message.author.id}
-
+            embed.add_field(name=f"__**Message**__", value=f"""
+<:greyTick:596576672900186113> ID: {message.id}
 Sent at: {discord.utils.format_dt(message.created_at, style='F')} ({discord.utils.format_dt(message.created_at, style='R')})
 Jump URL: [Click here]({message.jump_url} 'Jump URL')
-            """)
+            """, inline=True)
+
+            embed.add_field(name=f"__**Author**__", value=f"""
+<:greyTick:596576672900186113> ID: {message.author.id}
+Name: {message.author.display_name}
+:hash: Discriminator: #{message.author.discriminator}
+<:mention:908055690277433365> Mention: {message.author.mention}
+:robot: Bot: {'Yes' if message.author.bot else 'No'}
+            """, inline=True)
 
             return await ctx.send(embed=embed)
 
