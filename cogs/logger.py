@@ -43,6 +43,9 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
+        if before.author.bot or after.author.bot:
+            return
+
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", before.guild.id)
         try:
 
@@ -203,14 +206,14 @@ Uses: {invite.uses}
                     add = False
 
                     if added:
-                        added = f"Added:" + ", ".join([role.mention for role in added])
+                        added = f"Added: " + ", ".join([role.mention for role in added])
                         add = True
 
                     else:
                         added = ''
                         
                     if removed:
-                        removed = f"Removed:" + ", ".join([role.mention for role in removed])
+                        removed = f"Removed: " + ", ".join([role.mention for role in removed])
                         add = True
                         
                     else:
