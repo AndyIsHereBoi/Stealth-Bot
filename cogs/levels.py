@@ -44,7 +44,7 @@ class Levels(commands.Cog):
 
         ## Rank card
         background = Editor("./data/background.png")
-        profile = await load_image_async(str(member.avatar_url))
+        profile = await load_image_async(str(member.avatar.url))
 
         profile = Editor(profile).resize((150, 150)).circle_image()
 
