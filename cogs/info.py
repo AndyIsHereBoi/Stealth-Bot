@@ -567,7 +567,7 @@ class Info(commands.Cog):
 :mag_right: Cases: {data['casesPerOneMillion']:,}
 :skull_crossbones: Deaths: {data['deathsPerOneMillion']:,}
 :syringe: Tests: {data['testsPerOneMillion']:,}
-        """)
+        """, inline=True)
 
         embed.add_field(name=f"__**Other**__", value=f"""
 :busts_in_silhouette: Population: {data['population']:,}
