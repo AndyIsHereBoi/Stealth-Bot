@@ -570,7 +570,7 @@ Tests: {data['testsPerOneMillion']:,}
         """)
 
         embed.add_field(name=f"__**Other**__", value=f"""
-Updated: {discord.utils.format_dt(data['updated'], 'R')}
+Updated: <t:{data['updated']}>
 Population: {data['population']:;}
 Continent: {data['continent'] if data['continent'] else 'Unknown'}
         """)
