@@ -178,9 +178,14 @@ def get_member_badges(member, fetched_member):
         
     # Premium
     
-    if fetched_member.banner or member.avatar.is_animated() or member.guild_avatar and member.guild_avatar != member.avatar:
+    if fetched_member.banner:
         emotes.append("<:nitro:895688440702726175>")
         text.append("Nitro user")
+
+    if member.avatar and "<:nitro:895688440702726175>" not in emotes and "Nitro user" not in text:
+        if member.avatar.is_animated() or member.guild_avatar and member.guild_avatar != member.avatar:
+            emotes.append("<:nitro:895688440702726175>")
+            text.append("Nitro user")
         
     if member.premium_since:
         emotes.append("<:boost:858326699234164756>")
