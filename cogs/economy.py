@@ -45,3 +45,12 @@ class Economy(commands.Cog):
         """Add money to a user's wallet"""
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
         await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", balance + amount, user)
+
+    async def set_money(self, user: int, amount: int):
+        """Set a user's wallet to a specific amount"""
+        await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", amount, user)
+
+    async def remove_money(self, user: int, amount: int):
+        """Remove money from a user's wallet"""
+        balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
+        await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", balance - amount, user)
