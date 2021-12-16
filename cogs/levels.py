@@ -48,9 +48,6 @@ class Levels(commands.Cog):
 
         profile = Editor(profile).resize((150, 150)).circle_image()
 
-        poppins = Font().poppins(size=40)
-        poppins_small = Font().poppins(size=30)
-
         square = Canvas((500, 500), "#06FFBF")
         square = Editor(square)
         square.rotate(30, expand=True)
@@ -67,14 +64,14 @@ class Levels(commands.Cog):
             fill="#FF56B2",
             radius=20,
         )
-        background.text((200, 40), str(member), font=poppins, color="white")
+        background.text((200, 40), str(member), font='./data/fonts/poppins.ttf', color="white")
 
         background.rectangle((200, 100), width=350, height=2, fill="#17F3F6")
         background.text(
             (200, 130),
             f"Level : {user_data['level']}"
             + f" XP : {user_data['xp']} / {(user_data['level'] + 1) * 100}",
-            font=poppins_small,
+            font='./data/fonts/poppins_small.ttf',
             color="white",
         )
 
