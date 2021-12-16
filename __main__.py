@@ -17,10 +17,10 @@ import asyncpraw
 import traceback
 
 from typing import Optional
+from collections import defaultdict
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
-from collections import defaultdict
 
 PRE: tuple = ("sb!",)
 

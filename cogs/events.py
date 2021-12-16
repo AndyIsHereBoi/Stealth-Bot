@@ -2,11 +2,13 @@ import io
 import re
 import copy
 import yaml
+import typing
 import random
 import errors
 import difflib
 import aiohttp
 import discord
+import inspect
 import itertools
 
 import traceback
@@ -22,8 +24,38 @@ with open(r'/root/stealthbot/config.yaml') as file:
 yaml_data = full_yaml
 
 
-def setup(client):
-    client.add_cog(Events(client))
+def conv_n(tuple_acc):
+    returning = ""
+    op_list_v = []
+    op_list_n = list(tuple_acc)
+
+    for i in range(len(op_list_n)):
+        op_list_v.append(op_list_n[i].__name__.replace("Converter", ""))
+
+    for i in range(len(op_list_v)):
+        if i + 3 <= len(op_list_v):
+            returning += f"{op_list_v[i].lower()}, "
+
+        elif i + 2 <= len(op_list_v):
+            returning += f"{op_list_v[i].lower()} or "
+
+        else:
+            returning += f"{op_list_v[i].lower()}"
+
+    return returning
+
+
+def join_literals(annotation: inspect.Parameter.annotation, return_list: bool = False):
+    if typing.get_origin(annotation) is typing.Literal:
+        arguments = annotation.__args__
+
+        if return_list is False:
+            return '[' + '|'.join(arguments) + ']'
+
+        else:
+            return list(arguments)
+
+    return None
 
 
 class AFKUsersEmbedPage(menus.ListPageSource):
@@ -39,6 +71,10 @@ class AFKUsersEmbedPage(menus.ListPageSource):
                               description="\n".join(f'{i + 1}. {v}' for i, v in enumerate(entries, start=offset)),
                               timestamp=discord.utils.utcnow(), color=color)
         return embed
+
+
+def setup(client):
+    client.add_cog(Events(client))
 
 
 class Events(commands.Cog):
@@ -478,16 +514,24 @@ This might also be a issue with role hierarchy, try moving my role to the top of
             name = "Too many arguments"
             icon_url = None
             message = "It appears that you've provided too many arguments, please try again with fewer arguments."
-            
+
+        elif isinstance(error, commands.BadLiteralArgument):
+            literals = join_literals(error.param.annotation, return_list=True)
+            literals = '"' + '", "'.join(literals[:-2] + ['" or "'.join(literals[-2:])]) + '"'
+
+            name = "Bad literal argument"
+            icon_url = None
+            message = f"Sorry but the argument `{error.param.name}` isn't one of the following: {literals}"
+
         elif isinstance(error, commands.BadArgument):
             name = "Bad argument"
             icon_url = None
-            message = "The argument you provided was invalid."
+            message = f"The argument you provided was invalid."
 
         elif isinstance(error, commands.BadUnionArgument):
             name = "Bad union argument"
             icon_url = None
-            message = f"The union argument you provided was invalid.({error})"
+            message = f"You didn't provide a valid {conv_n(error.converters)}."
 
         elif isinstance(error, commands.MemberNotFound):
             name = "Unknown member"

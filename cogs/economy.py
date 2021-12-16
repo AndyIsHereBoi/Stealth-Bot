@@ -1,13 +1,9 @@
 import errors
 import random
 import discord
-import asyncio
 
 from discord.ext import commands, menus
 from helpers.context import CustomContext
-from discord.ext.menus.views import ViewMenuPages
-from discord.ext.commands.cooldowns import BucketType
-from helpers.decorators import has_started, has_ref_started
 
 
 def setup(client):
