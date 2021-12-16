@@ -538,7 +538,7 @@ class Info(commands.Cog):
 
     @commands.command()
     async def covid(self, ctx: CustomContext, country: str = None):
-        url = f"https://disease.sh/v3/covid-19/states/{country}"
+        url = f"https://disease.sh/v3/covid-19/country/{country}"
 
         if country is None:
             url = f"https://disease.sh/v3/covid-19/all"

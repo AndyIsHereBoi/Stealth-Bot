@@ -20,7 +20,6 @@ from typing import Optional
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
-from helpers.level_manager import create_tables
 from collections import defaultdict
 
 PRE: tuple = ("sb!",)
@@ -247,8 +246,6 @@ class StealthBot(commands.AutoShardedBot):
         print(f"servers: {len(self.guilds)}")
         print(f"users: {len(self.users)}")
         print(f"-------------================----------------")
-
-        await create_tables(self.db)
 
         # try:
         #     await self.pomice.create_node(
