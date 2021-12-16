@@ -571,7 +571,7 @@ Tests: {data['testsPerOneMillion']:,}
 
         embed.add_field(name=f"__**Other**__", value=f"""
 Updated: <t:{data['updated']}>
-Population: {data['population']:;}
+Population: {data['population']:,}
 Continent: {data['continent'] if data['continent'] else 'Unknown'}
         """)
 
