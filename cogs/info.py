@@ -1171,17 +1171,17 @@ Permissions: {role.permissions}
 
             embed.add_field(name=f"__**Message**__", value=f"""
 <:greyTick:596576672900186113> ID: {message.id}
-Sent at: {discord.utils.format_dt(message.created_at, style='F')} ({discord.utils.format_dt(message.created_at, style='R')})
-Jump URL: [Click here]({message.jump_url} 'Jump URL')
+<:invite:895688440639799347> Sent at: {discord.utils.format_dt(message.created_at, style='F')} ({discord.utils.format_dt(message.created_at, style='R')})
+:link: Jump URL: [Click here]({message.jump_url} 'Jump URL')
             """, inline=True)
 
             embed.add_field(name=f"__**Author**__", value=f"""
 <:greyTick:596576672900186113> ID: {message.author.id}
-Name: {message.author.display_name}
+<:nickname:895688440912437258> Name: {message.author.display_name}
 :hash: Discriminator: #{message.author.discriminator}
 <:mention:908055690277433365> Mention: {message.author.mention}
 :robot: Bot: {'Yes' if message.author.bot else 'No'}
-            """, inline=True)
+            """, inline=False)
 
             return await ctx.send(embed=embed)
 
