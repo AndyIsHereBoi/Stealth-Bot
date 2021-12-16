@@ -549,30 +549,29 @@ class Info(commands.Cog):
         embed = discord.Embed(title=f"COVID-19 - {data['country'] if data['country'] else 'Global'}")
 
         embed.add_field(name=f"__**Total**__", value=f"""
-Cases: {data['cases']:,}
-Deaths: {data['deaths']:,}
-Recovered: {data['recovered']:,}
-Active: {data['active']:,}
-Critical: {data['critical']:,}
-Tests: {data['tests']:,}
+:mag_right: Cases: {data['cases']:,}
+:skull_crossbones: Deaths: {data['deaths']:,}
+:ambulance: Recovered: {data['recovered']:,}
+:thermometer_face: Active: {data['active']:,}
+:scream: Critical: {data['critical']:,}
+:syringe: Tests: {data['tests']:,}
         """, inline=True)
 
         embed.add_field(name=f"__**Today**__", value=f"""
-Cases: {data['todayCases']:,}
-Deaths: {data['todayDeaths']:,}
-Recovered: {data['todayRecovered']:,}
+:mag_right: Cases: {data['todayCases']:,}
+:skull_crossbones: Deaths: {data['todayDeaths']:,}
+:ambulance: Recovered: {data['todayRecovered']:,}
         """, inline=True)
 
         embed.add_field(name=f"__**Per million**__", value=f"""
-Cases: {data['casesPerOneMillion']:,}
-Deaths: {data['deathsPerOneMillion']:,}
-Tests: {data['testsPerOneMillion']:,}
+:mag_right: Cases: {data['casesPerOneMillion']:,}
+:skull_crossbones: Deaths: {data['deathsPerOneMillion']:,}
+:syringe: Tests: {data['testsPerOneMillion']:,}
         """)
 
         embed.add_field(name=f"__**Other**__", value=f"""
-Updated: <t:{data['updated']}>
-Population: {data['population']:,}
-Continent: {data['continent'] if data['continent'] else 'Unknown'}
+:busts_in_silhouette: Population: {data['population']:,}
+:map: Continent: {data['continent'] if data['continent'] else 'Unknown'}
         """)
 
         await ctx.send(embed=embed)
