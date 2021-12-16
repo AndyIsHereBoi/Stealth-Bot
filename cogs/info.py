@@ -697,17 +697,6 @@ Safe: {'Yes' if is_safe else 'No'}
 :art: Accent color: {helpers.get_member_accent_color(fetched_member)}
             """, inline=True)
 
-            record = await self.client.db.fetchrow("SELECT * FROM economy WHERE user_id = $1", member.id)
-            text = ""
-            if record:
-                wallet = record['wallet']
-                bank = record['bank']
-                bank_limit = record['bank_limit']
-                text = f"""
-<:dollar:899676397600141334> Wallet: {f'{wallet:,}' if wallet else '0'}
-:bank: Bank: {f'{bank:,}' if bank else '0'}/{f'{bank_limit:,}' if bank_limit else '0'}
-                """
-
             ack = await self.client.db.fetchval("SELECT acknowledgment FROM acknowledgments WHERE user_id = $1", member.id)
 
             embed.add_field(name="__**Other**__", value=f"""
@@ -718,7 +707,6 @@ Safe: {'Yes' if is_safe else 'No'}
 <:voice_channel:904474834526937120> Voice: {member.voice.channel.mention if member.voice else 'Not in a VC'} {f'**|** Muted: {"Yes" if member.voice.mute or member.voice.self_mute else "No"} **|** Deafened: {"Yes" if member.voice.deaf or member.voice.self_deaf else "No"}' if member.voice else ''}
 Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 else 'No mutual servers'}
 :star: Acknowledgments: {ack if ack else 'No acknowledgments'}
-{text}
             """, inline=False)
 
             view = discord.ui.View()

@@ -623,7 +623,7 @@ Message: {ctx.message.content[0:1700]}
         if message.channel.id in self.client.chatbot_channels:
             response = await self.client.rs.get_ai_response(discord.utils.remove_markdown(message.content))
             
-            await message.reply(response[0]['message'] if response else 'No response...')
+            await message.reply(response[0]['message'] or 'No response...')
             
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
