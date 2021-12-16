@@ -538,7 +538,7 @@ class Info(commands.Cog):
 
     @commands.command()
     async def covid(self, ctx: CustomContext, country: str = None):
-        url = f"https://disease.sh/v3/covid-19/country/{country}"
+        url = f"https://disease.sh/v3/covid-19/countries/{country}"
 
         if country is None:
             url = f"https://disease.sh/v3/covid-19/all"
@@ -546,7 +546,7 @@ class Info(commands.Cog):
         coviddata = await self.client.session.get(url)
         data = await coviddata.json()
 
-        embed = discord.Embed(title=f"COVID-19 - Help me", description=f"""
+        embed = discord.Embed(title=f"COVID-19 - ", description=f"""
 {data}
                                 """)
 
