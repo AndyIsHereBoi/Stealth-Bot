@@ -20,6 +20,7 @@ from typing import Optional
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
+from helpers.level_manager import create_tables
 from collections import defaultdict
 
 PRE: tuple = ("sb!",)
@@ -193,6 +194,26 @@ class StealthBot(commands.AutoShardedBot):
         else:
             return False
 
+    async def create_gist(self, *, filename: str, description: str, content: str, public: bool = True):
+        headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "Stealth-Bot",
+            "Authorization": f"token {yaml_data['GITHUB_TOKEN']}"
+        }
+
+        data = {
+            "public": public,
+            "files": {
+                filename: {
+                    "content": content
+                }
+            },
+            "description": description
+        }
+        output = await self.session.request("POST", "https://api.github.com/gists", json=data, headers=headers)
+        info = await output.json()
+        return info['html_url']
+
     async def get_pre(self, bot, message: discord.Message, raw_prefix: Optional[bool] = False):
         if not message:
             return commands.when_mentioned_or(*self.PRE)(bot, message) if not raw_prefix else self.PRE
@@ -226,6 +247,8 @@ class StealthBot(commands.AutoShardedBot):
         print(f"servers: {len(self.guilds)}")
         print(f"users: {len(self.users)}")
         print(f"-------------================----------------")
+
+        await create_tables(self.db)
 
         # try:
         #     await self.pomice.create_node(
