@@ -1586,67 +1586,6 @@ With the reason being: {info['reason']}""")
         return await ctx.send(embed=embed)
 
     @commands.command(
-        help="Shows the specified member's level. If no member is specified it will default to the author.",
-        aliases=['lvl', 'rank'])
-    async def level(self, ctx: CustomContext, member: discord.Member = None):
-        if member is not None:
-            message = f"{member.mention} doesn't have a level!"
-
-        if member is None:
-            if ctx.message.reference:
-                member = ctx.message.reference.resolved.author
-            else:
-                member = ctx.author
-                message = "You don't have any level!"
-
-        database = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", member.id,
-                                              ctx.guild.id)
-
-        if not database:
-            return await ctx.send(message)
-
-        else:
-            embed = discord.Embed(title=f"{member.name}'s level", description=f"""
-Level: {format(database[0]['level'], ',')}
-XP: {format(database[0]['xp'], ',')}
-                                  """)
-
-            await ctx.send(embed=embed)
-
-    @commands.command(
-        help="Shows the level leaderboard of this server.",
-        aliases=['lvllb', 'lvl_leaderboard', 'lvl-leaderboard', 'lvl_lb', 'lvl-lb'])
-    async def lvlleaderboard(self, ctx: CustomContext):
-        database = await self.client.db.fetch("SELECT * FROM users WHERE guild_id = $1 ORDER BY level DESC LIMIT 10",
-                                              ctx.guild.id)
-        topTenUsers = []
-        topTenLevel = []
-        number = 0
-
-        for user in database:
-            member = self.client.get_user(database[number]['user_id'])
-            level = database[number]['level']
-            number = number + 1
-            topTenUsers.append(f"{number}. {member.mention}")
-            topTenLevel.append(f"{format(level, ',')}")
-
-        if topTenUsers and topTenLevel:
-            topTenUsers = "\n".join(topTenUsers)
-            topTenLevel = "\n".join(topTenLevel)
-            embed = discord.Embed(title=f"{ctx.guild.name}'s level leaderboard")
-            embed.add_field(name="Members", value=topTenUsers, inline=True)
-            embed.add_field(name="Level", value=topTenLevel, inline=True)
-
-        else:
-            embed = discord.Embed(title=f"{ctx.guild.name}'s level leaderboard",
-                                  description="No one has any level in this server.")
-
-        if ctx.guild.icon:
-            embed.set_thumbnail(url=ctx.guild.icon.url)
-
-        await ctx.send(embed=embed)
-
-    @commands.command(
         help="Sends the source code of the bot/a command")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def source(self, ctx: CustomContext, *, command: str = None):
