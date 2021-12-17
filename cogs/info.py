@@ -1245,8 +1245,6 @@ Permissions: {role.permissions}
         aliases=['bn'],
         brief="banner\nbanner @Bruno\nbanner Mars#0001")
     async def banner(self, ctx: CustomContext, member: discord.Member = None):
-        errorMessage = f"{member} doesnt have a banner."
-
         await ctx.trigger_typing()
 
         if member is None:
@@ -1254,19 +1252,17 @@ Permissions: {role.permissions}
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
-                errorMessage = f"You don't have a banner."
 
         fetched_member = await self.client.fetch_user(member.id)
 
         if fetched_member.banner:
-            embed = discord.Embed(title=f"{ctx.author.name}'s banner", description=f"{helpers.get_member_banner_urls(await self.client.fetch_user(member.id), ctx, member.id)}")
+            embed = discord.Embed(title=f"{'Your' if member.id == ctx.author.id else f'{member.display_name}s'} banner", description=f"{helpers.get_member_banner_urls(fetched_member, ctx, member.id)}")
             embed.set_image(url=fetched_member.banner.url)
 
             await ctx.send(embed=embed)
 
         else:
-            embed = discord.Embed(description=errorMessage)
-            await ctx.send(embed=embed)
+            await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.display_name} doesnt'} have a banner.")
 
     @banner.command(
         help="Shows the banner of this server.",
