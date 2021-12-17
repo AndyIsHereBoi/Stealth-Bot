@@ -115,11 +115,6 @@ class Events(commands.Cog):
 
     @staticmethod
     async def send_unexpected_error(ctx, error, **kwargs):
-        with contextlib.suppress(discord.HTTPException):
-            message = "An unexpected error occurred, it has been logged and will be fixed as soon as possible."
-
-            embed = discord.Embed(description=f"{message}\n\nTraceback:\n```py\n{type(error).__name__}\n```")
-
         channel = ctx.bot.get_channel(914145662520659998)
         traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
@@ -133,7 +128,7 @@ Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
 Bot admin?: {ctx.me.guild_permissions.administrator}
 Role position: {ctx.me.top_role.position}
 
-Message: FUCK YOU
+Message: {ctx.message}
         """
 
         send = f"""
@@ -689,23 +684,11 @@ I've reported it to the developers.
             
             traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
+            embed = discord.Embed(description=f"An unexpected error occurred. The developers have been notified about this and will fix it ASAP.")
+            embed.set_author(name="Unexpected error occurred", icon_url='https://i.imgur.com/9gQ6A5Y.png')
+
+            await ctx.send(embed=embed)
             return await self.send_unexpected_error(ctx, error)
-            await channel.send(f"""
-```yaml
-An unexpected error occurred in on_command_error
-
-Author: {ctx.author} ({ctx.author.id})
-Author admin?: {ctx.author.guild_permissions.administrator}
-Channel: {ctx.channel} ({ctx.channel.id})
-Guild: {ctx.guild} ({ctx.guild.id})
-Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
-
-Bot admin?: {ctx.me.guild_permissions.administrator}
-Role position: {ctx.me.top_role.position}
-
-Message: {ctx.message.content[0:1600]}
-```
-            """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"))
 
         embed = discord.Embed(description=message)
         icon_urlL = icon_url or 'https://i.imgur.com/9gQ6A5Y.png'
