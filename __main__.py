@@ -360,6 +360,13 @@ This restart took {round(delay, 2)} seconds.
             
             await self.get_channel(channel_id).send(embed=embed)
 
+    async def on_interaction(self, interaction: discord.Interaction):
+        try:
+            await super().on_interaction(interaction)
+
+        except Exception as error:
+            print(error)
+
     async def on_message(self, message: discord.Message):
         # wait until bot is ready
         await self.wait_until_ready()
