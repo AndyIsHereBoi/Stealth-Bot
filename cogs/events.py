@@ -133,7 +133,7 @@ Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
 Bot admin?: {ctx.me.guild_permissions.administrator}
 Role position: {ctx.me.top_role.position}
 
-Message: {ctx.message[0:1600]}
+Message: FUCK YOU
         """
 
         send = f"""
