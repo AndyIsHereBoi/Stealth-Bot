@@ -1320,38 +1320,35 @@ Permissions: {role.permissions}
         await ctx.send(content="Received ping!", embed=embed)
 
     @commands.command(brief="Gives info on pypi packages")
-    async def pypi(self, ctx, *, args=None):
+    async def pypi(self, ctx, *, package):
+        pypi_response = await self.client.session.get(f"https://pypi.org/pypi/{package}/json")
+        if pypi_response.ok:
 
-        if args:
-            pypi_response = await self.client.session.get(f"https://pypi.org/pypi/{args}/json")
-            if pypi_response.ok:
+            pypi_response = await pypi_response.json()
 
-                pypi_response = await pypi_response.json()
+            pypi_data = pypi_response["info"]
 
-                pypi_data = pypi_response["info"]
+            embed = discord.Embed(title=f"{pypi_data.get('name') if pypi_data.get('name') else 'None provided'}", url=f"{pypi_data.get('release_url') if pypi_data.get('release_url') else discord.Embed.Empty}", description=f"{pypi_data.get('summary') if pypi_data.get('summary') else 'None provided'}")
 
-                embed = discord.Embed(
-                    title=f"{pypi_data.get('name') or 'None provided'} {pypi_data.get('version') or 'None provided'}",
-                    url=f"{pypi_data.get('release_url') or 'None provided'}",
-                    description=f"{pypi_data.get('summary') or 'None provided'}", color=random.randint(0, 16777215))
+            embed.add_field(name=f"__**Author**__", value=f"""
+<:nickname:895688440912437258> Name: {pypi_data.get('author') or 'None provided'}
+:e_mail: Email: {pypi_data.get('author_email') or 'None provided'}
+            """, inline=True)
 
-                embed.set_thumbnail(url="https://i.imgur.com/oP0e7jK.png")
+            embed.add_field(name=f"__**Package**__", value=f"""
+:link: Download URL: {pypi_data.get('download_url') or 'None provided'}
+:link: Documentation URL: {pypi_data.get('dosc_url') or 'None provided'}
+:house: Homepage: {pypi_data.get('home_page') or 'None provided'}
+:newspaper: License: {pypi_data.get('license') or 'None provided'}
+:key: Keywords: {pypi_data.get('keywords') or 'None provided'}
+            """, inline=True)
 
-                embed.add_field(name="**Author Info**",
-                                value=f"**Author Name:** {pypi_data.get('author') or 'None provided'}\n**Author Email:** {pypi_data.get('author_email') or 'None provided'}",
-                                inline=False)
-                embed.add_field(name="**Package Info**",
-                                value=f"**Download URL**: {pypi_data.get('download_url') or 'None provided'}\n**Documentation URL:** {pypi_data.get('docs_url') or 'None provided'}\n**Home Page:** {pypi_data.get('home_page') or 'None provided'}\n**Keywords:** {pypi_data.get('keywords') or 'None provided'}\n**License:** {pypi_data.get('license') or 'None provided'}",
-                                inline=False)
+            embed.set_thumbnail(url="https://i.imgur.com/oP0e7jK.png")
 
-                await ctx.send(embed=embed)
-
-            else:
-                await ctx.send(f"Could not find package **{args}** on pypi.",
-                               allowed_mentions=discord.AllowedMentions.none())
+            await ctx.send(embed=embed)
 
         else:
-            await ctx.send("Please look for a library to get the info of.")
+            await ctx.send("Invalid package!")
 
     @commands.command(
         help="Shows the uptime of the bot.",
