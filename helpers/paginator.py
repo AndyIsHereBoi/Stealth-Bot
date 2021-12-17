@@ -138,32 +138,32 @@ class ViewPaginator(discord.ui.View):
         self._update_labels(0)
         self.message = await self.ctx.send(**kwargs, view=self)
 
-    @discord.ui.button(emoji='<:first:904371319733370913>', style=discord.ButtonStyle.grey)
+    @discord.ui.button(emoji="<:first:921408035597983745>", style=discord.ButtonStyle.grey)
     async def go_to_first_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """go to the first page"""
         await self.show_page(interaction, 0)
 
-    @discord.ui.button(emoji='<:previous:904371350020456449>', style=discord.ButtonStyle.grey)
+    @discord.ui.button(emoji="<:previous:921408043470688267>", style=discord.ButtonStyle.grey)
     async def go_to_previous_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """go to the previous page"""
         await self.show_checked_page(interaction, self.current_page - 1)
 
-    @discord.ui.button(label='Current', style=discord.ButtonStyle.grey, disabled=True)
+    @discord.ui.button(label="Current", style=discord.ButtonStyle.grey, disabled=True)
     async def go_to_current_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         pass
 
-    @discord.ui.button(emoji='<:next:904371339836661762>', style=discord.ButtonStyle.grey)
+    @discord.ui.button(emoji="<:next:921408056766636073>", style=discord.ButtonStyle.grey)
     async def go_to_next_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """go to the next page"""
         await self.show_checked_page(interaction, self.current_page + 1)
 
-    @discord.ui.button(emoji='<:last:904371325630578760>', style=discord.ButtonStyle.grey)
+    @discord.ui.button(emoji="<:last:921408062886146088>", style=discord.ButtonStyle.grey)
     async def go_to_last_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """go to the last page"""
         # The call here is safe because it's guarded by skip_if
         await self.show_page(interaction, self.source.get_max_pages() - 1)
 
-    @discord.ui.button(label='Skip to page...', style=discord.ButtonStyle.grey)
+    @discord.ui.button(label="Skip to page...", style=discord.ButtonStyle.grey)
     async def numbered_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """lets you type a page number to go to"""
         if self.input_lock.locked():
@@ -191,7 +191,7 @@ class ViewPaginator(discord.ui.View):
                 await msg.delete()
                 await self.show_checked_page(interaction, page - 1)
 
-    @discord.ui.button(emoji='🗑️', style=discord.ButtonStyle.red)
+    @discord.ui.button(emoji="<:close:921408051091759114>", style=discord.ButtonStyle.red)
     async def stop_pages(self, button: discord.ui.Button, interaction: discord.Interaction):
         """stops the pagination session."""
         await interaction.response.defer()

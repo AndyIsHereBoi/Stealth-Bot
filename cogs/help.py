@@ -242,19 +242,19 @@ But you can only use **{self.usable_commands}** of those in this server.
         view = HelpCentre(self.ctx, self)
         await view.start(interaction)
 
-    @discord.ui.button(emoji="<:previous:904371350020456449>", style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(emoji="<:previous:921408043470688267>", style=discord.ButtonStyle.gray, row=1)
     async def previous(self, button: Button, interaction: Interaction):
         self.current_page -= 1
         self._update_buttons()
         await interaction.response.edit_message(embed=self.embeds[self.current_page], view=self)
 
-    @discord.ui.button(emoji="🗑️", style=discord.ButtonStyle.red, row=1)
+    @discord.ui.button(emoji="<:close:921408051091759114>", style=discord.ButtonStyle.red, row=1)
     async def delete(self, button: Button, interaction: Interaction):
         await interaction.message.delete()
         if self.ctx.channel.permissions_for(self.ctx.me).manage_messages:
             await self.ctx.message.delete()
 
-    @discord.ui.button(emoji="<:next:904371339836661762>", style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(emoji="<:next:921408056766636073>", style=discord.ButtonStyle.gray, row=1)
     async def next(self, button: Button, interaction: Interaction):
         self.current_page += 1
         self._update_buttons()
