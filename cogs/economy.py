@@ -55,14 +55,25 @@ class Economy(commands.Cog):
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
         await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", balance - amount, user)
 
-    @commands.command(name="balance", aliases=["bal", "money", "balances"])
+    @commands.command()
+    async def start(self, ctx: CustomContext):
+        """" Creates a balance for you if you don't have one. """
+        if await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", ctx.author.id):
+            await ctx.send("You already have a balance.")
+
+        else:
+            await self.client.db.execute("INSERT INTO economy (user_id, created_at, balance) VALUES ($1, $2, $3)", ctx.author.id, ctx.message.created_at, 0)
+            await ctx.send("You now have a balance.")
+
+    @commands.command()
     async def balance(self, ctx: CustomContext, user: discord.Member = None):
-        """Check your balance"""
+        """Check your balance."""
         if user is None:
             user = ctx.author
 
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user.id)
-        if balance is None:
-            await self.client.db.execute("INSERT INTO economy (user_id, balance) VALUES ($1, $2)", user.id, 0)
-            balance = 0
-        await ctx.send(f"{user.mention} has {balance}")
+        if not balance:
+            await ctx.send("You don't have a balance.")
+
+        else:
+            await ctx.send(f"{user.mention} has {balance} .")
