@@ -9,6 +9,7 @@ import itertools
 from discord import Interaction
 from discord.ext import commands
 from asyncdagpi import Client, ImageFeatures
+from discord.ext.commands import Bot as StealthBot
 
 target_type = typing.Union[discord.Member, discord.User, discord.PartialEmoji, discord.Guild, discord.Invite]
 
@@ -75,6 +76,7 @@ class Confirm(discord.ui.View):
 
 
 class CustomContext(commands.Context):
+    bot: StealthBot
 
     @staticmethod
     def tick(option: bool):
