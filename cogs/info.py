@@ -1393,7 +1393,7 @@ Permissions: {role.permissions}
                 embed.add_field(name=f"__**Result**__", value=f"""
 <t:{js['UnixTimeStamp']}>
 <t:{js['UnixTimeStamp']}:t>
->t:{js['UnixTimeStamp']}:T>
+<t:{js['UnixTimeStamp']}:T>
 <t:{js['UnixTimeStamp']}:F>
 <t:{js['UnixTimeStamp']}:d>
 <t:{js['UnixTimeStamp']}:D>
