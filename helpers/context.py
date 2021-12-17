@@ -126,8 +126,7 @@ class CustomContext(commands.Context):
 
         return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
 
-    @property
-    def uptime(self):
+    async def uptime(self):
         delta_uptime = discord.utils.utcnow() - self.bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
