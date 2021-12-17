@@ -279,20 +279,20 @@ class StealthBot(commands.AutoShardedBot):
         except:
             print("an unexpected error occurred while loading node2")
 
-        try:
-            await self.pomice.create_node(
-                bot=self,
-                host=yaml_data['NODE3_HOST'],
-                port=yaml_data['NODE3_PORT'],
-                password=yaml_data['NODE3_PASSWORD'],
-                identifier=yaml_data['NODE3_IDENTIFIER'],
-                spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
-                spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
-            )
-            print("node3 has successfully been loaded")
-            
-        except:
-            print("an unexpected error occurred while loading node3")
+        # try:
+        #     await self.pomice.create_node(
+        #         bot=self,
+        #         host=yaml_data['NODE3_HOST'],
+        #         port=yaml_data['NODE3_PORT'],
+        #         password=yaml_data['NODE3_PASSWORD'],
+        #         identifier=yaml_data['NODE3_IDENTIFIER'],
+        #         spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
+        #         spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
+        #     )
+        #     print("node3 has successfully been loaded")
+        #
+        # except:
+        #     print("an unexpected error occurred while loading node3")
         
         channel = self.get_channel(895683561737297934)
 
@@ -340,8 +340,8 @@ class StealthBot(commands.AutoShardedBot):
 
         self._dynamic_cogs()
         self.load_extension("jishaku")
-        # self.add_view(PersistentExceptionView(self))
-        # self.persistent_views_added = True
+        self.add_view(PersistentExceptionView(self))
+        self.persistent_views_added = True
 
         print(f"-------------================----------------")
         print("all cogs have successfully been loaded")
