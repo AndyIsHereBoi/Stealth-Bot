@@ -128,17 +128,16 @@ Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
 Bot admin?: {ctx.me.guild_permissions.administrator}
 Role position: {ctx.me.top_role.position}
 
-Message: {ctx.message}
-        """
+Message: {ctx.message}"""
 
         send = f"""
 ```yaml
 {data}
-``````py
+```
+```py
 Command {ctx.command} raised the following error:
 {traceback_string}
-```
-        """
+```"""
 
         try:
             if len(send) < 2000:
@@ -148,7 +147,8 @@ Command {ctx.command} raised the following error:
                 await channel.send(f"""
 ```yaml
 {data}
-``````py
+```
+```py
 Command {ctx.command} raised the following error:
 ```
                 """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"), view=PersistentExceptionView(ctx.bot))
