@@ -75,7 +75,6 @@ class Confirm(discord.ui.View):
 
 
 class CustomContext(commands.Context):
-    bot: StealthBot
 
     @staticmethod
     def tick(option: bool):
