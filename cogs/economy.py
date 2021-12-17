@@ -54,3 +54,15 @@ class Economy(commands.Cog):
         """Remove money from a user's wallet"""
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
         await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", balance - amount, user)
+
+    @commands.command(name="balance", aliases=["bal", "money", "balances"])
+    async def balance(self, ctx: CustomContext, user: discord.Member = None):
+        """Check your balance"""
+        if user is None:
+            user = ctx.author
+
+        balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user.id)
+        if balance is None:
+            await self.client.db.execute("INSERT INTO economy (user_id, balance) VALUES ($1, $2)", user.id, 0)
+            balance = 0
+        await ctx.send(f"{user.mention} has {balance}")
