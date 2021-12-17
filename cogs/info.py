@@ -1215,8 +1215,6 @@ Permissions: {role.permissions}
         brief="avatar\navatar @Jeff\navatar Luke#1951")
     @commands.cooldown(1, 5, BucketType.member)
     async def avatar(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
-        errorMessage = f"{member} doesnt have a avatar."
-
         await ctx.trigger_typing()
 
         if member is None:
@@ -1224,10 +1222,9 @@ Permissions: {role.permissions}
                 member = ctx.message.reference.resolved.author
             else:
                 member = ctx.author
-                errorMessage = f"You don't have a avatar."
 
         if member.avatar:
-            embed = discord.Embed(title=f"{member}'s avatar", description=f"{helpers.get_member_avatar_urls(member, ctx, member.id)}")
+            embed = discord.Embed(title=f"{'Your' if member.id == ctx.author.id else f'{member.display_name}s'} avatar", description=f"{helpers.get_member_avatar_urls(member, ctx, member.id)}")
             embed.set_image(url=member.avatar.url)
 
             if member.avatar != member.display_avatar:
@@ -1236,8 +1233,7 @@ Permissions: {role.permissions}
             return await ctx.send(embed=embed)
 
         else:
-            embed = discord.Embed(description=errorMessage)
-            await ctx.send(embed=embed)
+            await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.display_name} doesnt'} have a avatar.")
 
     @commands.group(
         help=":frame_photo: Gets the banner of the specified member.",
