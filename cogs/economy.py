@@ -1,5 +1,6 @@
 import errors
 import random
+import typing
 import discord
 
 from discord.ext import commands, menus
@@ -8,28 +9,6 @@ from helpers.context import CustomContext
 
 def setup(client):
     client.add_cog(Economy(client))
-
-
-class RichestUsersEmbedPage(menus.ListPageSource):
-    def __init__(self, data, guild):
-        self.data = data
-        self.guild = guild
-        super().__init__(data, per_page=10)
-
-    async def format_page(self, menu, entries):
-        offset = menu.current_page * self.per_page
-        colors = [0x910023, 0xA523FF]
-        color = random.choice(colors)
-
-        embed = discord.Embed(title=f"Richest users in {self.guild.name}",
-                              description="\n".join(f'{i + 1}. {v}' for i, v in enumerate(entries, start=offset)),
-                              timestamp=discord.utils.utcnow(), color=color)
-        embed.set_footer(text=f"Remember this is wallets not banks")
-
-        if self.guild.icon:
-            embed.set_thumbnail(url=self.guild.icon.url)
-
-        return embed
 
 
 class Economy(commands.Cog):
@@ -55,25 +34,33 @@ class Economy(commands.Cog):
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
         await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", balance - amount, user)
 
-    @commands.command()
-    async def start(self, ctx: CustomContext):
-        """" Creates a balance for you if you don't have one. """
+    @commands.command(
+        help="Creates a balance for you if you don't have one.",
+        aliases=['begin'])
+    async def start(self, ctx: CustomContext) -> discord.Message:
         if await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", ctx.author.id):
-            await ctx.send("You already have a balance.")
+            return await ctx.send("You already have a balance.")
 
-        else:
-            await self.client.db.execute("INSERT INTO economy (user_id, created_at, balance) VALUES ($1, $2, $3)", ctx.author.id, ctx.message.created_at, 0)
-            await ctx.send("You now have a balance.")
+        await self.client.db.execute("INSERT INTO economy (user_id, created_at, balance) VALUES ($1, $2, $3)", ctx.author.id, ctx.message.created_at, 0)
+        return await ctx.send("You now have a balance.")
 
-    @commands.command()
-    async def balance(self, ctx: CustomContext, user: discord.Member = None):
-        """Check your balance."""
-        if user is None:
-            user = ctx.author
+    @commands.command(
+        help="Shows you the balance of the specified member.",
+        aliases=['bal', 'money'])
+    async def balance(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None) -> discord.Message:
+        await ctx.trigger_typing()
 
-        balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user.id)
-        if not balance:
-            await ctx.send("You don't have a balance.")
+        if member is None:
+            if ctx.message.reference:
+                member = ctx.message.reference.resolved.author
+            else:
+                member = ctx.author
 
-        else:
-            await ctx.send(f"{user.mention} has {balance} .")
+        if member.bot:
+            return await ctx.send("Bots don't have a balance.")
+
+        if not await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", member.id):
+            return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
+
+        balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", member.id)
+        await ctx.send(f"{'You have' if member.id == ctx.author.id else f'{member.mention} has'} {balance:,} money.")
