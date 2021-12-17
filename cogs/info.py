@@ -1398,7 +1398,7 @@ Permissions: {role.permissions}
 <t:{js['UnixTimeStamp']}:d>
 <t:{js['UnixTimeStamp']}:D>
 <t:{js['UnixTimeStamp']}:R>
-                """)
+                """, inline=True)
 
                 await ctx.send(embed=embed)
 
