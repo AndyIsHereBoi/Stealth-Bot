@@ -638,15 +638,20 @@ I've reported it to the developers.
             traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
             await channel.send(f"""
-Author: {ctx.author} **|** {ctx.author.id} **|** {ctx.author.mention}
-Channel: {ctx.channel} **|** {ctx.channel.id} **|** {ctx.channel.mention}
-Server: {ctx.guild} **|** {ctx.guild.id}
-Sever owner: {ctx.guild.owner} **|** {ctx.guild.owner.id} **|** {ctx.guild.owner.mention}
+```yaml
+An unexpected error occurred in on_command_error
 
-Bot admin?: {ctx.tick(ctx.me.guild_permissions.administrator)}
+Author: {ctx.author} ({ctx.author.id})
+Author admin?: {ctx.author.guild_permissions.administrator}
+Channel: {ctx.channel} ({ctx.channel.id})
+Guild: {ctx.guild} ({ctx.guild.id})
+Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
+
+Bot admin?: {ctx.me.guild_permissions.administrator}
 Role position: {ctx.me.top_role.position}
 
-Message: {ctx.message.content[0:1700]}
+Message: {ctx.message.content[0:1600]}
+```
             """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"))
 
         embed = discord.Embed(description=message)
