@@ -1341,7 +1341,7 @@ Permissions: {role.permissions}
 :house: Homepage: {pypi_data.get('home_page') or 'None provided'}
 :newspaper: License: {pypi_data.get('license') or 'None provided'}
 :key: Keywords: {pypi_data.get('keywords') or 'None provided'}
-            """, inline=True)
+            """, inline=false)
 
             embed.set_thumbnail(url="https://i.imgur.com/oP0e7jK.png")
 
