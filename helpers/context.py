@@ -6,7 +6,6 @@ import discord
 import datetime
 import itertools
 
-from __main__ import StealthBot
 from discord import Interaction
 from discord.ext import commands
 from asyncdagpi import Client, ImageFeatures
@@ -126,8 +125,9 @@ class CustomContext(commands.Context):
 
         return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
 
-    async def uptime(self):
-        delta_uptime = discord.utils.utcnow() - self.bot.launch_time
+    @staticmethod
+    def uptime(bot):
+        delta_uptime = discord.utils.utcnow() - bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
@@ -143,10 +143,6 @@ class CustomContext(commands.Context):
         seconds = remove_s(f"{seconds}s")
 
         return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
-
-    @staticmethod
-    def session(self):
-        return self.session
 
     @staticmethod
     def get_last_commits(count=3):
