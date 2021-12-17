@@ -1350,28 +1350,57 @@ Permissions: {role.permissions}
         else:
             await ctx.send("Invalid package!")
 
-    @commands.command(name='tounix', aliases=['2uinx', 'tu'],
-                      help="Get unix timestamp from datetime. Datetime example = 2020/11/25 12:56:54")
+    @commands.command(
+        help="Get unix timestamp from datetime. Datetime example = 2020/11/25 12:56:54",
+        aliases=['2uinx', 'tu', 'time', 'datetime'])
     @commands.cooldown(1, 5, BucketType.user)
-    async def _tounix(self, ctx, *, datetime: str):
+    async def tounix(self, ctx, *, datetime: str):
         datetime = datetime.replace('-', '/')
         datetime = datetime.replace('.', '/')
         base_url = "https://showcase.api.linx.twenty57.net/UnixTime/tounixtimestamp?datetime="
         url = base_url + datetime
+
         async with self.client.session.get(url) as resp:
             try:
                 js = await resp.json()
 
             except Exception as e:
-                raise commands.BadArgument(f"Invalid datetime given. Please provide a valid datetime, thanks.")
-            else:
-                err = js.get('Error')
-                if err:
-                    return await ctx.send(f"**Error**: {err}")
+                raise commands.BadArgument()
 
-                ts = js['UnixTimeStamp']
-                await ctx.send(
-                    f"Unix timestamp : `{ts}`\n\n`<t:{ts}:t>` -> <t:{ts}:t>\n`<t:{ts}:T>` -> <t:{ts}:T>\n`<t:{ts}>`    -> <t:{ts}>\n`<t:{ts}:F>` -> <t:{ts}:F>\n`<t:{ts}:d>` -> <t:{ts}:d>\n`<t:{ts}:D>` -> <t:{ts}:D>\n`<t:{ts}:R>` -> <t:{ts}:R>\n")
+            else:
+                error = js.get('Error')
+                if error:
+                    embed = discord.Embed(title="API Error", description=f"""
+```log
+{error}
+```
+                    """)
+
+                    return await ctx.send(embed=embed)
+
+                embed = discord.Embed(title=f"Unix timestamps for {datetime}")
+
+                embed.add_field(name=f"__**Raw**__", value=f"""
+`<t:{js['UnixTimeStamp']}>`  
+`<t:{js['UnixTimeStamp']}:t>`
+`<t:{js['UnixTimeStamp']}:T>`
+`<t:{js['UnixTimeStamp']}:F>`
+`<t:{js['UnixTimeStamp']}:d>`
+`<t:{js['UnixTimeStamp']}:D>`
+`<t:{js['UnixTimeStamp']}:R>`
+                """, inline=True)
+
+                embed.add_field(name=f"__**Result**__", value=f"""
+<t:{js['UnixTimeStamp']}>
+<t:{js['UnixTimeStamp']}:t>
+>t:{js['UnixTimeStamp']}:T>
+<t:{js['UnixTimeStamp']}:F>
+<t:{js['UnixTimeStamp']}:d>
+<t:{js['UnixTimeStamp']}:D>
+<t:{js['UnixTimeStamp']}:R>
+                """)
+
+                await ctx.send(embed=embed)
 
     @commands.command(
         help="Shows the uptime of the bot.",
