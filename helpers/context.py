@@ -144,6 +144,10 @@ class CustomContext(commands.Context):
         return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
 
     @staticmethod
+    def session(self):
+        return self.session
+
+    @staticmethod
     def get_last_commits(count=3):
         def format_commit(commit):
             short, _, _ = commit.message.partition('\n')
@@ -157,22 +161,6 @@ class CustomContext(commands.Context):
         repo = pygit2.Repository('.git')
         commits = list(itertools.islice(repo.walk(repo.head.target, pygit2.GIT_SORT_TOPOLOGICAL), count))
         return '\n'.join(format_commit(c) for c in commits)
-
-    @staticmethod
-    def members(bot):
-        return len(bot.users)
-
-    @staticmethod
-    def users(bot):
-        return len(bot.users)
-
-    @staticmethod
-    def guilds(bot):
-        return len(bot.guilds)
-
-    @staticmethod
-    def servers(bot):
-        return len(bot.guilds)
 
     async def send(self, content: str = None, embed: discord.Embed = None, reminders: bool = True,
                    reply: bool = True, footer: bool = True, timestamp: bool = True, color: bool = True,
