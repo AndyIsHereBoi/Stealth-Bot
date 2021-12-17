@@ -6,10 +6,10 @@ import discord
 import datetime
 import itertools
 
+from __main__ import StealthBot
 from discord import Interaction
 from discord.ext import commands
 from asyncdagpi import Client, ImageFeatures
-from discord.ext.commands import Bot as StealthBot
 
 target_type = typing.Union[discord.Member, discord.User, discord.PartialEmoji, discord.Guild, discord.Invite]
 
