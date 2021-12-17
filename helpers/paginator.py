@@ -362,3 +362,29 @@ class QueueMenu(menus.ListPageSource):
             embed.add_field(name='\u200b', value=f'`{i + 1}.` {v}', inline=False)
 
         return embed
+
+
+class PersistentExceptionView(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.client = bot
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return await self.client.is_owner(interaction.user) is False
+
+    @discord.ui.button(emoji="🗑️", label="Mark as fixed", custom_id="persistant_exception_view_mark_as_resolved")
+    async def resolve(self, _, interaction: discord.Interaction):
+        message = interaction.message
+        error = "\n".join(message.content.split("\n")[7:])
+        error  = f"""
+```py
+{error}
+```
+        """
+
+        await message.edit(content=f"""
+{error}
+```fix
+Marked as fixed by {interaction.user}.
+```
+        """, view=None)

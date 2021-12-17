@@ -9,7 +9,9 @@ import difflib
 import aiohttp
 import discord
 import inspect
+import logging
 import itertools
+import contextlib
 
 import traceback
 
@@ -17,6 +19,7 @@ from discord import Webhook
 from helpers import helpers as helpers
 from discord.ext import commands, menus
 from helpers.context import CustomContext
+from helpers.paginator import PersistentExceptionView
 
 
 with open(r'/root/stealthbot/config.yaml') as file:
@@ -109,7 +112,56 @@ class Events(commands.Cog):
         seconds = remove_s(f"{seconds} seconds")
 
         return " and ".join(", ".join(filter(lambda i: int(i[0]), (days, hours, minutes, seconds))).rsplit(", ", 1))
-    
+
+    @staticmethod
+    async def send_unexpected_error(ctx, error, **kwargs):
+        with contextlib.suppress(discord.HTTPException):
+            message = "An unexpected error occurred, it has been logged and will be fixed as soon as possible."
+
+            embed = discord.Embed(description=f"{message}\n\nTraceback:\n```py\n{type(error).__name__}\n```")
+
+        channel = ctx.bot.get_channel(914145662520659998)
+        traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
+
+
+        data = f"""
+Author: {ctx.author} ({ctx.author.id})
+Channel: {ctx.channel} ({ctx.channel.id})
+Guild: {ctx.guild} ({ctx.guild.id})
+Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
+
+Bot admin?: {ctx.me.guild_permissions.administrator}
+Role position: {ctx.me.top_role.position}
+
+Message: {ctx.message[0:1600]}
+        """
+
+        send = f"""
+```yaml
+{data}
+``````py
+Command {ctx.command} raised the following error:
+{traceback_string}
+```
+        """
+
+        try:
+            if len(send) < 2000:
+                await channel.send(send, view=PersistentExceptionView(ctx.bot))
+
+            else:
+                await channel.send(f"""
+```yaml
+{data}
+``````py
+Command {ctx.command} raised the following error:
+```
+                """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"), view=PersistentExceptionView(ctx.bot))
+
+        finally:
+            print(f"{ctx.command} raised an unexpected error")
+
+
     @commands.Cog.listener()
     async def on_autopost_success(self):
         channel = self.client.get_channel(896775088249122889)
@@ -637,6 +689,7 @@ I've reported it to the developers.
             
             traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
+            return await self.send_unexpected_error(ctx, error)
             await channel.send(f"""
 ```yaml
 An unexpected error occurred in on_command_error

@@ -21,6 +21,7 @@ from collections import defaultdict
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
+from helpers.paginator import PersistentExceptionView
 
 PRE: tuple = ("sb!",)
 
@@ -118,6 +119,7 @@ class StealthBot(commands.AutoShardedBot):
         self.add_check(self.guild_only)
         self.add_check(self.maintenance)
         self.add_check(self.blacklist)
+        self.persistent_views_added = False
 
         # Tokens
         self.dagpi_cooldown = commands.CooldownMapping.from_cooldown(60, 60, commands.BucketType.default)
@@ -338,6 +340,8 @@ class StealthBot(commands.AutoShardedBot):
 
         self._dynamic_cogs()
         self.load_extension("jishaku")
+        self.add_view(PersistentExceptionView(self))
+        self.persistent_views_added = True
 
         print(f"-------------================----------------")
         print("all cogs have successfully been loaded")
