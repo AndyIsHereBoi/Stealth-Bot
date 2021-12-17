@@ -340,8 +340,8 @@ class StealthBot(commands.AutoShardedBot):
 
         self._dynamic_cogs()
         self.load_extension("jishaku")
-        self.add_view(PersistentExceptionView(self))
-        self.persistent_views_added = True
+        # self.add_view(PersistentExceptionView(self))
+        # self.persistent_views_added = True
 
         print(f"-------------================----------------")
         print("all cogs have successfully been loaded")
