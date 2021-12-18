@@ -1132,6 +1132,9 @@ You may want to fix that using the `mute_role fix` command.
         if duration.dt < (created_at + datetime.timedelta(minutes=1)):
             return await ctx.send("You can't temp-mute someone for less than a minute!")
 
+        if duration.dt > (created_at + datetime.timedelta(days=1)):
+            return await ctx.send("You can't self-mute yourself for more than a day!")
+
         delta = helpers.human_timedelta(duration.dt, source=created_at)
 
         try:
@@ -1148,3 +1151,41 @@ You may want to fix that using the `mute_role fix` command.
         embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         return await ctx.send(embed=embed)
+
+    @commands.command(
+        help="Temporary mutes you for the specified duration.\nDuration must be a short time for example: 1h, 2d, 5m or a combination of those like 1h2d5m",
+        aliases=['self_mute', 'self-mute', 'smute'],
+        brief="selfmute 5h\nselfmute 5m1s")
+    @ensure_muterole()
+    @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def selfmute(self, ctx: CustomContext, *, duration: time_inputs.ShortTime):
+        role = await muterole(ctx)
+
+        created_at = ctx.message.created_at
+        if duration.dt < (created_at + datetime.timedelta(minutes=1)):
+            return await ctx.send("You can't self-mute yourself for less than a minute!")
+
+        if duration.dt > (created_at + datetime.timedelta(days=1)):
+            return await ctx.send("You can't self-mute yourself for more than a day!")
+
+        delta = helpers.human_timedelta(duration.dt, source=created_at)
+
+        try:
+            await ctx.author.add_roles(role, reason=f"Self-mute")
+
+        except discord.Forbidden:
+            return await ctx.send(f"I don't seem to have permissions to add the `{role.name}` role")
+
+        confirmation = await ctx.confirm("Are you sure you want to do this?\n__**Do not ask moderators to undo this!**__")
+
+        if not confirmation:
+            return await ctx.send("Okay, I won't self-mute you then.")
+
+        else:
+
+            await self.client.db.execute("INSERT INTO temporary_mutes(guild_id, member_id, reason, end_time) VALUES ($1, $2, $3, $4) ON CONFLICT (guild_id, member_id) DO UPDATE SET reason = $3, end_time = $4", ctx.guild.id, member.id, f"Temporary mute by {ctx.author} ({ctx.author.id})", duration.dt)
+
+            self.mute_task()
+
+            return await ctx.send("You've successfully been self-muted. Be sure to not bother anyone about it.")
