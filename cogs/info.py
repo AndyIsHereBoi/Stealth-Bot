@@ -806,6 +806,28 @@ Banner: {helpers.get_member_banner_urls(member)}
         else:
             raise errors.UnknownError
 
+    @commands.command()
+    async def run(self, ctx, *, code):
+        request = await self.client.session.get("https://repi.openrobot.xyz/eval",
+                                                params={"auth": f"{yaml_data['OR_TEST_TOKEN']}", "code": f"{code}"})
+        json = await request.json()
+
+        if json['error']:
+            embed = discord.Embed(description=f"""
+```log
+{json['error']}
+```
+            """)
+            return await ctx.send(embed=embed)
+
+        else:
+            embed = discord.Embed(title="Output", description=f"""
+```py
+{json['result']}
+```
+            """)
+            return await ctx.send(embed=embed)
+
     @commands.command(
         help="Shows information about the specified server. If no server is specified it will default to the current server.",
         aliases=['si', 'guild', 'guildinfo'])
