@@ -788,64 +788,6 @@ Content:
             await message.delete()
             await message.channel.send(
                 f"Hey {message.author.mention}, don't spam mentions! Next time this will result in a ban.")
-
-    @commands.Cog.listener('on_message')
-    async def on_vicente_un_funny(self, message: discord.Message):
-        if not message.guild:
-            return
-
-        if message.author.bot:
-            return
-
-        if message.author.id == 555818548291829792 and message.guild.id == 799330949686231050:
-
-            blacklistedWords = [
-                                "sus",
-                                "susgus",
-                                "ñ",
-                                "amogus",
-                                "among us",
-                                "the",
-                                "s",
-                                "e",
-                                "h",
-                                "susy",
-                                "burger",
-                                "burber",
-                                "impostor",
-                                "mom",
-                                "mama",
-                                ]
-
-            def main(string):
-                string = string.replace("ö", "o").replace("ä", "a").replace("ü", "u").replace("@",
-                "a").replace("$", "s").replace("!", "i").replace('"', "").replace("§", "s").replace("/", "").replace("{",
-                "").replace("[", "").replace("]", "").replace("}", "").replace("(", "").replace(")", "").replace("=",
-                "").replace(".", "").replace(",", "").replace(":", "").replace(";", "").replace("-", "").replace("_",
-                "").replace("#", "").replace("'", "").replace("´", "").replace("`", "").replace("^", "").replace("°",
-                "").replace("*", "").replace("+", "").replace("~", "").replace("€", "").replace("%", "").replace("&",
-                "").replace("?", "").replace("ó", "o").replace("ú", "u").replace("á", "a").replace("é", "e").replace("ë",
-                "e").replace("ï", "i").replace("í", "i").replace("y", "y").replace("ß", "").replace("ć", "c").replace("ś",
-                "s").replace("ő", "o")
-                return string
-
-            messageString = message.content.lower()
-            messageString = main(string=messageString)
-
-            scanned = difflib.get_close_matches(messageString, blacklistedWords, n=1, cutoff=0.5)
-            
-            responses = [
-                        "that was so funny we forgot to laugh",
-                        "i can't stop laughing cause i never started",
-                        "where funny?",
-                        ":neutral_face::neutral_face::neutral_face:"
-                        ]
-
-            if scanned:
-                return await message.reply(random.choice(responses), mention_author=False)
-
-            else:
-                return await message.reply(random.choice(responses), mention_author=True)
             
     @commands.Cog.listener('on_message')
     async def on_suggestion(self, message: discord.Message):

@@ -24,7 +24,6 @@ class Economy(commands.Cog):
         """Add money to a user's wallet"""
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
         await self.client.db.execute("UPDATE economy SET balance = $1 WHERE user_id = $2", balance + amount, user)
-        print(f"Balance: {balance} Amount: {amount}")
         return await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", user)
 
     async def set_money(self, user: int, amount: int):
@@ -96,7 +95,6 @@ class Economy(commands.Cog):
         if not await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", member.id):
             return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
 
-        await self.add_money(member.id, amount)
         return await ctx.send(f"Successfully added {amount:,} money to {'your' if member.id == ctx.author.id else f'{member.mention}s'} balance. {'You' if member.id == ctx.author.id else 'They'} now have {await self.add_money(member.id, amount):,} money.")
 
     @admin_eco.command(
@@ -118,5 +116,4 @@ class Economy(commands.Cog):
         if not await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", member.id):
             return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
 
-        await self.remove_money(member.id, amount)
         return await ctx.send(f"Successfully removed {amount:,} money from {'your' if member.id == ctx.author.id else f'{member.mention}s'} balance. {'You' if member.id == ctx.author.id else 'They'} now have {await self.remove_money(member.id, amount):,} money.")
