@@ -68,6 +68,33 @@ class Economy(commands.Cog):
         balance = await self.client.db.fetchval("SELECT balance FROM economy WHERE user_id = $1", member.id)
         await ctx.send(f"{'You have' if member.id == ctx.author.id else f'{member.mention} has'} {balance:,} money.")
 
+    @commands.command()
+    async def trivia(self, ctx):
+        request = await self.client.session.get("https://opentdb.com/api.php?amount=1")
+        json = await request.json()
+
+        answers = json['results'][0]['incorrect_answers']
+        answers.append(json['results'][0]['correct_answer'])
+        correct_answer = json['results'][0]['correct_answer']
+        random.shuffle(answers)
+        yes = []
+        num = 0
+
+        for answer in answers:
+            num = num + 1
+            yes.append(f"**{num}**. {answer}\n")
+
+        embed = discord.Embed(title=f"Trivia question", description=f"""
+__**Question**__
+{json['results'][0]['question']}
+
+__**Answers**__
+{''.join(yes)}
+""")
+        embed.set_footer(text=f"Difficulty: {json['results'][0]['difficulty']} • Category: {json['results'][0]['category']}")
+
+        await ctx.send(embed=embed, footer=False)
+
     @commands.group(
         invoke_without_command=True,
         help="Economy commands for the owner.",
