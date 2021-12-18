@@ -301,6 +301,12 @@ class Owner(commands.Cog):
                     await to_edit.edit(content=f'```py\n{to_send}\n```')
 
     @dev.command(
+        help="Updates the bot. First it does 'jsk git pull' and then 'dev reload ~'",
+        aliases=['upd', 'pull'])
+    async def update(self, ctx: CustomContext, silent: typing.Optional[bool]=False):
+
+
+    @dev.command(
         help="Shows information about the system the bot is hosted on",
         aliases=['sys'])
     @commands.is_owner()

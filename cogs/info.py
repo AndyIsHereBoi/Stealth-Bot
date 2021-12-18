@@ -1091,9 +1091,9 @@ To disable it, do `{ctx.prefix}privacy enable_commands`
             return await ctx.send("That setting is already **enabled** for this server!")
 
     @commands.command(
-        help="Translates the given message to English",
+        help="Translates the given message to English.",
         aliases=['trans'],
-        brief="translate english Hello!\ntranslate en こんにちは")
+        brief="translate Hallo!\ntranslate こんにちは")
     async def translate(self, ctx: CustomContext, *, message: str = None):
         if message is None:
             reference = ctx.message.reference
@@ -1102,14 +1102,24 @@ To disable it, do `{ctx.prefix}privacy enable_commands`
                 message = reference.resolved.content
 
             else:
-                embed = discord.Embed(description="Pleaes specfiy the message to translate.")
+                embed = discord.Embed(description="Please specfiy the message to translate.")
                 return await ctx.send(embed=embed)
 
-        translation = translator.translate(message)
-        await ctx.send(translation)
-        embed = discord.Embed()
-        embed.add_field(name=f"Input ({translation.src.upper()})", value=f"{message}")
-        embed.add_field(name=f"Output (English)", value=f"{translation.text}")
+        request = await self.client.session.get('https://api.openrobot.xyz/api/translate',
+                                                headers={"Authorization": f"{yaml_data['OR_TOKEN']}"},
+                                                params={"text": f"{message}", "to_lang": "English",
+                                                        'from_lang': 'auto'})
+        json = await request.json()
+
+        embed = discord.Embed(title="Translator")
+
+        embed.add_field(name=f"__**Before ({json[0]['source']})**__", value=f"""
+{json[0]['before']}
+                    """)
+
+        embed.add_field(name=f"__**After ({json[0]['to']})**__", value=f"""
+{json[0]['text']}
+                    """, inline=False)
 
         await ctx.send(embed=embed)
 
@@ -1131,20 +1141,21 @@ To disable it, do `{ctx.prefix}privacy enable_commands`
         for emoji in guildEmotes:
 
             if emoji.animated:
-                emotes.append(
-                    f"<a:{emoji.name}:{emoji.id}> **|** {emoji.name} **|** [`<a:{emoji.name}:{emoji.id}>`]({emoji.url})")
+                emotes.append(f"<a:{emoji.name}:{emoji.id}> **|** {emoji.name} **|** [`<a:{emoji.name}:{emoji.id}>`]({emoji.url})")
 
             if not emoji.animated:
-                emotes.append(
-                    f"<:{emoji.name}:{emoji.id}> **|** {emoji.name} **|** [`<:{emoji.name}:{emoji.id}>`]({emoji.url})")
+                emotes.append(f"<:{emoji.name}:{emoji.id}> **|** {emoji.name} **|** [`<:{emoji.name}:{emoji.id}>`]({emoji.url})")
 
         paginator = ViewMenuPages(source=ServerEmotesEmbedPage(emotes, guild), clear_reactions_after=True)
         page = await paginator._source.get_page(0)
         kwargs = await paginator._get_kwargs_from_page(page)
+
         if paginator.build_view():
             paginator.message = await ctx.send(embed=kwargs['embed'], view=paginator.build_view())
+
         else:
             paginator.message = await ctx.send(embed=kwargs['embed'])
+
         await paginator.start(ctx)
 
     @commands.command(
