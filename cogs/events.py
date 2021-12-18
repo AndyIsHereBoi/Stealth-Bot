@@ -864,7 +864,7 @@ Content:
         if not message.guild or message.author.bot:
             return
 
-        if message.author.id == 555818548291829792 or message.author.id == 564890536947875868:
+        if message.author.id == 555818548291829792:
             character = "\u200b"
             content = message.content
             emojis = re.findall(r';(?P<name>[a-zA-Z0-9]{1,32}?);', message.content)
