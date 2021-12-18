@@ -612,6 +612,7 @@ class Info(commands.Cog):
         help="Posts the specified code in the specified language to mystb.in",
         aliases=['mystb.in'],
         brief="mystbin python print('Hello World!')")
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def mystbin(self, ctx, language: str, *, code: str) -> discord.Message:
         try:
             post = await self.client.mystbin.post(code, syntax=language)
