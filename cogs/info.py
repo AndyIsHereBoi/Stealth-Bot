@@ -25,6 +25,10 @@ from discord.ext.commands.cooldowns import BucketType
 
 translator = Translator()
 
+with open(r'/root/stealthbot/config.yaml') as file:
+    full_yaml = yaml.load(file)
+yaml_data = full_yaml
+
 
 def get_ram_usage():
     return int(psutil.virtual_memory().total - psutil.virtual_memory().available)
@@ -603,9 +607,21 @@ class Info(commands.Cog):
 
         return await ctx.send(f"{f'**You** are' if member.id == ctx.author.id else f'{member.mention} is'} listening to **{spotify.title}** by **{', '.join(spotify.artists)}**", file=discord.File(buffer, 'spotify.png'), view=view)
 
+    @commands.command(
+        help="Posts the specified code in the specified language to mystb.in",
+        aliases=['mystb.in'],
+        brief="mystbin python print('Hello World!')")
+    async def mystbin(self, ctx, language: str, *, code: str) -> discord.Message:
+        try:
+            post = await self.client.mystbin.post(code, syntax=language)
+            return await ctx.send(f"Successfully posted to mystbin, here's the link: {str(post)}")
+
+        except Exception as e:
+            return await ctx.send(f"Failed to post to mystbin, here's the error: {e}")
+
     @commands.command()
     async def weather(self, ctx, location: str) -> discord.Message:
-        request = await self.client.session.get(f"http://api.weatherapi.com/v1/current.json?key=dbcb3d2bdd904b49baf161924211412&q={location}")
+        request = await self.client.session.get(f"http://api.weatherapi.com/v1/current.json?key={yaml_data['WEATHER_TOKEN']}&q={location}")
         data = await request.json()
 
         embed = discord.Embed(title=f"Weather in {location.title()}")
@@ -653,7 +669,7 @@ UV index: {current['uv']}
         if not member.display_avatar:
             return await ctx.send(f"{'You have' if member.id == ctx.author.id else f'{member.mention} has'} no avatar.")
 
-        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': 'RWg1ohrsS8y8xNCFwNOkpVw2BYrdKfQrVy-wqiOZsAQhY3jHHr5b1-dDyJGKop1ZmHQ'}, params={'url': ctx.author.display_avatar.url})
+        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': f'{yaml_data["OR_TOKEN"]}'}, params={'url': ctx.author.display_avatar.url})
         json = await request.json()
 
         safe = round(100 - json['nsfw_score'] * 100, 2)

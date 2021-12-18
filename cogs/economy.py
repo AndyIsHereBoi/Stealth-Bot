@@ -78,7 +78,7 @@ class Economy(commands.Cog):
 
     @admin_eco.command(
         name="add",
-        help="Adds money to the specified member's balance",
+        help="Adds money to the specified member's balance.",
         aliases=['give', '+'])
     async def admin_eco_add(self, ctx, member: typing.Union[discord.Member, discord.User], amount: int) -> discord.Message:
         await ctx.trigger_typing()
@@ -96,3 +96,24 @@ class Economy(commands.Cog):
             return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
 
         return await ctx.send(f"Successfully added {amount:,} money to {'your' if member.id == ctx.author.id else f'{member.mention}s'} balance. They now have {await self.add_money(member.id, amount):,} money.")
+
+    @admin_eco.command(
+        name="remove",
+        help="Removes  money from the specified member's balance.",
+        aliases=['give', '-'])
+    async def admin_eco_remove(self, ctx, member: typing.Union[discord.Member, discord.User], amount: int) -> discord.Message:
+        await ctx.trigger_typing()
+
+        if member is None:
+            if ctx.message.reference:
+                member = ctx.message.reference.resolved.author
+            else:
+                member = ctx.author
+
+        if member.bot:
+            return await ctx.send("Bots don't have a balance.")
+
+        if not await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", member.id):
+            return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
+
+        return await ctx.send(f"Successfully removed {amount:,} money from {'your' if member.id == ctx.author.id else f'{member.mention}s'} balance. They now have {await self.remove_money(member.id, amount):,} money.")

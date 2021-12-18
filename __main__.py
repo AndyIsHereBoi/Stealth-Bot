@@ -9,6 +9,7 @@ import prsaw
 import typing
 import pomice
 import errors
+import mystbin
 import asyncpg
 import discord
 import logging
@@ -130,6 +131,7 @@ class StealthBot(commands.AutoShardedBot):
                                        username=yaml_data['ASYNC_PRAW_USERNAME'],
                                        password=yaml_data['ASYNC_PRAW_PASSWORD'])
         self.session = aiohttp.ClientSession(loop=self.loop)
+        self.mystbin = mystbin.Client()
 
         # Custom stuff
         self.chatbot_channels = [913851034416324658, 913851042079338586, 919603110220005437]
@@ -424,8 +426,7 @@ if __name__ == '__main__':
         
     except:
         pass
-    
-    
+
     try:
         webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
         webhook.send(content=":white_check_mark: Stealth Bot is starting up...")
