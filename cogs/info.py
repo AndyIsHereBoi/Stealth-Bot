@@ -829,12 +829,12 @@ Banner: {helpers.get_member_banner_urls(member)}
 
             else:
 
-            embed = discord.Embed(title="Output", description=f"""
+                embed = discord.Embed(title="Output", description=f"""
 ```py
 {json['result']}
 ```
             """)
-            return await ctx.send(embed=embed)
+                return await ctx.send(embed=embed)
 
     @commands.command(
         help="Shows information about the specified server. If no server is specified it will default to the current server.",
