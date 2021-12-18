@@ -808,7 +808,7 @@ Banner: {helpers.get_member_banner_urls(member)}
 
     @commands.command()
     async def run(self, ctx, *, code):
-        if not ctx.author.id == 746807014658801704 or not ctx.author.id == 564890536947875868:
+        if ctx.author.id not in [746807014658801704, 564890536947875868]:
             return await ctx.send("fuck off")
 
         request = await self.client.session.get("https://repi.openrobot.xyz/eval",
