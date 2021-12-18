@@ -811,10 +811,12 @@ Banner: {helpers.get_member_banner_urls(member)}
         await ctx.trigger_typing()
 
         request = await self.client.session.get("https://repi.openrobot.xyz/tts",
-                              params={"text": "Hello my name is jeff",
-                                      "lang": "en"})
+                              params={"text": f"{message}",
+                                      "lang": f"{language}"})
 
         read = await request.read()
+
+        file = discord.File(io.BytesIO(read), filename="tts.mp3")
 
         await ctx.send(file=discord.File(io.BytesIO(read), filename="tts.mp3"))
 
