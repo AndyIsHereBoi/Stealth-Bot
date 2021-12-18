@@ -80,7 +80,7 @@ class Economy(commands.Cog):
         name="add",
         help="Adds money to the specified member's balance.",
         aliases=['give', '+'])
-    async def admin_eco_add(self, ctx, member: typing.Union[discord.Member, discord.User], amount: int) -> discord.Message:
+    async def admin_eco_add(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User]], amount: int) -> discord.Message:
         await ctx.trigger_typing()
 
         if member is None:
@@ -101,7 +101,7 @@ class Economy(commands.Cog):
         name="remove",
         help="Removes  money from the specified member's balance.",
         aliases=['delete', '-'])
-    async def admin_eco_remove(self, ctx, member: typing.Union[discord.Member, discord.User], amount: int) -> discord.Message:
+    async def admin_eco_remove(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User]], amount: int) -> discord.Message:
         await ctx.trigger_typing()
 
         if member is None:
