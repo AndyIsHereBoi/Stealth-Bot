@@ -833,7 +833,7 @@ Banner: {helpers.get_member_banner_urls(member)}
 ```py
 {json['result']}
 ```
-            """)
+                """)
                 return await ctx.send(embed=embed)
 
     @commands.command(
