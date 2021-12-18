@@ -806,11 +806,9 @@ Banner: {helpers.get_member_banner_urls(member)}
         else:
             raise errors.UnknownError
 
-    @commands.command()
+    @commands.command(
+        help="Runs your code in python.")
     async def run(self, ctx, *, code):
-        if ctx.author.id not in [746807014658801704, 564890536947875868]:
-            return await ctx.send("fuck off")
-
         request = await self.client.session.get("https://repi.openrobot.xyz/eval",
                                                 params={"auth": f"{yaml_data['OR_TEST_TOKEN']}", "code": f"{code}"})
         json = await request.json()
