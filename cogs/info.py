@@ -806,6 +806,18 @@ Banner: {helpers.get_member_banner_urls(member)}
         else:
             raise errors.UnknownError
 
+    @commands.command()
+    async def tts(self, ctx, language: str, *, message: str):
+        await ctx.trigger_typing()
+
+        request = await self.client.session.get("https://repi.openrobot.xyz/tts",
+                              params={"text": "Hello my name is jeff",
+                                      "lang": "en"})
+
+        read = await request.read()
+
+        await ctx.send(file=discord.File(io.BytesIO(read, filename="tts.mp3"))
+
     @commands.command(
         help="Runs your code in python.")
     async def run(self, ctx, *, code):
