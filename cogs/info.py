@@ -816,7 +816,7 @@ Banner: {helpers.get_member_banner_urls(member)}
 
         read = await request.read()
 
-        await ctx.send(file=discord.File(io.BytesIO(read, filename="tts.mp3"))
+        await ctx.send(file=discord.File(io.BytesIO(read), filename="tts.mp3"))
 
     @commands.command(
         help="Runs your code in python.")
