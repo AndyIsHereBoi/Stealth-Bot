@@ -1092,7 +1092,7 @@ To disable it, do `{ctx.prefix}privacy enable_commands`
 
     @commands.command(
         help="Translates the given message to English.",
-        aliases=['trans'],
+        aliases=['trans', 'translator'],
         brief="translate Hallo!\ntranslate こんにちは")
     async def translate(self, ctx: CustomContext, *, message: str = None):
         if message is None:
