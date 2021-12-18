@@ -812,7 +812,7 @@ Banner: {helpers.get_member_banner_urls(member)}
 
         request = await self.client.session.get("https://repi.openrobot.xyz/tts",
                               params={"text": f"{message}",
-                                      "lang": "English"})
+                                      "lang": "en"})
 
         read = await request.read()
 
