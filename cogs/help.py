@@ -95,7 +95,15 @@ class NewsCentre(discord.ui.View):
         colors = [0x910023, 0xA523FF]
         color = random.choice(colors)
 
-        embed = discord.Embed(title=f"Latest news - ())", description=f"""
+        embed = discord.Embed(title=f"Latest news", description=f"""
+__**<:google_turtle:787675845371363338> Translate command fixed & improved (<t:1639819756:R>)**__ 
+The translate command has been fixed and improved! It's very fast!
+To try it out, do **{self.ctx.prefix}help translate**.
+
+__**:mute: Mute commands! (<t:1639338972:R>)**__
+New mute commands have been added! To manage your mute role, do **{self.ctx.prefix}help muterole**.
+To see the actual mute commands, do **{self.ctx.prefix}help mod** and go to the last page.
+    
 __**<a:music:888778105844563988> Music system improved (<t:1637504100:R>)**__
 The music system has been improved and is now way faster and smoother!
 Do **{self.ctx.prefix}help Music** to try it out!
@@ -107,15 +115,7 @@ Do **{self.ctx.prefix}help welcome** for more info.
 __**<:scroll:904038785921187911> Logging system (<t:1637074743:R>)**__
 The logging system can log various actions in your server.
 For more info, do **{self.ctx.prefix}help log**.
-NOTE: This is in beta.
-
-__**<:staff:858326975869485077> More moderation features (<t:1636037924:R>)**__
-New moderation features have been added!
-To try them out, do **{self.ctx.prefix}help Moderation**.
-
-__**:bell: New todo system (<t:1635951676:R>)**__
-With the todo system you can remind yourself to do tasks in the future!
-Do **{self.ctx.prefix}help todo** for more info.
+NOTE: This is in beta and some bugs may occur.
                               """, color=color)
 
         embed.set_footer(text=f"To continue browsing the help menu, press the \"Go back\" button.")

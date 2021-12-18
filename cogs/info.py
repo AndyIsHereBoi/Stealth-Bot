@@ -17,14 +17,12 @@ import discord
 import humanize
 import datetime
 
-from googletrans import Translator
 from helpers import helpers as helpers
 from discord.ext import commands, menus
 from helpers.context import CustomContext
 from discord.ext.menus.views import ViewMenuPages
 from discord.ext.commands.cooldowns import BucketType
 
-translator = Translator()
 
 with open(r'/root/stealthbot/config.yaml') as file:
     full_yaml = yaml.load(file)
