@@ -95,6 +95,7 @@ class Economy(commands.Cog):
         if not await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", member.id):
             return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
 
+        await self.add_money(member.id, amount)
         return await ctx.send(f"Successfully added {amount:,} money to {'your' if member.id == ctx.author.id else f'{member.mention}s'} balance. {'You' if member.id == ctx.author.id else 'They'} now have {await self.add_money(member.id, amount):,} money.")
 
     @admin_eco.command(
@@ -116,4 +117,5 @@ class Economy(commands.Cog):
         if not await self.client.db.fetchval("SELECT user_id FROM economy WHERE user_id = $1", member.id):
             return await ctx.send(f"{'You dont' if member.id == ctx.author.id else f'{member.mention} doesnt'} have a balance.")
 
+        await self.remove_money(member.id, amount)
         return await ctx.send(f"Successfully removed {amount:,} money from {'your' if member.id == ctx.author.id else f'{member.mention}s'} balance. {'You' if member.id == ctx.author.id else 'They'} now have {await self.remove_money(member.id, amount):,} money.")
