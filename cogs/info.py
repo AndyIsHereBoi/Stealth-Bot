@@ -824,7 +824,7 @@ Banner: {helpers.get_member_banner_urls(member)}
             return await ctx.send(embed=embed)
 
         else:
-            if len(json['result']) > 500:
+            if len(json['result']) > 500 or json['result'].count('\n') > 20:
                 return await ctx.send("here's your output, bitch.", file=discord.File(io.StringIO(json['result']), filename="output.py"))
 
             else:
