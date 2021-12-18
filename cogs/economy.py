@@ -100,7 +100,7 @@ class Economy(commands.Cog):
     @admin_eco.command(
         name="remove",
         help="Removes  money from the specified member's balance.",
-        aliases=['give', '-'])
+        aliases=['s', '-'])
     async def admin_eco_remove(self, ctx, member: typing.Union[discord.Member, discord.User], amount: int) -> discord.Message:
         await ctx.trigger_typing()
 
