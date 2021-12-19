@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, Optional
-import discord
 import random
+from typing import Any, Dict, Optional
+
+import discord
 from discord.ext import commands
-from discord.ext.commands import Paginator as CommandPaginator
 from discord.ext import menus
+from discord.ext.commands import Paginator as CommandPaginator
 
 
 class ViewPaginator(discord.ui.View):
@@ -237,18 +238,20 @@ class TextPageSource(menus.ListPageSource):
 
 
 class SimplePageSource(menus.ListPageSource):
+    def __init__(self, embed, entries, *, per_page):
+        super().__init__(entries, per_page=per_page)
+        self.embed = embed
+
     async def format_page(self, menu, entries):
-        pages = []
-        for index, entry in enumerate(entries, start=menu.current_page * self.per_page):
-            pages.append(f'{index + 1}. {entry}')
+        pages = entries
 
         maximum = self.get_max_pages()
         if maximum > 1:
             footer = f'Page {menu.current_page + 1}/{maximum} ({len(self.entries)} entries)'
-            menu.embed.set_footer(text=footer)
+            self.embed.set_footer(text=footer)
 
-        menu.embed.description = '\n'.join(pages)
-        return menu.embed
+        self.embed.description = '\n'.join(pages)
+        return self.embed
 
 
 class SimplePages(ViewPaginator):
@@ -288,15 +291,15 @@ class GroupHelpPageSource(menus.ListPageSource):
 
         command_signatures = [self.get_minimal_command_signature(c) for c in cog_commands]
         val = "\n".join(command_signatures)
-        
+
         if isinstance(self.group, discord.ext.commands.Group):
             text = f"""
 {self.description}
             """
-            
+
         else:
             text = f"""
-{self.group.select_emoji } {self.group.select_brief}
+{self.group.select_emoji} {self.group.select_brief}
             """
 
         embed = discord.Embed(title=self.title, description=f"""
