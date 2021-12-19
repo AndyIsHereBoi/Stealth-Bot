@@ -874,6 +874,9 @@ With the reason being: {info['reason']}
         if message.author == self.client.user:
             return
 
+        if message.guild.id == 336642139381301249:
+            return
+
         if message.mentions:
             pinged_afk_user_ids = list(set([u.id for u in message.mentions]).intersection(self.client.afk_users))
             afkUsers = []
@@ -899,34 +902,34 @@ With the reason being: {info['reason']}
             else:
                 return
 
-    @commands.Cog.listener('on_member_join')
-    async def add_previously_muted_members(self, member: discord.Member):
-        if not await self.client.db.fetchval("SELECT user_id FROM muted WHERE user_id = $1 AND guild_id = $2", member.id, member.guild.id):
-            return
-
-        await self.client.db.execute("DELETE FROM muted WHERE user_id = $1 AND guild_id = $2", member.id, member.guild.id)
-
-        if not (role := await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", member.guild.id)):
-            return
-
-        if not (role := member.guild.get_role(role)):
-            return
-
-        if role >= member.guild.me.top_role:
-            return
-
-        await member.add_roles(role, reason="Member was previous muted.")
-
-    @commands.Cog.listener('on_member_remove')
-    async def remove_previously_muted_members(self, member: discord.Member):
-        if not (role := await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", member.guild.id)):
-            return
-
-        if not (role := member.guild.get_role(role)):
-            return
-
-        if role in member.roles:
-            await self.client.db.execute("INSERT INTO muted (user_id, guild_id) VALUES ($1, $2) ON CONFLICT (user_id, guild_id) DO NOTHING", member.id, member.guild.id)
+    # @commands.Cog.listener('on_member_join')
+    # async def add_previously_muted_members(self, member: discord.Member):
+    #     if not await self.client.db.fetchval("SELECT user_id FROM muted WHERE user_id = $1 AND guild_id = $2", member.id, member.guild.id):
+    #         return
+    #
+    #     await self.client.db.execute("DELETE FROM muted WHERE user_id = $1 AND guild_id = $2", member.id, member.guild.id)
+    #
+    #     if not (role := await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", member.guild.id)):
+    #         return
+    #
+    #     if not (role := member.guild.get_role(role)):
+    #         return
+    #
+    #     if role >= member.guild.me.top_role:
+    #         return
+    #
+    #     await member.add_roles(role, reason="Member was previous muted.")
+    #
+    # @commands.Cog.listener('on_member_remove')
+    # async def remove_previously_muted_members(self, member: discord.Member):
+    #     if not (role := await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", member.guild.id)):
+    #         return
+    #
+    #     if not (role := member.guild.get_role(role)):
+    #         return
+    #
+    #     if role in member.roles:
+    #         await self.client.db.execute("INSERT INTO muted (user_id, guild_id) VALUES ($1, $2) ON CONFLICT (user_id, guild_id) DO NOTHING", member.id, member.guild.id)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
