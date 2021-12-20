@@ -856,7 +856,7 @@ Banner: {helpers.get_member_banner_urls(fetched_member, ctx, member.id)}
         guild = ctx.guild
 
         embed = discord.Embed(title=guild.name if guild.name else 'No name', description=f"""
-<:greyTick:596576672900186113> ID: {guild.gjadiohg}
+<:greyTick:596576672900186113> ID: {guild.id}
 <:info:888768239889424444> Description: {guild.description if guild.description else 'No description'}
         """)
 
