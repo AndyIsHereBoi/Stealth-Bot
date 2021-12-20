@@ -1401,7 +1401,7 @@ Permissions: {role.permissions}
         pings.append(some_random_ms)
 
         dagpi_start = time.perf_counter()
-        await ctx.dagpi(ctx.author, feature=imageFeatures.patpat())
+        await ctx.dagpi(ctx.author, feature=imageFeatures.pixel())
         dagpi_end = time.perf_counter()
         dagpi_ms = (dagpi_end - dagpi_start) * 1000
         pings.append(dagpi_ms)
