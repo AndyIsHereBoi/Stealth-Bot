@@ -1390,7 +1390,7 @@ Permissions: {role.permissions}
         embed.add_field(name=f"<a:typing:597589448607399949> Typing latency", value=f"{round(typing_ms)}ms{' ' * (9 - len(str(round(typing_ms, 3))))}", inline=True)
         embed.add_field(name=f":speech_balloon: Message latency", value=f"{round(message_ms)}ms{' ' * (9 - len(str(round(message_ms, 3))))}", inline=True)
         embed.add_field(name=f"<:psql:896134588961800294> Database latency", value=f"{round(postgres_ms)}ms{' ' * (9 - len(str(round(postgres_ms, 3))))}", inline=True)
-        embed.add_field(Name=f"<:OpenRobot:922490609288241192> OpenRobot API latency", value=f"{round(open_robot_ms)}ms{' ' * (9 - len(str(round(open_robot_ms, 3))))}", inline=True)
+        embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot API latency", value=f"{round(open_robot_ms)}ms{' ' * (9 - len(str(round(open_robot_ms, 3))))}", inline=True)
         embed.add_field(name=f":infinity: Average latency", value=f"{round(average)}ms{' ' * (9 - len(str(round(average, 3))))}")
 
         await ctx.send(content="Received ping!", embed=embed)
