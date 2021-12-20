@@ -1351,6 +1351,7 @@ Permissions: {role.permissions}
     @commands.command(
         help="Shows the latency of the bot",
         aliases=['pong'])
+    @commands.cooldown(1, 20, BucketType.member)
     async def ping(self, ctx: CustomContext):
         pings = []
         number = 0
@@ -1389,7 +1390,7 @@ Permissions: {role.permissions}
         pings.append(waifu_im_ms)
 
         jeyy_start = time.perf_counter()
-        await self.client.session.get("https://api.jeyy.xyz/image/balls", params={"image_url": "https://cdn.discordapp.com/avatars/564890536947875868/a_fe1db7c8e5d82accc22be12d26c3f208.gif?size=1024"})
+        await self.client.session.get("https://api.jeyy.xyz/isometric", params={'iso_code': "401 133 332"})
         jeyy_end = time.perf_counter()
         jeyy_ms = (jeyy_end - jeyy_start) * 1000
         pings.append(jeyy_ms)
@@ -1401,7 +1402,7 @@ Permissions: {role.permissions}
         pings.append(some_random_ms)
 
         dagpi_start = time.perf_counter()
-        await ctx.dagpi(ctx.author, feature=imageFeatures.pixel())
+        await ctx.dagpi.yomama()
         dagpi_end = time.perf_counter()
         dagpi_ms = (dagpi_end - dagpi_start) * 1000
         pings.append(dagpi_ms)
