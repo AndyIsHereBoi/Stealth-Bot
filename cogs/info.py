@@ -22,6 +22,7 @@ from discord.ext import commands, menus
 from helpers.context import CustomContext
 from discord.ext.menus.views import ViewMenuPages
 from discord.ext.commands.cooldowns import BucketType
+from asyncdagpi import ImageFeatures as imageFeatures
 
 
 with open(r'/root/stealthbot/config.yaml') as file:
@@ -1387,6 +1388,24 @@ Permissions: {role.permissions}
         waifu_im_ms = (waifu_im_end - waifu_im_start) * 1000
         pings.append(waifu_im_ms)
 
+        jeyy_start = time.perf_counter()
+        await self.client.session.get("https://api.jeyy.xyz/image/sob", params={"image_url": "https://cdn.discordapp.com/avatars/564890536947875868/a_fe1db7c8e5d82accc22be12d26c3f208.gif?size=1024"})
+        jeyy_end = time.perf_counter()
+        jeyy_ms = (jeyy_end - jeyy_start) * 1000
+        pings.append(jeyy_ms)
+
+        some_random_start = time.perf_counter()
+        await self.client.session.get("https://some-random-api.ml/img/cat")
+        some_random_end = time.perf_counter()
+        some_random_ms = (some_random_end - some_random_start) * 1000
+        pings.append(some_random_ms)
+
+        dagpi_start = time.perf_counter()
+        await ctx.dagpi(ctx.author, feature=imageFeatures.patpat())
+        dagpi_end = time.perf_counter()
+        dagpi_ms = (dagpi_end - dagpi_start) * 1000
+        pings.append(dagpi_ms)
+
         for ms in pings:
             number += ms
 
@@ -1399,6 +1418,9 @@ Permissions: {role.permissions}
         embed.add_field(name=f"<:psql:896134588961800294> PostgreSQL latency", value=f"{round(postgres_ms)}ms{' ' * (9 - len(str(round(postgres_ms, 3))))}", inline=True)
         embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot API latency", value=f"{round(open_robot_ms)}ms{' ' * (9 - len(str(round(open_robot_ms, 3))))}", inline=True)
         embed.add_field(name="Wafiu.im API latency", value=f"{round(waifu_im_ms)}ms{' ' * (9 - len(str(round(waifu_im_ms, 3))))}", inline=True)
+        embed.add_field(name="<:pensive_cowboy:787677850165706763> Jeyy API latency", value=f"{round(jeyy_ms)}ms{' ' * (9 - len(str(round(jeyy_ms, 3))))}", inline=True)
+        embed.add_field(name=":rainbow: Some random API latency", value=f"{round(some_random_ms)}ms{' ' * (9 - len(str(round(some_random_ms, 3))))}", inline=True)
+        embed.add_field(name="<:dagpi:922493027073814530> Dagpi API latency", value=f"{round(dagpi_ms)}ms{' ' * (9 - len(str(round(dagpi_ms, 3))))}", inline=True)
         embed.add_field(name=f":infinity: Average latency", value=f"{round(average)}ms{' ' * (9 - len(str(round(average, 3))))}", inline=False)
 
         await ctx.send(content="Received ping!", embed=embed)
