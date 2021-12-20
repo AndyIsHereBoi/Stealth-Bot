@@ -395,3 +395,38 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
             await ctx.send(f"done! took {round(complete_time, 2)} seconds"
                            f"\nSet permissions for {modified} channel{'' if modified == 1 else 's'}!")
 
+    # Verify commands
+
+    @commands.group(
+        invoke_without_command=True,
+        help="<:greenTick:895688440690147370> | Verify commands. If no argument is specified it will show you the current verify role.",
+        aliases=['verify_role', 'verify-role', 'vr'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
+    async def verifyrole(self, ctx: CustomContext):
+        role = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+
+        if not role['verify_role_id']:
+            return await ctx.send(
+                f"This server doesn't have a verify role. To set it do `{ctx.prefix}verifyrole set <role>`")
+
+        else:
+            role = ctx.guild.get_role(role['verify_role_id'])
+            return await ctx.send(f"The current verify role for this server is {role.mention}.")
+
+    @verifyrole.command(
+        name="set",
+        help="Changes the verify role to the specified role.")
+    async def _set(self, ctx: CustomContext, role: discord.Role):
+        await self.client.db.execute(
+            "INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2",
+            ctx.guild.id, role.id)
+        await ctx.send(f"Successfully set the verify role for this server to {role.mention}.")
+
+    @verifyrole.command(
+        help="Removes the verify role")
+    async def remove(self, ctx: CustomContext):
+        await self.client.db.execute(
+            "INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2",
+            ctx.guild.id, None)
+        await ctx.send(f"Successfully removed the verify role for this server.")
