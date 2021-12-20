@@ -92,6 +92,9 @@ class Fun(commands.Cog):
 
         ms = (end - start) * 1000
 
+        if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
+            return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
+
         embed = discord.Embed(title=json['title'])
         embed.set_image(url=json['url'])
         embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
@@ -100,7 +103,7 @@ class Fun(commands.Cog):
         
     @commands.command(
         help=":frog: Sends a random programmer meme from Reddit.",
-        aliases=['programmer_meme', 'programmerhumor', 'programmer_humor', 'programmerhumour', 'programmer_humour'])
+        aliases=['programmer_meme', 'programmerhumor', 'programmer_humor', 'programmerhumour', 'programmer_humour', 'pm'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def programmermeme(self, ctx: CustomContext):
         start = time.perf_counter()
@@ -111,6 +114,9 @@ class Fun(commands.Cog):
         end = time.perf_counter()
 
         ms = (end - start) * 1000
+
+        if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
+            return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
 
         embed = discord.Embed(title=json['title'])
         embed.set_image(url=json['url'])
@@ -133,6 +139,9 @@ class Fun(commands.Cog):
 
         ms = (end - start) * 1000
 
+        if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
+            return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
+
         embed = discord.Embed(title=json['title'])
         embed.set_image(url=json['url'])
         embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
@@ -153,6 +162,9 @@ class Fun(commands.Cog):
                 return await ctx.send("Invalid sub-reddit!")
             
         except:
+
+            if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
+                return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
 
             end = time.perf_counter()
 
