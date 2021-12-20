@@ -1376,7 +1376,7 @@ Permissions: {role.permissions}
         pings.append(postgres_ms)
 
         open_robot_start = time.perf_counter()
-        await self.clienbt.session.get(f"https://api.openrobot.xyz/_internal/available")
+        await self.client.session.get(f"https://api.openrobot.xyz/_internal/available")
         open_robot_end = time.perf_counter()
         open_robot_ms = (open_robot_end - open_robot_start) * 1000
         pings.append(open_robot_ms)
