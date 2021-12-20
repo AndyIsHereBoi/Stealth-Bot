@@ -1389,7 +1389,7 @@ Permissions: {role.permissions}
         pings.append(waifu_im_ms)
 
         jeyy_start = time.perf_counter()
-        await self.client.session.get("https://api.jeyy.xyz/image/sob", params={"image_url": "https://cdn.discordapp.com/avatars/564890536947875868/a_fe1db7c8e5d82accc22be12d26c3f208.gif?size=1024"})
+        await self.client.session.get("https://api.jeyy.xyz/image/balls", params={"image_url": "https://cdn.discordapp.com/avatars/564890536947875868/a_fe1db7c8e5d82accc22be12d26c3f208.gif?size=1024"})
         jeyy_end = time.perf_counter()
         jeyy_ms = (jeyy_end - jeyy_start) * 1000
         pings.append(jeyy_ms)
