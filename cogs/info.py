@@ -772,6 +772,8 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
 
         elif isinstance(member, discord.User):
 
+            fetched_member = await self.client.fetch_user(member.id)
+
             embed = discord.Embed(title=member.name if member.name else "No name", url=f"https://discord.com/users/{member.id}", description=f"*Less info cause this is a user not a member*\n<:greyTick:596576672900186113> ID: {member.id}")
 
             embed.add_field(name="__**General**__", value=f"""
@@ -788,8 +790,8 @@ Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 el
             """, inline=False)
 
             embed.add_field(name="__**Assets**__", value=f"""
-Avatar: {helpers.get_member_avatar_urls(await self.client.fetch_user(member.id))}
-Banner: {helpers.get_member_banner_urls(member)}
+{helpers.get_member_avatar_urls(member, ctx, member.id)}
+Banner: {helpers.get_member_banner_urls(fetched_member, ctx, member.id)}
 :rainbow: Color: {helpers.get_member_color(member)}
 :rainbow: Accent color: {helpers.get_member_accent_color(member)}
             """, inline=True)
@@ -1623,6 +1625,9 @@ Jump URL: [Click here]({new['jump_url']})
     @commands.command(
         help="Makes you go AFK. If someone pings you the bot will tell them that you're AFK.")
     async def afk(self, ctx: CustomContext, *, reason="No reason provided"):
+        if ctx.author.id == 716134528409665586:
+            return await ctx.send("fuck off")
+
         if ctx.author.id in self.client.afk_users and ctx.author.id in self.client.auto_un_afk and self.client.auto_un_afk[ctx.author.id] is True:
             return
 

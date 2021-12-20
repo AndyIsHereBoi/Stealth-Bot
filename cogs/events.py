@@ -670,25 +670,60 @@ This might also be a issue with role hierarchy, try moving my role to the top of
             message = error
 
         else:
-            name = "Unexpected error"
+            name = None
             icon_url = None
-            message = f"""
-An unexpected error has occurred.
-I've reported it to the developers.
-```py
-{error}
-```
-"""
+            message = None
 
             channel = self.client.get_channel(914145662520659998)
-            
+
             traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
             embed = discord.Embed(description=f"An unexpected error occurred. The developers have been notified about this and will fix it ASAP.")
             embed.set_author(name="Unexpected error occurred", icon_url='https://i.imgur.com/9gQ6A5Y.png')
 
             await ctx.send(embed=embed)
-            return await self.send_unexpected_error(ctx, error)
+
+            channel = self.client.get_channel(914145662520659998)
+
+            data = f"""
+Author: {ctx.author} ({ctx.author.id})
+Channel: {ctx.channel} ({ctx.channel.id})
+Guild: {ctx.guild} ({ctx.guild.id})
+Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
+
+Bot admin?: {ctx.me.guild_permissions.administrator}
+Role position: {ctx.me.top_role.position}
+
+Message: {ctx.message}"""
+
+            send = f"""
+```yaml
+{data}
+```
+```py
+Command {ctx.command} raised the following error:
+{traceback_string}
+```"""
+
+            try:
+                if len(send) < 2000:
+                    await channel.send(send, view=PersistentExceptionView(ctx.bot))
+
+                else:
+                    await channel.send(f"""
+```yaml
+{data}
+```
+```py
+Command {ctx.command} raised the following error:
+```
+                            """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"),
+                                view=PersistentExceptionView(ctx.bot))
+
+            finally:
+                print(f"{ctx.command} raised an unexpected error")
+
+            return
 
         embed = discord.Embed(description=message)
         icon_urlL = icon_url or 'https://i.imgur.com/9gQ6A5Y.png'
