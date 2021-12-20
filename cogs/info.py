@@ -1362,11 +1362,13 @@ Permissions: {role.permissions}
         typing_ms = (typing_end - typing_start) * 1000
         pings.append(typing_ms)
 
-        start = time.perf_counter()
+        message_start = time.perf_counter()
         message = await ctx.send("Getting ping...")
-        end = time.perf_counter()
-        message_ms = (end - start) * 1000
+        message_end = time.perf_counter()
+        message_ms = (message_end - message_start) * 1000
         pings.append(message_ms)
+
+        await message.delete()
 
         latency_ms = self.client.latency * 1000
         pings.append(latency_ms)
@@ -1444,7 +1446,9 @@ Permissions: {role.permissions}
         embed.add_field(name=f":infinity: Average latency",
                         value=f"{round(average)}ms{' ' * (9 - len(str(round(average, 3))))}", inline=False)
 
-        await message.edit("Received ping!", embed=embed)
+        embed.set_thumbnail(url="https://tenor.com/view/cats-ping-pong-gif-8942945")
+
+        await ctx.send("Received ping!", embed=embed)
 
     @commands.command(brief="Gives info on pypi packages")
     async def pypi(self, ctx, *, package):
