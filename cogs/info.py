@@ -1418,7 +1418,7 @@ Permissions: {role.permissions}
         embed.add_field(name=f":speech_balloon: Message latency", value=f"{round(message_ms)}ms{' ' * (9 - len(str(round(message_ms, 3))))}", inline=True)
         embed.add_field(name=f"<:psql:896134588961800294> PostgreSQL latency", value=f"{round(postgres_ms)}ms{' ' * (9 - len(str(round(postgres_ms, 3))))}", inline=True)
         embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot API latency", value=f"{round(open_robot_ms)}ms{' ' * (9 - len(str(round(open_robot_ms, 3))))}", inline=True)
-        embed.add_field(name="Wafiu.im API latency", value=f"{round(waifu_im_ms)}ms{' ' * (9 - len(str(round(waifu_im_ms, 3))))}", inline=True)
+        embed.add_field(name="Waifu.im API latency", value=f"{round(waifu_im_ms)}ms{' ' * (9 - len(str(round(waifu_im_ms, 3))))}", inline=True)
         embed.add_field(name="<:pensive_cowboy:787677850165706763> Jeyy API latency", value=f"{round(jeyy_ms)}ms{' ' * (9 - len(str(round(jeyy_ms, 3))))}", inline=True)
         embed.add_field(name=":rainbow: Some random API latency", value=f"{round(some_random_ms)}ms{' ' * (9 - len(str(round(some_random_ms, 3))))}", inline=True)
         embed.add_field(name="<:dagpi:922493027073814530> Dagpi API latency", value=f"{round(dagpi_ms)}ms{' ' * (9 - len(str(round(dagpi_ms, 3))))}", inline=True)
