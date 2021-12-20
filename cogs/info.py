@@ -1389,12 +1389,6 @@ Permissions: {role.permissions}
         open_robot_repi_ms = (open_robot_repi_end - open_robot_repi_start) * 1000
         pings.append(open_robot_repi_ms)
 
-        waifu_im_start = time.perf_counter()
-        await self.client.session.get("https://api.waifu.im/sfw/waifu")
-        waifu_im_end = time.perf_counter()
-        waifu_im_ms = (waifu_im_end - waifu_im_start) * 1000
-        pings.append(waifu_im_ms)
-
         jeyy_start = time.perf_counter()
         await self.client.session.get("https://api.jeyy.xyz/isometric", params={'iso_code': "401 133 332"})
         jeyy_end = time.perf_counter()
@@ -1407,24 +1401,50 @@ Permissions: {role.permissions}
         dagpi_ms = (dagpi_end - dagpi_start) * 1000
         pings.append(dagpi_ms)
 
+        waifu_im_start = time.perf_counter()
+        await self.client.session.get("https://api.waifu.im/sfw/waifu")
+        waifu_im_end = time.perf_counter()
+        waifu_im_ms = (waifu_im_end - waifu_im_start) * 1000
+        pings.append(waifu_im_ms)
+
         for ms in pings:
             number += ms
 
         average = number / len(pings)
 
         embed = discord.Embed(title="🏓 Pong")
-        embed.add_field(name=f":globe_with_meridians: Websocket latency", value=f"{round(latency_ms)}ms{' ' * (9 - len(str(round(latency_ms, 3))))}", inline=True)
-        embed.add_field(name=f"<a:typing:597589448607399949> Typing latency", value=f"{round(typing_ms)}ms{' ' * (9 - len(str(round(typing_ms, 3))))}", inline=True)
-        embed.add_field(name=f":speech_balloon: Message latency", value=f"{round(message_ms)}ms{' ' * (9 - len(str(round(message_ms, 3))))}", inline=True)
-        embed.add_field(name=f"<:psql:896134588961800294> PostgreSQL latency", value=f"{round(postgres_ms)}ms{' ' * (9 - len(str(round(postgres_ms, 3))))}", inline=True)
-        embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot API latency", value=f"{round(open_robot_ms)}ms{' ' * (9 - len(str(round(open_robot_ms, 3))))}", inline=True)
-        embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot REPI latency", value=f"{round(open_robot_repi_ms)}ms{' ' * (9 - len(str(round(open_robot_repi_ms, 3))))}", inline=True)
-        embed.add_field(name="<:pensive_cowboy:787677850165706763> Jeyy API latency", value=f"{round(jeyy_ms)}ms{' ' * (9 - len(str(round(jeyy_ms, 3))))}", inline=True)
-        embed.add_field(name="Waifu.im API latency", value=f"{round(waifu_im_ms)}ms{' ' * (9 - len(str(round(waifu_im_ms, 3))))}", inline=True)
-        embed.add_field(name="<:dagpi:922493027073814530> Dagpi API latency", value=f"{round(dagpi_ms)}ms{' ' * (9 - len(str(round(dagpi_ms, 3))))}", inline=True)
-        embed.add_field(name=f":infinity: Average latency", value=f"{round(average)}ms{' ' * (9 - len(str(round(average, 3))))}", inline=False)
 
-        await ctx.send(content="Received ping!", embed=embed)
+        embed.add_field(name=f":globe_with_meridians: Websocket latency",
+                        value=f"{round(latency_ms)}ms{' ' * (9 - len(str(round(latency_ms, 3))))}", inline=True)
+
+        embed.add_field(name=f"<a:typing:597589448607399949> Typing latency",
+                        value=f"{round(typing_ms)}ms{' ' * (9 - len(str(round(typing_ms, 3))))}", inline=True)
+
+        embed.add_field(name=f":speech_balloon: Message latency",
+                        value=f"{round(message_ms)}ms{' ' * (9 - len(str(round(message_ms, 3))))}", inline=True)
+
+        embed.add_field(name=f"<:psql:896134588961800294> PostgreSQL latency",
+                        value=f"{round(postgres_ms)}ms{' ' * (9 - len(str(round(postgres_ms, 3))))}", inline=True)
+
+        embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot API latency",
+                        value=f"{round(open_robot_ms)}ms{' ' * (9 - len(str(round(open_robot_ms, 3))))}", inline=True)
+
+        embed.add_field(name=f"<:OpenRobot:922490609288241192> OpenRobot REPI latency",
+                        value=f"{round(open_robot_repi_ms)}ms{' ' * (9 - len(str(round(open_robot_repi_ms, 3))))}", inline=True)
+
+        embed.add_field(name="<:pensive_cowboy:787677850165706763> Jeyy API latency",
+                        value=f"{round(jeyy_ms)}ms{' ' * (9 - len(str(round(jeyy_ms, 3))))}", inline=True)
+
+        embed.add_field(name="<:dagpi:922493027073814530> Dagpi API latency",
+                        value=f"{round(dagpi_ms)}ms{' ' * (9 - len(str(round(dagpi_ms, 3))))}", inline=True)
+
+        embed.add_field(name="Waifu.im API latency",
+                        value=f"{round(waifu_im_ms)}ms{' ' * (9 - len(str(round(waifu_im_ms, 3))))}", inline=True)
+
+        embed.add_field(name=f":infinity: Average latency",
+                        value=f"{round(average)}ms{' ' * (9 - len(str(round(average, 3))))}", inline=False)
+
+        await message.edit("Received ping!", embed=embed)
 
     @commands.command(brief="Gives info on pypi packages")
     async def pypi(self, ctx, *, package):
