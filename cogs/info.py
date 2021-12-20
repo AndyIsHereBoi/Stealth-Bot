@@ -1402,7 +1402,7 @@ Permissions: {role.permissions}
         pings.append(some_random_ms)
 
         dagpi_start = time.perf_counter()
-        await ctx.dagpi.yomama()
+        await self.client.dagpi.yomama()
         dagpi_end = time.perf_counter()
         dagpi_ms = (dagpi_end - dagpi_start) * 1000
         pings.append(dagpi_ms)
