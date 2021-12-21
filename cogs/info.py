@@ -1685,9 +1685,6 @@ Jump URL: [Click here]({new['jump_url']})
     @commands.command(
         help="Makes you go AFK. If someone pings you the bot will tell them that you're AFK.")
     async def afk(self, ctx: CustomContext, *, reason="No reason provided"):
-        if ctx.author.id == 716134528409665586:
-            return await ctx.send("fuck off")
-
         if ctx.author.id in self.client.afk_users and ctx.author.id in self.client.auto_un_afk and self.client.auto_un_afk[ctx.author.id] is True:
             return
 
