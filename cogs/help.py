@@ -71,7 +71,6 @@ This means that the argument is **optional** and has a default value.
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-
     async def interaction_check(self, interaction: Interaction):
         if interaction.user and interaction.user == self.ctx.author:
             return True
