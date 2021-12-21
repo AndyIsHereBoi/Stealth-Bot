@@ -205,22 +205,23 @@ class HelpView(discord.ui.View):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
 
-        embed = discord.Embed()
-
-        embed.add_field(name="**Help menu**", value=f"""
+        embed = discord.Embed(title="Help menu", description=f"""
 Hello there! I'm **Stealth Bot**. Welcome to the help menu.
+         """)
 
-**Getting help**
+        embed.add_field(name=f"**Getting help**", value=f"""
 Use **sb!help <command>** for more info on a command.
 There's also **sb!help <command> [sub-command]**.
 Use **sb!help <category>** for more info on a category.
 You can also use the dropdown below to select a category.
+                        """, inline=False)
 
-**Getting support**
+        embed.add_field(name=f"**Getting support**", value=f"""
 To get help, you can join my [support server](https://discord.gg/MrBcA6PZPw).
 You can also send me a DM if you prefer to.
+                        """, inline=False)
 
-**Wait a minute... Who are you?**
+        embed.add_field(name=f"**Wait a minute.. Who are you?**", value=f"""
 I'm a multipurpose discord bot created by <:github:895688440492986389> [Ender2K89#9999](https://github.com/Ender2K89/).
 You can use me to moderate your server, play music,
 manipulate images and way more!
@@ -229,53 +230,7 @@ I've been on discord since {discord.utils.format_dt(self.ctx.me.created_at)} ({d
 I've been online for {self.ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}
 I have **{len(self.bot.commands)}** commands.
 But you can only use **{self.usable_commands}** of those in this server.
-        """, inline=True)
-
-        embed.add_field(name=f"**Latest news**", value=f"""
-__**<:google_turtle:787675845371363338> Translate command fixed & improved (<t:1639819756:R>)**__ 
-The translate command has been fixed and improved! It's very fast!
-To try it out, do **{self.ctx.prefix}help translate**.
-
-__**:mute: Mute commands! (<t:1639338972:R>)**__
-New mute commands have been added! To manage your mute role, do **{self.ctx.prefix}help muterole**.
-To see the actual mute commands, do **{self.ctx.prefix}help mod** and go to the last page.
-    
-__**<a:music:888778105844563988> Music system improved (<t:1637504100:R>)**__
-The music system has been improved and is now way faster and smoother!
-Do **{self.ctx.prefix}help Music** to try it out!
-
-__**:wave: New welcoming system (<t:1637247577:R>)**__
-With this you can welcome new members that join your server!
-Do **{self.ctx.prefix}help welcome** for more info.
-
-__**<:scroll:904038785921187911> Logging system (<t:1637074743:R>)**__
-The logging system can log various actions in your server.
-For more info, do **{self.ctx.prefix}help log**.
-NOTE: This is in beta and some bugs may occur.
-        """, inline=True)
-
-#         embed.add_field(name=f"**Getting help**", value=f"""
-# Use **sb!help <command>** for more info on a command.
-# There's also **sb!help <command> [sub-command]**.
-# Use **sb!help <category>** for more info on a category.
-# You can also use the dropdown below to select a category.
-#                         """, inline=False)
-#
-#         embed.add_field(name=f"**Getting support**", value=f"""
-# To get help, you can join my [support server](https://discord.gg/MrBcA6PZPw).
-# You can also send me a DM if you prefer to.
-#                         """, inline=False)
-#
-#         embed.add_field(name=f"**Wait a minute.. Who are you?**", value=f"""
-# I'm a multipurpose discord bot created by <:github:895688440492986389> [Ender2K89#9999](https://github.com/Ender2K89/).
-# You can use me to moderate your server, play music,
-# manipulate images and way more!
-#
-# I've been on discord since {discord.utils.format_dt(self.ctx.me.created_at)} ({discord.utils.format_dt(self.ctx.me.created_at, style='R')})
-# I've been online for {self.ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}
-# I have **{len(self.bot.commands)}** commands.
-# But you can only use **{self.usable_commands}** of those in this server.
-#                         """, inline=False)
+                        """, inline=False)
 
         embed.set_footer(text=f"This command is inspired by R. Danny and DuckBot")
 
