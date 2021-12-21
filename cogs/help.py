@@ -250,7 +250,7 @@ __**<:scroll:904038785921187911> Logging system (<t:1637074743:R>)**__
 The logging system can log various actions in your server.
 For more info, do **{self.ctx.prefix}help log**.
 NOTE: This is in beta and some bugs may occur.
-        """)
+        """, inline=True)
 
 #         embed.add_field(name=f"**Getting help**", value=f"""
 # Use **sb!help <command>** for more info on a command.
