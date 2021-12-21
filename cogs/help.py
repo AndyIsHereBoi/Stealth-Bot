@@ -205,7 +205,9 @@ class HelpView(discord.ui.View):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
 
-        embed = discord.Embed(title="Help menu", description=f"""
+        embed = discord.Embed()
+
+        embed.add_field(name="**Help menu**", value=f"""
 Hello there! I'm **Stealth Bot**. Welcome to the help menu.
 
 **Getting help**
@@ -227,7 +229,7 @@ I've been on discord since {discord.utils.format_dt(self.ctx.me.created_at)} ({d
 I've been online for {self.ctx.time(days=days, hours=hours, minutes=minutes, seconds=seconds)}
 I have **{len(self.bot.commands)}** commands.
 But you can only use **{self.usable_commands}** of those in this server.
-         """)
+        """, inline=True)
 
         embed.add_field(name=f"**Latest news**", value=f"""
 __**<:google_turtle:787675845371363338> Translate command fixed & improved (<t:1639819756:R>)**__ 
@@ -250,7 +252,7 @@ __**<:scroll:904038785921187911> Logging system (<t:1637074743:R>)**__
 The logging system can log various actions in your server.
 For more info, do **{self.ctx.prefix}help log**.
 NOTE: This is in beta and some bugs may occur.
-        """, inline=False)
+        """, inline=True)
 
 #         embed.add_field(name=f"**Getting help**", value=f"""
 # Use **sb!help <command>** for more info on a command.
