@@ -229,6 +229,29 @@ I have **{len(self.bot.commands)}** commands.
 But you can only use **{self.usable_commands}** of those in this server.
          """)
 
+        embed.add_field(name=f"**Latest news**", value=f"""
+__**<:google_turtle:787675845371363338> Translate command fixed & improved (<t:1639819756:R>)**__ 
+The translate command has been fixed and improved! It's very fast!
+To try it out, do **{self.ctx.prefix}help translate**.
+
+__**:mute: Mute commands! (<t:1639338972:R>)**__
+New mute commands have been added! To manage your mute role, do **{self.ctx.prefix}help muterole**.
+To see the actual mute commands, do **{self.ctx.prefix}help mod** and go to the last page.
+    
+__**<a:music:888778105844563988> Music system improved (<t:1637504100:R>)**__
+The music system has been improved and is now way faster and smoother!
+Do **{self.ctx.prefix}help Music** to try it out!
+
+__**:wave: New welcoming system (<t:1637247577:R>)**__
+With this you can welcome new members that join your server!
+Do **{self.ctx.prefix}help welcome** for more info.
+
+__**<:scroll:904038785921187911> Logging system (<t:1637074743:R>)**__
+The logging system can log various actions in your server.
+For more info, do **{self.ctx.prefix}help log**.
+NOTE: This is in beta and some bugs may occur.
+        """)
+
 #         embed.add_field(name=f"**Getting help**", value=f"""
 # Use **sb!help <command>** for more info on a command.
 # There's also **sb!help <command> [sub-command]**.
