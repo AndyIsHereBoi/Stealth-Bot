@@ -126,80 +126,47 @@ class Images(commands.Cog):
         help="🐱 Shows a picture of a cat and a random fact about cats")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def cat(self, ctx: CustomContext):
-        start = time.perf_counter()
-
         request = await self.client.session.get('https://some-random-api.ml/img/cat')
         pictureJson = await request.json()
         request2 = await self.client.session.get('https://some-random-api.ml/facts/cat')
         factJson = await request2.json()
 
-        end = time.perf_counter()
-
-        ms = (end - start) * 1000
-
-        titles = ["Meowww", "Meoww!", "Meowwwww"]
-
-        embed = discord.Embed(title=f"{random.choice(titles)}", url=pictureJson['link'])
+        embed = discord.Embed(title=f"{random.choice(['Meowww', 'Meoww!', 'Meowwwww'])}", url=pictureJson['link'])
         embed.set_image(url=pictureJson['link'])
-        embed.set_footer(text=f"{round(ms)}ms{'' * (9 - len(str(round(ms, 3))))} • {factJson['fact']}")
+        embed.set_footer(text=f"{factJson['fact']}")
 
         await ctx.send(embed=embed, footer=False)
 
-    # @commands.command(
-    #     help="🐶 Shows a picture of a dog and a random fact about dogs")
-    # @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    # async def dog(self, ctx: CustomContext):
-    #     start = time.perf_counter()
-
-    #     request = await self.client.session.get('https://some-random-api.ml/img/dog')
-    #     pictureJson = await request.json()
-    #     request2 = await self.client.session.get('https://some-random-api.ml/facts/dog')
-    #     factJson = await request2.json()
-
-    #     end = time.perf_counter()
-
-    #     ms = (end - start) * 1000
-
-    #     titles = ["Bark!", "Arf!", "Woof!", "Bork!"]
-
-    #     embed = discord.Embed(title=f"{random.choice(titles)}", url=pictureJson['link'])
-    #     embed.set_image(url=pictureJson['link'])
-    #     embed.set_footer(text=f"{round(ms)}ms{'' * (9 - len(str(round(ms, 3))))} • {factJson['fact']}")
-
-    #     await ctx.send(embed=embed, footer=False)
-        
     @commands.command(
         help="🐶 Shows a picture of a dog and a random fact about dogs")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def dog(self, ctx: CustomContext):
-        async with self.client.session.get('https://random.dog/woof') as response:
-            if response.status != 200:
-                return await ctx.send('No dog found :(')
-            
-            request2 = await self.client.session.get('https://some-random-api.ml/facts/dog')
-            factJson = await request2.json()
+        request = await self.client.session.get("https://random.dog/woof")
+        if request.status != 200:
+            return await ctx.send("No dog found :(")
 
-            filename = await response.text()
-            url = f'https://random.dog/{filename}'
-            filesize = ctx.guild.filesize_limit if ctx.guild else 8388608
-            if filename.endswith(('.mp4', '.webm')):
-                async with ctx.typing():
-                    async with self.client.session.get(url) as other:
-                        if other.status != 200:
-                            raise errors.UnknownError
+        request2 = await self.client.session.get('https://some-random-api.ml/facts/dog')
+        factJson = await request2.json()
 
-                        if int(other.headers['Content-Length']) >= filesize:
-                            return await ctx.send(f"The video was too big to upload\nSee it here: **{url}**")
+        filename = await request.text()
+        filesize = ctx.guild.filesize_limit if ctx.guild else 8388608
+        if filename.endswith((".mp4", ".webm")):
+            await ctx.trigger_typing()
+            other = await self.client.session.get(f"https://random.dog/{filename}")
+            if request.status != 200:
+                raise errors.UnknownError
 
-                        fp = io.BytesIO(await other.read())
-                        await ctx.send(f"Random fact about dogs: {factJson['fact']}", file=discord.File(fp, filename=filename))
-                        
-            else:
-                embed = discord.Embed(title=random.choice(["Bark!", "Arf!", "Woof!", "Bork!"]), url=url)
-                embed.set_image(url=url)
-                embed.set_footer(text=factJson['fact'])
-                
-                await ctx.send(embed=embed, footer=False)
+            if int(other.headers['Content-Length']) >= filesize:
+                return await ctx.send(f"The video was too big to upload\nSee it here: **https://random.dog/{filename}**")
+
+            return await ctx.send(f"Random fact about dogs: {factJson['fact']}", file=discord.File(io.BytesIO(await other.read()), filename=filename))
+
+        else:
+            embed = discord.Embed(title=f"{random.choice(['Bark!', 'Arf!', 'Woof!', 'Bork!'])}", url=f"https://random.dog/{filename}")
+            embed.set_image(url=f"https://random.dog/{filename}")
+            embed.set_footer(text=f"{factJson['fact']}")
+
+            await ctx.send(embed=embed, footer=False)
 
     @commands.command(
         help="🐼 Shows a picture of a panda and a random fact about pandas")
