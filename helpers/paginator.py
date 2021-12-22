@@ -306,7 +306,7 @@ class GroupHelpPageSource(menus.ListPageSource):
 Total commands: {self.total_commands}
 Commands usable by you (in this server): {self.usable_commands}
                               """, timestamp=discord.utils.utcnow(), color=color)
-        embed.add_field(name=f"__**Avaible Commands ({self.total_commands})**__", value=f"""
+        embed.add_field(name=f"__**Available Commands ({self.total_commands})**__", value=f"""
 {text}
 ```yaml
 {val}
