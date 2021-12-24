@@ -180,13 +180,13 @@ def setup(client):
 
 
 class Info(commands.Cog):
-    "All informative commands like serverinfo, userinfo and more!"
+    """All informative commands like server-info, user-info and more!"""
 
     def __init__(self, client):
         self.client = client
         
         self.select_emoji = "<:info:888768239889424444>"
-        self.select_brief = "All informative commands like serverinfo, userinfo and more!"
+        self.select_brief = "All informative commands like server-info, userinfo and more!"
 
     async def build_rtfm_lookup_table(self, page_types):
         cache = {}

@@ -9,10 +9,7 @@ import difflib
 import aiohttp
 import discord
 import inspect
-import logging
 import itertools
-import contextlib
-
 import traceback
 
 from discord import Webhook
@@ -897,7 +894,7 @@ You've been AFK for {self.time(days=days, hours=hours, minutes=minutes, seconds=
 With the reason being: {info['reason']}
                                 """, timestamp=discord.utils.utcnow(), color=color)
 
-            await message.channel.send(embed=embed)
+            await message.channel.send(embed=embed, delete_after=35)
 
             await message.add_reaction("👋")
 
@@ -907,9 +904,6 @@ With the reason being: {info['reason']}
             return
 
         if message.author == self.client.user:
-            return
-
-        if message.guild.id == 336642139381301249:
             return
 
         if message.mentions:
@@ -932,7 +926,7 @@ With the reason being: {info['reason']}
 
             if afkUsers:
                 afkUsers = "\n".join(afkUsers)
-                await message.reply(f"{afkUsers}")
+                await message.reply(f"{afkUsers}", delete_after=35)
 
             else:
                 return

@@ -16,8 +16,6 @@ from helpers import time_inputs as time_inputs
 from discord.ext import commands, menus, tasks
 from discord.ext.menus.views import ViewMenuPages
 
-def can_execute_action(ctx, member, target):
-    return target.id == member.id or target.id == ctx.me.id or target.id == ctx.guild.owner.id or target.guild_permissions.administrator or (member.top_role > target.top_role and target != ctx.guild.owner)
 
 def ensure_muterole(*, required: bool = True):
     async def predicate(ctx):
@@ -46,13 +44,40 @@ async def muterole(ctx) -> discord.Role:
         raise commands.BadArgument("This server's mute role seems to be above my top role. I can't assign it!")
     return role
 
-
-def setup(client):
-    client.add_cog(Moderation(client))
     
 class Arguments(argparse.ArgumentParser):
     def error(self, message):
         raise RuntimeError(message)
+
+
+def can_execute_action(ctx, user, target):
+    return user.id == ctx.bot.owner_id or \
+           user == ctx.guild.owner or \
+           user.top_role > target.top_role
+
+
+class MemberID(commands.Converter):
+    async def convert(self, ctx, argument):
+        try:
+            m = await commands.MemberConverter().convert(ctx, argument)
+        except commands.BadArgument:
+            try:
+                member_id = int(argument, base=10)
+            except ValueError:
+                raise commands.BadArgument(f"{argument} is not a valid member or member ID.") from None
+            else:
+                m = await ctx.bot.get_or_fetch_member(ctx.guild, member_id)
+                if m is None:
+                    # hackban case
+                    return type('_Hackban', (), {'id': member_id, '__str__': lambda s: f'Member ID {s.id}'})()
+
+        if not can_execute_action(ctx, ctx.author, m):
+            raise commands.BadArgument('You cannot do this action on this user due to role hierarchy.')
+        return m
+
+
+def setup(client):
+    client.add_cog(Moderation(client))
 
 
 class ServerBansEmbedPage(menus.ListPageSource):
