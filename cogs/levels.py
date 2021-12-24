@@ -78,7 +78,7 @@ class Levels(commands.Cog):
             'next_xp': round((4 * (user['level'] ** 3)) / 5),  # xp required for next level
             'user_position': 69,  # User position in leaderboard
             'user_name': ctx.author,  # user name with descriminator
-            'user_status': ctx.author.status,  # User status eg. online, offline, idle, streaming, dnd
+            'user_status': 'online',  # User status eg. online, offline, idle, streaming, dnd
         }
 
         image = Generator().generate_profile(**args)
