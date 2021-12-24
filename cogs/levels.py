@@ -2,6 +2,7 @@ import asyncio
 import discord
 
 from discord.ext import commands
+from disrank.generator import Generator
 from helpers.context import CustomContext
 
 
@@ -28,11 +29,6 @@ class Levels(commands.Cog):
 
         else:
             return False
-
-    async def something(self, *values):
-        await self.client.db.execute("SELECT", tuple(values))
-
-        return [item[0] for item in await self.client.db.fetchall()]
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -70,18 +66,21 @@ class Levels(commands.Cog):
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
                                           ctx.author.id, ctx.guild.id)
 
-        ids = await self.something("* FROM users ORDER BY xp DESC")
-
         if not user:
             return await ctx.send("You don't have a level!")
 
-        level = user['level']
-        xp = user['xp']
+        args = {
+            'bg_image': 'https://media.discordapp.net/attachments/820049182860509206/923974515623604224/Untitled48_20211224102440.png?width=1193&height=671',  # Background image link
+            'profile_image': 'https://media.discordapp.net/attachments/820049182860509206/923974515623604224/Untitled48_20211224102440.png?width=1193&height=671',  # User profile picture link
+            'level': user['level'],  # User current level
+            'current_xp': 0,  # Current level minimum xp
+            'user_xp': user['xp'],  # User current xp
+            'next_xp': round((4 * (user['level'] ** 3)) / 5),  # xp required for next level
+            'user_position': 69,  # User position in leaderboard
+            'user_name': ctx.author,  # user name with descriminator
+            'user_status': ctx.author.status,  # User status eg. online, offline, idle, streaming, dnd
+        }
 
-        embed = discord.Embed(description=f"""
-Level: {level}
-XP: {xp}/{round((4 * (level ** 3)) / 5)}
-Rank: {ids.index(ctx.author.id)+1}/{len(ids)}
-        """)
+        image = Generator().generate_profile(**args)
 
-        return await ctx.send(embed=embed)
+        return await ctx.send(file=discord.File(fp=image, filename="rank.png"))
