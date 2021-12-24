@@ -47,10 +47,10 @@ class Levels(commands.Cog):
 
             if await self.level_up(user):
                 try:
-                    await message.reply(f"You've levelled up! You are now level **{user['level' + 1]}**")
+                    await message.reply(f"You've levelled up! You are now level **{user['level'] + 1}**")
 
                 except:
-                    await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{user['level' + 1]}**")
+                    await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{user['level'] + 1}**")
 
         else:
             return
