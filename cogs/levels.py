@@ -71,14 +71,14 @@ class Levels(commands.Cog):
 
         args = {
             'bg_image': 'https://media.discordapp.net/attachments/820049182860509206/923974515623604224/Untitled48_20211224102440.png?width=1193&height=671',  # Background image link
-            'profile_image': 'https://media.discordapp.net/attachments/820049182860509206/923974515623604224/Untitled48_20211224102440.png?width=1193&height=671',  # User profile picture link
+            'profile_image': str(ctx.author.avatar.replace(format='png', size=2048).url),  # User profile picture link
             'level': user['level'],  # User current level
             'current_xp': 0,  # Current level minimum xp
             'user_xp': user['xp'],  # User current xp
             'next_xp': round((4 * (user['level'] ** 3)) / 5),  # xp required for next level
-            'user_position': 69,  # User position in leaderboard
-            'user_name': ctx.author,  # user name with descriminator
-            'user_status': 'online',  # User status eg. online, offline, idle, streaming, dnd
+            'user_position': 1,  # User position in leaderboard
+            'user_name': str(ctx.author),  # user name with descriminator
+            'user_status': ctx.author.status.name,  # User status eg. online, offline, idle, streaming, dnd
         }
 
         image = Generator().generate_profile(**args)
