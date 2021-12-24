@@ -1,3 +1,4 @@
+import asyncio
 import discord
 
 from discord.ext import commands
@@ -28,6 +29,11 @@ class Levels(commands.Cog):
         else:
             return False
 
+    async def something(self, *values):
+        await self.client.db.execute("SELECT", tuple(values))
+
+        return [item[0] for item in await self.client.db.fetchall()]
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
@@ -55,10 +61,16 @@ class Levels(commands.Cog):
         else:
             return
 
-    @commands.command()
+    @commands.command(
+        help="")
     async def level(self, ctx: CustomContext) -> discord.Message:
+        await ctx.trigger_typing()
+        await asyncio.sleep(2)
+
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
                                           ctx.author.id, ctx.guild.id)
+
+        ids = await self.something("* FROM users ORDER BY xp DESC")
 
         if not user:
             return await ctx.send("You don't have a level!")
@@ -69,6 +81,7 @@ class Levels(commands.Cog):
         embed = discord.Embed(description=f"""
 Level: {level}
 XP: {xp}/{round((4 * (level ** 3)) / 5)}
+Rank: {ids.index(ctx.author.id)+1}/{len(ids)}
         """)
 
         return await ctx.send(embed=embed)
