@@ -57,7 +57,7 @@ class Levels(commands.Cog):
 
     @commands.command()
     async def level(self, ctx: CustomContext) -> discord.Message:
-        user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
+        user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
                                           ctx.author.id, ctx.guild.id)
 
         if not user:
