@@ -54,3 +54,21 @@ class Levels(commands.Cog):
 
         else:
             return
+
+    @commands.command()
+    async def level(self, ctx: CustomContext) -> discord.Message:
+        user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
+                                          ctx.author.id, ctx.guild.id)
+
+        if not user:
+            return await ctx.send("You don't have a level!")
+
+        level = user['level']
+        xp = user['xp']
+
+        embed = discord.Embed(description=f"""
+Level: {level}
+XP: {xp}/{round((4 * (level ** 3)) / 5)}
+        """)
+
+        return await ctx.send(embed=embed)
