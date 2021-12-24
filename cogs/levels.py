@@ -35,20 +35,21 @@ class Levels(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.id != 923959775794978826:
+        if message.channel.id == 923959775794978826:
+            user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
+
+            if not user:
+                await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
+
+            user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
+            await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + 1, message.author.id, message.guild.id)
+
+            if await self.level_up(user):
+                try:
+                    await message.reply(f"You've levelled up! You are now level **{user['level' + 1]}**")
+
+                except:
+                    await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{user['level' + 1]}**")
+
+        else:
             return
-
-        user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
-
-        if not user:
-            await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
-
-        user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
-        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + 1, message.author.id, message.guild.id)
-
-        if self.level_up(user):
-            try:
-                await message.reply(f"You've levelled up! You are now level **{user['level' + 1]}**")
-
-            except:
-                await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{user['level' + 1]}**")
