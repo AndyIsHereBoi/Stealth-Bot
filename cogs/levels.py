@@ -28,6 +28,7 @@ class Levels(commands.Cog):
         else:
             return False
 
+    @commands.Cog.listener()
     async def on_message(self, message):
         if not message.guild:
             return
