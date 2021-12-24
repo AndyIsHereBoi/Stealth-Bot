@@ -17,12 +17,12 @@ class Levels(commands.Cog):
         self.select_emoji = "<:lightningbolt:903706434791956561>"
         self.select_brief = "Levelling system."
 
-    def level_up(self, user):
+    async def level_up(self, user):
         level = user['level']
         xp = user['xp']
 
         if xp >= round((4 * (level ** 3)) / 5):
-            await self.bot.db.execute("UPDATE users SET level = $1 WHERE user_id = $2 AND guild_id = $3", level + 1, user['user_id'], user['guild_id'])
+            await self.client.db.execute("UPDATE users SET level = $1 WHERE user_id = $2 AND guild_id = $3", level + 1, user['user_id'], user['guild_id'])
             return True
 
         else:
