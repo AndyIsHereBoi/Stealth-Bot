@@ -1,5 +1,7 @@
+import typing
 import asyncio
 import discord
+import functools
 
 from discord.ext import commands
 from disrank.generator import Generator
@@ -28,7 +30,11 @@ class Levels(commands.Cog):
             return True
 
         else:
-            return False
+            return
+
+    def get_rank_card(self, args):
+        image = Generator().generate_profile(**args)
+        return image
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -38,7 +44,7 @@ class Levels(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.id == 923959775794978826:
+        if message.channel.id == 829418754408317029:
             user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
 
             if not user:
@@ -58,10 +64,11 @@ class Levels(commands.Cog):
             return
 
     @commands.command(
-        help="")
-    async def level(self, ctx: CustomContext) -> discord.Message:
+        help="Shows the specified member's rank card.",
+        aliases=['lvl', 'rank'])
+    async def level(self, ctx: CustomContext, member: typing.Optional[discord.Member] = None) -> discord.Message:
         await ctx.trigger_typing()
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
 
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
                                           ctx.author.id, ctx.guild.id)
@@ -81,6 +88,6 @@ class Levels(commands.Cog):
             'user_status': ctx.author.status.name,  # User status eg. online, offline, idle, streaming, dnd
         }
 
-        image = Generator().generate_profile(**args)
+        image = await asyncio.get_event_loop().run_in_executor(None, functools.partial(self.get_rank_card, args))
 
         return await ctx.send(file=discord.File(fp=image, filename="rank.png"))
