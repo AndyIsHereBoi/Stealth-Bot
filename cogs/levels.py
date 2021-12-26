@@ -95,7 +95,7 @@ class Levels(commands.Cog):
 
         image = await asyncio.get_event_loop().run_in_executor(None, functools.partial(self.get_rank_card, args))
 
-        embed = discord.Embed(title=f"{'Your' if member.id == ctx.author.id else f'{member.display_name}s level'}")
+        embed = discord.Embed(title=f"{'Your' if member.id == ctx.author.id else f'{member.display_name}s'} rank card")
         embed.set_image(url=f"attachment://rank.png")
 
         return await ctx.send(embed=embed, file=discord.File(fp=image, filename="rank.png"))
