@@ -68,26 +68,34 @@ class Levels(commands.Cog):
         aliases=['lvl', 'rank'])
     async def level(self, ctx: CustomContext, member: typing.Optional[discord.Member] = None) -> discord.Message:
         await ctx.trigger_typing()
-        await asyncio.sleep(1)
+
+        if member is None:
+            if ctx.message.reference:
+                member = ctx.message.reference.resolved.author
+            else:
+                member = ctx.author
 
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2",
-                                          ctx.author.id, ctx.guild.id)
+                                          member.id, ctx.guild.id)
 
         if not user:
             return await ctx.send("You don't have a level!")
 
         args = {
             'bg_image': 'https://media.discordapp.net/attachments/820049182860509206/923974515623604224/Untitled48_20211224102440.png?width=1193&height=671',  # Background image link
-            'profile_image': str(ctx.author.avatar.replace(format='png', size=2048).url),  # User profile picture link
+            'profile_image': str(member.avatar.replace(format='png', size=2048).url),  # User profile picture link
             'level': user['level'],  # User current level
             'current_xp': 0,  # Current level minimum xp
             'user_xp': user['xp'],  # User current xp
             'next_xp': round((4 * (user['level'] ** 3)) / 5),  # xp required for next level
             'user_position': 1,  # User position in leaderboard
-            'user_name': str(ctx.author),  # username with descriminator
-            'user_status': ctx.author.status.name,  # User status eg. online, offline, idle, streaming, dnd
+            'user_name': str(member),  # username with descriminator
+            'user_status': member.status.name,  # User status eg. online, offline, idle, streaming, dnd
         }
 
         image = await asyncio.get_event_loop().run_in_executor(None, functools.partial(self.get_rank_card, args))
 
-        return await ctx.send(file=discord.File(fp=image, filename="rank.png"))
+        embed = discord.Embed(title=f"{'Your' if member.id == ctx.author.id else f'{member.display_name}s level'}")
+        embed.set_image(url=f"attachment://rank.png")
+
+        return await ctx.send(embed=embed, file=discord.File(fp=image, filename="rank.png"))
