@@ -88,7 +88,7 @@ class Levels(commands.Cog):
             'current_xp': 0,  # Current level minimum xp
             'user_xp': user['xp'],  # User current xp
             'next_xp': round((4 * (user['level'] ** 3)) / 5),  # xp required for next level
-            'user_position': 1,  # User position in leaderboard
+            'user_position': 0,  # User position in leaderboard
             'user_name': str(member),  # username with descriminator
             'user_status': member.status.name,  # User status eg. online, offline, idle, streaming, dnd
         }
