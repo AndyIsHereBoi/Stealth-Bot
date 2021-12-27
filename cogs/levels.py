@@ -30,7 +30,7 @@ class Levels(commands.Cog):
             return True
 
         else:
-            return
+            return False
 
     def get_rank_card(self, args):
         image = Generator().generate_profile(**args)
@@ -44,21 +44,21 @@ class Levels(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.id == 829418754408317029:
-            user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
+        user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
 
-            if not user:
-                await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
+        if not user:
+            await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
 
-            user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
-            await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + 1, message.author.id, message.guild.id)
+        user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
+        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + 1, message.author.id, message.guild.id)
 
-            if await self.level_up(user):
-                try:
-                    await message.reply(f"You've levelled up! You are now level **{user['level'] + 1}**")
+        if await self.level_up(user) and message.channel.id == 829418754408317029 and message.guild.id == 799330949686231050:
+            level: int = user['level'] + 1
+            try:
+                await message.reply(f"You've levelled up! You are now level **{level}**")
 
-                except:
-                    await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{user['level'] + 1}**")
+            except:
+                await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{level}**")
 
         else:
             return
@@ -99,3 +99,24 @@ class Levels(commands.Cog):
         embed.set_image(url=f"attachment://rank.png")
 
         return await ctx.send(embed=embed, file=discord.File(fp=image, filename="rank.png"))
+
+    @commands.command(
+        help="Shows the level leaderboard for the server.",
+        aliases=['lb'])
+    async def leaderboard(self, ctx: CustomContext) -> discord.Message:
+        records = await self.client.db.fetch("SELECT * FROM users WHERE guild_id = $1 ORDER BY level DESC LIMIT 10",
+                                            ctx.guild.id)
+
+        users = []
+        levels = []
+        nl = "\n"
+
+        for record in records:
+            user = ctx.guild.get_member(record['user_id'])
+            users.append(f"{user.mention}")
+            levels.append(f"{record['level']} ({record['xp']} XP)")
+
+        embed = discord.Embed(title=f"{ctx.guild.name}'s level leaderboard")
+        embed.add_field(name=f"User", value=f"{nl.join(users)}", inline=True)
+        embed.add_field(name=f"Level", value=f"{nl.join(levels)}", inline=True)
+        return await ctx.send(embed=embed)
