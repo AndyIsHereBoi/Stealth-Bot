@@ -390,5 +390,5 @@ class PersistentVerifyView(discord.ui.View):
 
     @discord.ui.button(emoji="✅", label="Verify", custom_id="persistant_verify_view_verify")
     async def verify(self, _, interaction: discord.Interaction):
-        role = discord.utils.get(interaction.guild.roles, name="Verified")
+        role = interaction.guild.get_role(925110650290712597)
         return await interaction.user.add_roles(role)
