@@ -52,13 +52,17 @@ class Levels(commands.Cog):
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
         await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + 1, message.author.id, message.guild.id)
 
-        if await self.level_up(user) and message.channel.id == 829418754408317029 and message.guild.id == 799330949686231050:
-            level: int = user['level'] + 1
-            try:
-                await message.reply(f"You've levelled up! You are now level **{level}**")
+        if await self.level_up(user):
+            if message.channel.id == 829418754408317029 and message.guild.id == 799330949686231050:
+                level: int = user['level'] + 1
+                try:
+                    await message.reply(f"You've levelled up! You are now level **{level}**")
 
-            except:
-                await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{level}**")
+                except:
+                    await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{level}**")
+
+            else:
+                pass
 
         else:
             return
