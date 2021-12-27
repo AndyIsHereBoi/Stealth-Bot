@@ -381,3 +381,19 @@ class PersistentExceptionView(discord.ui.View):
 Marked as fixed by {interaction.user}
 ```
         """, view=None)
+
+
+class PersistentVerifyView(discord.ui.View):
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.client = bot
+
+    @discord.ui.button(emoji="✅", label="Verify", custom_id="persistant_verify_view_verify")
+    async def verify(self, _, interaction: discord.Interaction):
+        guild = self.client.get_guild(interaction.guild_id)
+        if guild.id == 925067864241754132:
+            role = discord.utils.get(guild.roles, name="Verified")
+            return await interaction.user.add_roles(role)
+
+        else:
+            return

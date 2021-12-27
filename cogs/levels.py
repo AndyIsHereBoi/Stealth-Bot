@@ -59,11 +59,7 @@ class Levels(commands.Cog):
             if message.guild.id == 799330949686231050:
                 level: int = user['level'] + 1
 
-                try:
-                    await message.reply(f"You've levelled up! You are now level **{level}**")
-
-                except:
-                    await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{level}**")
+                await message.reply(f"You've levelled up! You are now level **{user['level'] + 1}**")
 
     @commands.command(
         help="Shows the specified member's rank card.",
@@ -81,7 +77,7 @@ class Levels(commands.Cog):
                                           member.id, ctx.guild.id)
 
         if not user:
-            return await ctx.send("You don't have a level!")
+            return await ctx.send(f"{'You' if member.id == ctx.author.id else f'{member.display_name}'} doesn't have a level")
 
         args = {
             'bg_image': 'https://media.discordapp.net/attachments/820049182860509206/923974515623604224/Untitled48_20211224102440.png?width=1193&height=671',  # Background image link

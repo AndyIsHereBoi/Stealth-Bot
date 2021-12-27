@@ -22,7 +22,7 @@ from collections import defaultdict
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
-from helpers.paginator import PersistentExceptionView
+from helpers.paginator import PersistentExceptionView, PersistentVerifyView
 
 PRE: tuple = ("sb!",)
 
@@ -343,6 +343,7 @@ class StealthBot(commands.AutoShardedBot):
         self._dynamic_cogs()
         self.load_extension("jishaku")
         self.add_view(PersistentExceptionView(self))
+        self.add_view(PersistentVerifyView(self))
         self.persistent_views_added = True
 
         print(f"-------------================----------------")
