@@ -61,12 +61,6 @@ class Levels(commands.Cog):
                 except:
                     await message.channel.send(f"{message.author.mention} has levelled up! They are now level **{level}**")
 
-            else:
-                pass
-
-        else:
-            return
-
     @commands.command(
         help="Shows the specified member's rank card.",
         aliases=['lvl', 'rank'])
