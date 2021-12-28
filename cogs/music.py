@@ -360,7 +360,7 @@ class Music(commands.Cog):
 
     @commands.command(
         help="Adds the specified song to the queue.",
-        aliases=['p', 'sing', 'playsong', 'playmusic', 'listen', 'listenmusic', 'musiclisten', 'search'])
+        aliases=['p', 'sing', 'playsong', 'playmusic', 'listen', 'listenmusic', 'musiclisten'])
     async def play(self, ctx: CustomContext, *, song: typing.Optional[str] = None):
         player = ctx.voice_client
 
@@ -397,14 +397,7 @@ class Music(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            if ctx.invoked_with == 'search':
-                view = SearchMenu(ctx, tracks=results)
-                await view.start()
-                await view.wait()
-                track = view.track
-            else:
-                track = results[0]
-
+            track = results[0]
 
             player.queue.put(track)
 
@@ -413,6 +406,54 @@ class Music(commands.Cog):
             
             await ctx.send(embed=embed)
             
+        if not player.is_playing:
+            await player.play(player.queue.get())
+
+    @commands.command(
+        help="Searches for the specified song and then gives you a list of results.")
+    async def search(self, ctx: CustomContext, *, song: str) -> discord.Message:
+        player = ctx.voice_client
+        try:
+            results = await self.get_tracks(ctx, song)
+
+        except pomice.TrackLoadError:
+            raise LoadFailed
+
+        if not results:
+            raise NoMatches
+
+        if isinstance(results, pomice.Playlist):
+            tracks = results.tracks
+
+            for track in tracks:
+                player.queue.put(track)
+
+            if results.spotify:
+                thumbnail = results.thumbnail
+
+            else:
+                thumbnail = self.get_thumbnail(results.tracks[0])
+
+            embed = discord.Embed(title="Added a playlist to the queue",
+                                  description=f"**[{results}]({song})** with **{len(tracks)}** songs.")
+            embed.set_thumbnail(url=thumbnail or discord.embeds.EmptyEmbed)
+
+            await ctx.send(embed=embed)
+
+        else:
+            view = SearchMenu(ctx, tracks=results)
+            await view.start()
+            await view.wait()
+            track = view.track
+
+            player.queue.put(track)
+
+            embed = discord.Embed(title="Added a song to the queue",
+                                  description=f"**[{track.title.upper()}]({track.uri})**")
+            embed.set_thumbnail(url=self.get_thumbnail(track))
+
+            return await ctx.send(embed=embed)
+
         if not player.is_playing:
             await player.play(player.queue.get())
 
