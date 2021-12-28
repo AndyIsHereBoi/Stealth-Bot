@@ -258,9 +258,10 @@ class Info(commands.Cog):
 
     async def do_rtfm(self, ctx: CustomContext, key, obj):
         page_types = {
-            'old': 'https://discordpy.readthedocs.io/en/rewrite',
             'latest': 'https://discordpy.readthedocs.io/en/latest',
             'latest-jp': 'https://discordpy.readthedocs.io/ja/latest',
+            'rewrite': 'https://discordpy.readthedocs.io/en/rewrite',
+            'legacy': 'https://discordpy.readthedocs.io/en/legacy',
             'python': 'https://docs.python.org/3',
             'python-jp': 'https://docs.python.org/ja/3',
             'master': 'https://discordpy.readthedocs.io/en/master',
@@ -271,9 +272,10 @@ class Info(commands.Cog):
             'pomice': 'https://pomice.readthedocs.io/en/latest'
         }
         embed_titles = {
-            'old': 'discord.py v1.0.0',
             'latest': 'discord.py v1.7.3',
             'latest-jp': 'discord.py v1.7.3 in Japanese',
+            'rewrite': 'discord.py v1.0.0',
+            'legacy': 'discord.py v0.9.0',
             'python': 'python',
             'python-jp': 'python in Japanese',
             'master': 'discord.py v2.0.0a',
@@ -284,9 +286,10 @@ class Info(commands.Cog):
             'pomice': 'pomice'
         }
         embed_icons = {
-            'old': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
             'latest': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
             'latest-jp': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
+            'rewrite': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
+            'legacy': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
             'python': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png',
             'python-jp': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png',
             'master': 'https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png',
@@ -1854,11 +1857,18 @@ With the reason being: {info['reason']}""")
         await self.do_rtfm(ctx, 'latest-jp', obj)
 
     @rtfm.command(
-        help="Gives you a documentation link for an old discord.py entity (v1.0.0).",
-        name='old',
+        help="Gives you a documentation link for a discord.py entity (rewrite).",
+        name='rewrite',
         aliases=['1.0'])
-    async def rtfm_old(self, ctx: CustomContext, *, obj: str = None):
-        await self.do_rtfm(ctx, 'old', obj)
+    async def rtfm_rewrite(self, ctx: CustomContext, *, obj: str = None):
+        await self.do_rtfm(ctx, 'rewrite', obj)
+
+    @rtfm.command(
+        help="Gives you a documentation link for a discord.py entity (legacy).",
+        name='legacy',
+        aliases=['0.9'])
+    async def rtfm_legacy(self, ctx: CustomContext, *, obj: str = None):
+        await self.do_rtfm(ctx, 'legacy', obj)
 
     @rtfm.command(
         help="Gives you a documentation link for a Python entity.",
