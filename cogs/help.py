@@ -237,9 +237,6 @@ The economy is getting revamped!
 We have a dev team of 4 people working on it.
 We plan to release it within 6 months.
 We have a lot of plans and they might take a while.
-
-Best regards,
-Ender2K89
         """, inline=False)
 
         return embed
