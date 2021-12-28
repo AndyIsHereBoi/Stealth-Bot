@@ -1855,7 +1855,8 @@ With the reason being: {info['reason']}""")
 
     @rtfm.command(
         help="Gives you a documentation link for an old discord.py entity (v1.0.0).",
-        name='old')
+        name='old',
+        aliases=['1.0'])
     async def rtfm_old(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'old', obj)
 
