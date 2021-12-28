@@ -174,7 +174,7 @@ class CustomContext(commands.Context):
             colors = [0xFF9A00, 0x000000, 0x09FF00, 0xC900FF, 0xFBFAF4]
             emotes = [':ghost:', ':jack_o_lantern:']
             unicode_emotes = ['👻', '🎃']
-            star_emoji = ['<a:pumpkinhappy:919661769683771432>', '<a:pumpkindead:919662049322221610>', '<:ghostlove:919662188451495966>', '']
+            star_emoji = ['<a:pumpkinhappy:919661769683771432>', '<a:pumpkindead:919662049322221610>', '<:ghostlove:919662188451495966>']
 
         elif self.bot.theme == "christmas":
             colors = [0xB3000C, 0xE40010, 0xD8D8D8, 0x1FD537, 0x1FD537]
