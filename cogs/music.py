@@ -22,6 +22,63 @@ MM_SS_RE = re.compile(r"(?P<m>\d{1,2}):(?P<s>\d{1,2})")
 HUMAN_RE = re.compile(r"(?:(?P<m>\d+)\s*m\s*)?(?P<s>\d+)\s*[sm]")
 OFFSET_RE = re.compile(r'(?P<s>[-+]\d+)\s*s', re.IGNORECASE)
 
+class SearchDropdown(discord.ui.Select['SearchMenu']):
+    def __init__(self, options):
+        super().__init__(placeholder='Select a track', options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        resp: discord.InteractionResponse = interaction.response
+        if self.values[0] == 'cancel':
+            await self.view.on_timeout('Cancelled!')
+            return self.view.stop()
+        track = discord.utils.get(self.view.tracks, identifier=self.values[0])
+        if not track:
+            return await resp.send_message('Something went wrong, please try to select again.', ephemeral=True)
+        self.view.track = track
+        await interaction.message.delete()
+        return self.view.stop()
+
+
+class SearchMenu(discord.ui.View):
+    def __init__(self, ctx: CustomContext, *, tracks: typing.List[pomice.Track]):
+        super().__init__()
+        self.ctx = ctx
+        self.tracks = tracks[0:24]
+        self.message: discord.Message = None
+        self.track: typing.Optional[pomice.Track] = None
+        self.embed: discord.Embed = None
+        self.options: typing.List[discord.SelectOption] = []
+        self.build_embed()
+        self.add_item(SearchDropdown(self.options))
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user and interaction.user == self.ctx.author:
+            return True
+        await interaction.response.send_message('This is not your Play Menu!', ephemeral=True)
+
+    async def on_timeout(self, label: str = None) -> None:
+        for child in self.children:
+            child.disabled = True
+            if isinstance(child, discord.ui.Select):
+                child.placeholder = label or "Timed out! Please try again."
+
+        if self.message:
+            await self.message.edit(view=self)
+
+    def build_embed(self) -> typing.Tuple[discord.Embed, discord.SelectOption]:
+        data = []
+        for track in self.tracks:
+            self.options.append(
+                discord.SelectOption(label=track.title[0:100], value=track.identifier, description=track.author[0:100]))
+            data.append(f"[{track.title}]({track.uri})")
+        self.options.append(discord.SelectOption(label='Cancel', emoji='❌', value='cancel'))
+        data = [f"`{i}:` {desc}" for i, desc in enumerate(data, start=1)]
+        embed = discord.Embed(title='Select a track to enqueue', description='\n'.join(data))
+        self.embed = embed
+
+    async def start(self):
+        self.message = await self.ctx.send(embed=self.embed, view=self)
+
 def setup(bot):
     bot.add_cog(Music(bot))
 
@@ -303,7 +360,7 @@ class Music(commands.Cog):
 
     @commands.command(
         help="Adds the specified song to the queue.",
-        aliases=['p', 'sing', 'playsong', 'playmusic', 'listen', 'listenmusic', 'musiclisten'])
+        aliases=['p', 'sing', 'playsong', 'playmusic', 'listen', 'listenmusic', 'musiclisten', 'search'])
     async def play(self, ctx: CustomContext, *, song: typing.Optional[str] = None):
         player = ctx.voice_client
 
@@ -340,7 +397,15 @@ class Music(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            track = results[0]
+            if ctx.invoked_with == 'search':
+                view = SearchMenu(ctx, tracks=results)
+                await view.start()
+                await view.wait()
+                track = view.track
+            else:
+                track = results[0]
+
+
             player.queue.put(track)
 
             embed = discord.Embed(title="Added a song to the queue", description=f"**[{track.title.upper()}]({track.uri})**")
