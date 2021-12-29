@@ -134,7 +134,7 @@ class StealthBot(commands.AutoShardedBot):
         self.mystbin = mystbin.Client()
 
         # Custom stuff
-        self.chatbot_channels = [913851034416324658, 913851042079338586, 922510533368889404]
+        self.chatbot_channels = [913851034416324658, 913851042079338586, 914643410357473310, 925801564701069322]
         self.no_prefix = False
         self.maintenance = False
         self.launch_time = discord.utils.utcnow()
