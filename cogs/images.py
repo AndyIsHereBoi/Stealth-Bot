@@ -22,6 +22,8 @@ class Images(commands.Cog):
         self.select_brief = "Commands that manipulate/send images."
 
     async def jeyy_image_api(self, endpoint: str, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji, None]]):
+        await ctx.trigger_typing()
+
         if member is None:
             if ctx.message.reference:
                 member = ctx.message.reference.resolved.author
