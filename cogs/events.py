@@ -922,7 +922,7 @@ With the reason being: {info['reason']}
                     days, hours = divmod(hours, 24)
 
                     afkUsers.append(
-                        f"Hey {message.author.mention}, it looks like {member.mention} has been AFK for {self.time(days=int(days), hours=int(hours), minutes=int(minutes), seconds=int(seconds))}.\nWith the reason being: {info['reason']}\n")
+                        f"Hey {message.author.mention}, it looks like {member.mention} has been AFK for {helpers.human_timedelta(info['start_time'])}.\nWith the reason being: {info['reason']}\n")
 
             if afkUsers:
                 afkUsers = "\n".join(afkUsers)
