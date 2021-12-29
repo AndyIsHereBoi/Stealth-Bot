@@ -357,7 +357,7 @@ class StealthHelp(commands.HelpCommand):
 
     async def send_bot_help(self, mapping):
         view = HelpView(self.context, usable_commands=f"{len(await self.filter_commands(list(self.context.bot.commands), sort=True)):,}",
-                                                                data=mapping)
+                                                        data=mapping)
         await view.start()
 
 
