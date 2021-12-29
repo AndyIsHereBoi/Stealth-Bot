@@ -562,7 +562,7 @@ class Images(commands.Cog):
 
     @commands.command(
         help="Pat pat.",
-        aliases=['pats', 'pet', 'petpet', 'pat'],
+        aliases=['pats', 'pet', 'petpet'],
         usage="[member|user|emoji]")
     async def patpat(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
