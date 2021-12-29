@@ -635,7 +635,7 @@ class Images(commands.Cog):
 
     @commands.command(
         help=":sob::sob::sob:",
-        aliases=['magnifying'],
+        aliases=['cry'],
         usage="[member|user|emoji]")
     async def sob(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
