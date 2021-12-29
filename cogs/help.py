@@ -339,10 +339,10 @@ class StealthHelp(commands.HelpCommand):
     def get_bot_mapping(self):
         """Retrieves the bot mapping passed to :meth:`send_bot_help`."""
         bot = self.context.bot
-        ignored_cogs = ['NSFW', 'Events', 'Levels', 'IPC', 'SignalPvP', 'Help', 'Jishaku']
+        ignored_cogs = ['NSFW', 'Events', 'Levels', 'IPC', 'SignalPvP', 'Help', 'Jishaku', 'Logger']
 
         if self.context.channel.is_nsfw():
-            ignored_cogs = ['Events', 'Levels', 'IPC', 'SignalPvP', 'Help', 'Jishaku']
+            ignored_cogs = ['Events', 'Levels', 'IPC', 'SignalPvP', 'Help', 'Jishaku', 'Logger']
 
         mapping = {cog: cog.get_commands() for cog in sorted(bot.cogs.values(), key=lambda c: len(c.get_commands()), reverse=True) if cog.qualified_name not in ignored_cogs}
         return mapping
@@ -350,8 +350,9 @@ class StealthHelp(commands.HelpCommand):
 
     def get_minimal_command_signature(self, command):
         if isinstance(command, commands.Group):
-            return '[G] %s%s %s' % (self.context.clean_prefix, command.qualified_name, command.signature)
-        return '(c) %s%s %s' % (self.context.clean_prefix, command.qualified_name, command.signature)
+            return f"[G] {self.context.clean_prefix}{command.qualified_name} {command.usage if command.usage else command.signature}"
+
+        return f"[c] {self.context.clean_prefix}{command.qualified_name} {command.usage if command.usage else command.signature}"
 
 
     async def send_bot_help(self, mapping):

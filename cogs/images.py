@@ -374,112 +374,116 @@ class Images(commands.Cog):
 
     @commands.command()
     async def abstract(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def balls(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def blur(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def boil(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def bomb(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def bonks(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def burn(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def canny(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def cartoon(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def clock(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def earthquake(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def equations(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def explicit(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
     async def gallery(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
-    async def half_invert(self, ctx, member: typing.Optional[
+    async def glitch(self, ctx, member: typing.Optional[
         typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
-    async def hearts(self, ctx, member: typing.Optional[
-        typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+    async def half_invert(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
-    async def infinity(self, ctx, member: typing.Optional[
-        typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+    async def hearts(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
-    async def lamp(self, ctx, member: typing.Optional[
-        typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+    async def infinity(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command()
-    async def layers(self, ctx, member: typing.Optional[
-        typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
-        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+    async def lamp(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
+
+    @commands.command(
+        help="Shows layers with a mirror.",
+        aliases=['layer', 'lay'],
+        usage="[member|user|emoji]")
+    async def layers(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
 
     @commands.command( # 14
         help="""
