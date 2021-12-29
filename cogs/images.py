@@ -54,7 +54,13 @@ class Images(commands.Cog):
 
     @commands.command()
     async def cat(self, ctx):
-        return
+        request = await self.client.session.get(f"https://some-random-api.ml/animal/cat")
+        data = await request.json()
+
+        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
+        embed.set_image(url=data['image'])
+
+        return await ctx.send(embed=embed)
 
     @commands.command()
     async def bunny(self, ctx):
