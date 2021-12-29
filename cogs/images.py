@@ -48,7 +48,7 @@ class Images(commands.Cog):
         data = await request.json()
 
         embed = discord.Embed()
-        embed.set.image(url=data['image'], description=data['fact'])
+        embed.set_image(url=data['image'], description=data['fact'])
 
         return await ctx.send(embed=embed)
 
