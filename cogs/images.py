@@ -649,7 +649,7 @@ class Images(commands.Cog):
 
     @commands.command( # TODO: Fix this too
         help="For detectives",
-        aliases=['magnifying'],
+        aliases=['yt'],
         usage="[member|user|emoji]")
     async def youtube(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
