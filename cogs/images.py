@@ -367,13 +367,23 @@ class Images(commands.Cog):
                 file = discord.File(fp=buffer, filename="thispersondoesnotexist.png")
                 await ctx.send(file=file)
 
-    shit = ['abstract', 'balls', 'blur', 'boil', 'bomb', 'bonks', 'burn', 'canny', 'cartoon', 'clock', 'earthquake',
+    shit = ['boil', 'bomb', 'bonks', 'burn', 'canny', 'cartoon', 'clock', 'earthquake',
             'equations', 'explicit', 'gallery', 'glitch', 'half_invert', 'hearts', 'infinity', 'lamp', 'layers',
             'magnify', 'matrix', 'optics', 'paparazzi', 'patpat', 'print', 'radiate', 'rain', 'roll', 'scrapbook',
             'sensitive', 'shear', 'shock', 'shoot', 'sob', 'tv', 'warp', 'youtube']
 
     @commands.command()
     async def abstract(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+
+    @commands.command()
+    async def balls(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
+        return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
+
+    @commands.command()
+    async def blur(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
         return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
 
