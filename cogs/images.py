@@ -493,7 +493,7 @@ class Images(commands.Cog):
 
     @commands.command(
         help="Inverts halfly.",
-        aliases=['hi', 'halfinvert', 'half-invert'],
+        aliases=['halfinvert', 'half-invert'],
         usage="[member|user|emoji]")
     async def half_invert(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
