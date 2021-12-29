@@ -47,7 +47,7 @@ class Images(commands.Cog):
         request = await self.client.session.get(f"https://some-random-api.ml/animal/dog")
         data = await request.json()
 
-        embed = discord.Embed(description=data['fact'])
+        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
         embed.set_image(url=data['image'])
 
         return await ctx.send(embed=embed)
