@@ -20,14 +20,6 @@ class Images(commands.Cog):
         self.client = client
         self.select_emoji = "<:frame_photo:899621559520595968>"
         self.select_brief = "Commands that manipulate/send images."
-        self._cd = commands.CooldownMapping.from_cooldown(1.0, 10.0, commands.BucketType.user)
-
-    async def cog_check(self, ctx):
-        bucket = self._cd.get_bucket(ctx.message)
-        retry_after = bucket.update_rate_limit()
-        if retry_after:
-            raise commands.CommandOnCooldown(bucket, retry_after)
-            pass
 
     async def jeyy_image_api(self, endpoint: str, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji, None]]):
         await ctx.trigger_typing()
