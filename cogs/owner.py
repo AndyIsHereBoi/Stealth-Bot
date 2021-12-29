@@ -684,6 +684,7 @@ Average: {average_latency}
     @blacklist.command(
         help="Adds the specified user to the blacklist.",
         aliases=['a'])
+    @commands.is_owner()
     async def add(self, ctx: CustomContext, member: discord.User, *, reason: str):
         await self.client.db.execute("INSERT INTO blacklist(user_id, is_blacklisted, reason) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET is_blacklisted = $2", member.id, True, reason[0:1800])
         self.client.blacklist[member.id] = True
@@ -695,6 +696,7 @@ Average: {average_latency}
     @blacklist.command(
         help="Removes the specified user from the blacklist.",
         aliases=['r', 'rm'])
+    @commands.is_owner()
     async def remove(self, ctx: CustomContext, member: discord.User):
         await self.client.db.execute("DELETE FROM blacklist where user_id = $1", member.id)
         self.client.blacklist[member.id] = False
@@ -706,6 +708,7 @@ Average: {average_latency}
     @blacklist.command(
         help="Checks if the specified user is blacklisted or not.",
         liases=['c'])
+    @commands.is_owner()
     async def check(self, ctx: CustomContext, member: discord.User):
         status = None
         reason = None
@@ -724,6 +727,7 @@ Average: {average_latency}
     @blacklist.command(
         help="Sends a list of all blacklisted users.",
         aliases=['l'])
+    @commands.is_owner()
     async def list(self, ctx: CustomContext):
         blacklistedUsers = []
 
