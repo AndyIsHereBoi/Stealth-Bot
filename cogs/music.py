@@ -65,15 +65,17 @@ class SearchMenu(discord.ui.View):
         if self.message:
             await self.message.edit(view=self)
 
-    def build_embed(self) -> typing.Tuple[discord.Embed, discord.SelectOption]:
+    def build_embed(self):
         data = []
         for track in self.tracks:
-            self.options.append(
-                discord.SelectOption(label=track.title[0:100], value=track.identifier, description=track.author[0:100]))
+            self.options.append(discord.SelectOption(label=f"{track.title[0:85]}", emoji="<:youtube:845592321177026560>", value=f"{track.identifier}", description=f"{track.author[0:50]}"))
+
             data.append(f"[{track.title}]({track.uri})")
-        self.options.append(discord.SelectOption(label='Cancel', emoji='❌', value='cancel'))
+
+        self.options.append(discord.SelectOption(label="Cancel", emoji="❌", value="cancel"))
         data = [f"`{i}:` {desc}" for i, desc in enumerate(data, start=1)]
-        embed = discord.Embed(title='Select a track to enqueue', description='\n'.join(data))
+
+        embed = discord.Embed(title="Select a song", description='\n'.join(data))
         self.embed = embed
 
     async def start(self):
