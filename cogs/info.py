@@ -1249,7 +1249,7 @@ Position: {role.position}
 Members: {len(role.members)}
 Creation date: {discord.utils.format_dt(role.created_at, style="f")} ({discord.utils.format_dt(role.created_at, style="R")})
 
-Permissions: {role.permissions}
+Permissions: {helpers.get_member_permissions(role.permissions)}
         """)
 
         await ctx.send(embed=embed)
