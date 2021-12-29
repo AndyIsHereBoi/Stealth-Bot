@@ -371,7 +371,7 @@ class Images(commands.Cog):
             'sensitive', 'shear', 'shock', 'shoot', 'sob', 'tv', 'warp', 'youtube']
 
     @commands.command()
-    async def abstract(self, ctx, member: typing.Optional[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji] = None) -> discord.Message:
+    async def abstract(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.invoked_with}.gif")
         return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.invoked_with}", ctx, member))
 
