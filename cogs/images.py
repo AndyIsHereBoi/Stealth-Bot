@@ -43,7 +43,7 @@ class Images(commands.Cog):
         return discord.File(io.BytesIO(await request.read()), f"{endpoint}.gif")
 
     @commands.command()
-    async def dog(self, ctx):
+    async def dog(self, ctx) -> discord.Message:
         request = await self.client.session.get(f"https://some-random-api.ml/animal/dog")
         data = await request.json()
 
