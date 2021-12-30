@@ -108,8 +108,8 @@ class StealthBot(commands.AutoShardedBot):
         self.allowed_mentions = discord.AllowedMentions.none()
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
         self.owner_id = 564890536947875868
-        self.owner_ids = [564890536947875868, 555818548291829792,
-                          349373972103561218]  # 349373972103561218 (LeoCx1000) # 555818548291829792 (Vicente0670)
+        self.owner_ids = [564890536947875868, 555818548291829792, # Ender and vicente
+                          349373972103561218, 675104167345258506, 855775178893426719]  # Leo and yoni and perez
         self.ipc = ipc.Server(self, secret_key=yaml_data['IPC_SECRET'])
         self.pomice = pomice.NodePool()
         self.db = self.loop.run_until_complete(create_db_pool())
