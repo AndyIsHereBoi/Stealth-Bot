@@ -358,7 +358,7 @@ class StealthBot(commands.AutoShardedBot):
             delay = time.time() - os.path.getctime("data/restart_log.log")
     
             embed = discord.Embed(title="Successfully restarted", description=f"""
-This restart took 447413.76 seconds.
+This restart took {delay} seconds.
                                       """, color=discord.Color.green())
             
             await self.get_channel(channel_id).send(embed=embed)
