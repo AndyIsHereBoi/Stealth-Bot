@@ -114,7 +114,7 @@ class Events(commands.Cog):
     def __init__(self, client):
         self.hidden = True
         self.client = client
-        self.colors = {}
+        self.colours = {}
         
         self.select_emoji = "<:hypesquad:895688440610422900>"
         self.select_brief = "Just some events.. but how did you find this cog?..."
@@ -131,7 +131,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         guild = self.client.get_guild(879050715660697622)
-        self.colors = {
+        self.colours = {
             "<a:dark_red_flame:926390853415624735>": guild.get_role(925071980275859476), # Dark Red
             "<a:red_flame:926390860470448138>": guild.get_role(925072299940544552), # Red
             "🟥": guild.get_role(925072340453302374), # Light Red
@@ -162,15 +162,6 @@ class Events(commands.Cog):
             "🤍": guild.get_role(925073620416479303), # White
         }
 
-    def yes(self, emoji) -> str:
-        if emoji.id is None:
-            return emoji.name
-
-        if emoji.animated:
-            return f'<a:{emoji.name}:{emoji.id}>'
-
-        return f'<:{emoji.name}:{emoji.id}>'
-
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         if not payload.guild_id:
@@ -182,9 +173,9 @@ class Events(commands.Cog):
         if payload.channel_id != 926390126827937872:
             return
 
-        current_colours = filter(lambda r: r in self.colors.values(), payload.member.roles)
-        await payload.member.remove_roles(*current_colours, reason="Color role reaction.")
-        await payload.member.add_roles(self.colors[self.yes(payload.emoji)], reason="Color role reaction.")
+        current_colours = filter(lambda r: r in self.colours.values(), payload.member.roles)
+        await payload.member.remove_roles(*current_colours, reason="Colour role reaction.")
+        await payload.member.add_roles(self.colours[payload.emoji.name], reason="Colour role reaction.")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
