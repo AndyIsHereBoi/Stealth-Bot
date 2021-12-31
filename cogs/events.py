@@ -130,45 +130,46 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+        guild = self.client.get_guild(879050715660697622)
         self.colors = {
-            "<a:dark_red_flame:926390853415624735>": self.client.guild.get_role(925071980275859476), # Dark Red
-            "<a:red_flame:926390860470448138>": self.client.guild.get_role(925072299940544552), # Red
-            "🟥": self.client.guild.get_role(925072340453302374), # Light Red
+            "<a:dark_red_flame:926390853415624735>": guild.get_role(925071980275859476), # Dark Red
+            "<a:red_flame:926390860470448138>": guild.get_role(925072299940544552), # Red
+            "🟥": guild.get_role(925072340453302374), # Light Red
 
-            "<a:yellow_flame:926391276532793394>": self.client.guild.get_role(925072506413531206), # Yellow
-            "<:gold_ingot:926391443726143549>": self.client.guild.get_role(925072609719246858), # Gold
-            "🧡": self.client.guild.get_role(925072900522917888), # Orange
-            "🟧": self.client.guild.get_role(925072937025949716), # Light Orange
+            "<a:yellow_flame:926391276532793394>": guild.get_role(925072506413531206), # Yellow
+            "<:gold_ingot:926391443726143549>": guild.get_role(925072609719246858), # Gold
+            "🧡": guild.get_role(925072900522917888), # Orange
+            "🟧": guild.get_role(925072937025949716), # Light Orange
 
-            "💙": self.client.guild.get_role(925072395902005318), # Dark Blue
-            "🟦": self.client.guild.get_role(925072439652778025), # Blue
-            "🔵": self.client.guild.get_role(925072473651814440), # Light Blue
+            "💙": guild.get_role(925072395902005318), # Dark Blue
+            "🟦": guild.get_role(925072439652778025), # Blue
+            "🔵": guild.get_role(925072473651814440), # Light Blue
 
-            "🍏": self.client.guild.get_role(925073028025581639), # Dark Green
-            "<:green_sparkle:919660572310667294>": self.client.guild.get_role(925073079183503410), # Green
-            "🟩": self.client.guild.get_role(925073105586647080), # Light Green
+            "🍏": guild.get_role(925073028025581639), # Dark Green
+            "<:green_sparkle:919660572310667294>": guild.get_role(925073079183503410), # Green
+            "🟩": guild.get_role(925073105586647080), # Light Green
 
-            "🟪": self.client.guild.get_role(925073254979350528), # Dark Purple
-            "🟣": self.client.guild.get_role(925073130190417960), # Purple
-            "❤️": self.client.guild.get_role(925073303348056096), # Pink
-            "<:pink_sparkle:919660699674902528>": self.client.guild.get_role(925073341314891886), # Light Pink
+            "🟪": guild.get_role(925073254979350528), # Dark Purple
+            "🟣": guild.get_role(925073130190417960), # Purple
+            "❤️": guild.get_role(925073303348056096), # Pink
+            "<:pink_sparkle:919660699674902528>": guild.get_role(925073341314891886), # Light Pink
 
-            "🤎": self.client.guild.get_role(925073380804292618), # Brown
-            "<a:black_flame:926393087989780480>": self.client.guild.get_role(925073459304861716), # Black
-            "🕶️": self.client.guild.get_role(925073518754922617), # Dark Gray
-            "<:cat_paw:926393214313852928>": self.client.guild.get_role(925073553999663196), # Gray
-            "🔳": self.client.guild.get_role(925073584748109854), # Light Gray
-            "🤍": self.client.guild.get_role(925073620416479303), # White
+            "🤎": guild.get_role(925073380804292618), # Brown
+            "<a:black_flame:926393087989780480>": guild.get_role(925073459304861716), # Black
+            "🕶️": guild.get_role(925073518754922617), # Dark Gray
+            "<:cat_paw:926393214313852928>": guild.get_role(925073553999663196), # Gray
+            "🔳": guild.get_role(925073584748109854), # Light Gray
+            "🤍": guild.get_role(925073620416479303), # White
         }
 
-    def __str__(self) -> str:
-        if self.id is None:
-            return self.name
+    def yes(self, emoji) -> str:
+        if emoji.id is None:
+            return emoji.name
 
-        if self.animated:
-            return f'<a:{self.name}:{self.id}>'
+        if emoji.animated:
+            return f'<a:{emoji.name}:{emoji.id}>'
 
-        return f'<:{self.name}:{self.id}>'
+        return f'<:{emoji.name}:{emoji.id}>'
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -183,7 +184,7 @@ class Events(commands.Cog):
 
         current_colours = filter(lambda r: r in self.colors.values(), payload.member.roles)
         await payload.member.remove_roles(*current_colours, reason="Color role reaction.")
-        await payload.member.add_roles(self.colors[payload.emoji.name], reason="Color role reaction.")
+        await payload.member.add_roles(self.colors[self.yes(payload.emoji)], reason="Color role reaction.")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
