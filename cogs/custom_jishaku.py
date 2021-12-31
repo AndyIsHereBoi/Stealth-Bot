@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+"""
+jishaku.features.root_command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The jishaku root command.
+:copyright: (c) 2021 Devon (Gorialis) R
+:license: MIT, see LICENSE for more details.
+"""
+
 import sys
 import math
 import psutil
@@ -5,18 +15,17 @@ import discord
 
 
 from helpers.context import CustomContext
-from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
-from importlib.metadata import distribution, packages_distributions
-from jishaku.features.baseclass import Feature
 from jishaku.modules import package_version
+from jishaku.features.baseclass import Feature
+from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
+
+try:
+    from importlib.metadata import distribution, packages_distributions
+
+except ImportError:
+    from importlib_metadata import distribution, packages_distributions
 
 def natural_size(size_in_bytes: int):
-    """
-    Converts a number of bytes to an appropriately-scaled unit
-    E.g.:
-        1024 -> 1.00 KiB
-        12345678 -> 11.77 MiB
-    """
     units = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
 
     power = int(math.log(size_in_bytes, 1024))
