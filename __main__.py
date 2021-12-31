@@ -114,8 +114,6 @@ class StealthBot(commands.AutoShardedBot):
         self.pomice = pomice.NodePool()
         self.db = self.loop.run_until_complete(create_db_pool())
         self.ipc = ipc.Server(self, secret_key=yaml_data['IPC_SECRET'])
-        self._topgg = topgg.DBLClient(self, yaml_data['DBL_TOKEN'], autopost=True) # , post_shard_count=True
-        self._topgg_webhook = topgg.WebhookManager(self).dbl_webhook('/topgg', yaml_data['DBL_PASSWORD'])
         self.rs = prsaw.RandomStuff(api_key=yaml_data['PRSAW_KEY'], async_mode=True)
         self.add_check(self.guild_only)
         self.add_check(self.maintenance)
@@ -376,28 +374,6 @@ This restart took {delay} seconds.
 
         # process commands
         await self.process_commands(message)
-        
-        
-    async def on_dbl_vote(self, data):
-        if data["type"] == "test":
-            return self.dispatch("dbl_test", data)
-
-        channel = self.get_channel(896775088249122889)
-        embed = discord.Embed(title="Received a vote", description=f"""
-```
-{data}
-```
-                              """)
-        await channel.send(embed=embed)
-
-    async def on_dbl_test(self, data):
-        channel = self.get_channel(896775088249122889)
-        embed = discord.Embed(title="Received a test vote", description=f"""
-```
-{data}
-```
-                              """)
-        await channel.send(embed=embed)
 
     async def dagpi_request(self, ctx, target: target_type = None, *, feature: ImageFeatures, **kwargs):
         bucket = self.dagpi_cooldown.get_bucket(ctx.message)

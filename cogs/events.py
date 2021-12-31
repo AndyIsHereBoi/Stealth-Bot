@@ -76,6 +76,37 @@ class AFKUsersEmbedPage(menus.ListPageSource):
 def setup(client):
     client.add_cog(Events(client))
 
+class ColorRoles:
+    roles = {
+        "<a:dark_red_flame:926390853415624735>": 925071980275859476, # Dark Red
+        "<a:red_flame:926390860470448138>": 925072299940544552, # Red
+        "🟥": 925072340453302374, # Light Red
+
+        "<a:yellow_flame:926391276532793394>": 925072506413531206, # Yellow
+        "<:gold_ingot:926391443726143549>": 925072609719246858, # Gold
+        "🧡": 925072900522917888, # Orange
+        "🟧": 925072937025949716, # Light Orange
+
+        "💙": 925072395902005318, # Dark Blue
+        "🟦": 925072439652778025, # Blue
+        "🔵": 925072473651814440, # Light Blue
+
+        "🍏": 925073028025581639, # Dark Green
+        "<:green_sparkle:919660572310667294>": 925073079183503410, # Green
+        "🟩": 925073105586647080, # Light Green
+
+        "🟪": 925073254979350528, # Dark Purple
+        "🟣": 925073130190417960, # Purple
+        "❤️": 925073303348056096, # Pink
+        "<:pink_sparkle:919660699674902528>": 925073341314891886, # Light Pink
+
+        "🤎": 925073380804292618, # Brown
+        "<a:black_flame:926393087989780480>": 925073459304861716, # Black
+        "🕶️": 925073518754922617, # Dark Gray
+        "<:cat_paw:926393214313852928>": 925073553999663196, # Gray
+        "🔳": 925073584748109854, # Light Gray
+        "🤍": 925073620416479303, # White
+    }
 
 class Events(commands.Cog):
     """Just some events.. but how did you find this cog?..."""
@@ -95,6 +126,63 @@ class Events(commands.Cog):
             
         if not hasattr(self.client, 'edited_messages_count'):
             self.client.edited_messages_count = 0
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.colors = {
+            "<a:dark_red_flame:926390853415624735>": self.client.guild.get_role(925071980275859476), # Dark Red
+            "<a:red_flame:926390860470448138>": self.client.guild.get_role(925072299940544552), # Red
+            "🟥": self.client.guild.get_role(925072340453302374), # Light Red
+
+            "<a:yellow_flame:926391276532793394>": self.client.guild.get_role(925072506413531206), # Yellow
+            "<:gold_ingot:926391443726143549>": self.client.guild.get_role(925072609719246858), # Gold
+            "🧡": self.client.guild.get_role(925072900522917888), # Orange
+            "🟧": self.client.guild.get_role(925072937025949716), # Light Orange
+
+            "💙": self.client.guild.get_role(925072395902005318), # Dark Blue
+            "🟦": self.client.guild.get_role(925072439652778025), # Blue
+            "🔵": self.client.guild.get_role(925072473651814440), # Light Blue
+
+            "🍏": self.client.guild.get_role(925073028025581639), # Dark Green
+            "<:green_sparkle:919660572310667294>": self.client.guild.get_role(925073079183503410), # Green
+            "🟩": self.client.guild.get_role(925073105586647080), # Light Green
+
+            "🟪": self.client.guild.get_role(925073254979350528), # Dark Purple
+            "🟣": self.client.guild.get_role(925073130190417960), # Purple
+            "❤️": self.client.guild.get_role(925073303348056096), # Pink
+            "<:pink_sparkle:919660699674902528>": self.client.guild.get_role(925073341314891886), # Light Pink
+
+            "🤎": self.client.guild.get_role(925073380804292618), # Brown
+            "<a:black_flame:926393087989780480>": self.client.guild.get_role(925073459304861716), # Black
+            "🕶️": self.client.guild.get_role(925073518754922617), # Dark Gray
+            "<:cat_paw:926393214313852928>": self.client.guild.get_role(925073553999663196), # Gray
+            "🔳": self.client.guild.get_role(925073584748109854), # Light Gray
+            "🤍": self.client.guild.get_role(925073620416479303), # White
+        }
+
+    def __str__(self) -> str:
+        if self.id is None:
+            return self.name
+
+        if self.animated:
+            return f'<a:{self.name}:{self.id}>'
+
+        return f'<:{self.name}:{self.id}>'
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        if not payload.guild_id:
+            return
+
+        if payload.guild_id != 925067864241754132:
+            return
+
+        if payload.channel_id != 926390126827937872:
+            return
+
+        current_colours = filter(lambda r: r in self.colors.values(), payload.member.roles)
+        await payload.member.remove_roles(*current_colours, reason="Color role reaction.")
+        await payload.member.add_roles(self.colors[str(payload.emoji)], reason="Color role reaction.")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
