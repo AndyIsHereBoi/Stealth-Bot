@@ -130,6 +130,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener('on_raw_reaction_add')
     async def reaction_roles(self, payload: discord.RawReactionActionEvent):
+        print("event called")
         roles = {
             ":dark_red_flame:": 925071980275859476,  # Dark Red
             ":red_flame:": 925072299940544552,  # Red
@@ -162,10 +163,13 @@ class Events(commands.Cog):
         }
 
         if payload.member.bot or payload.channel_id != 926390126827937872 or not payload.member.guild:
+            print("member was a bot or the channel was incorrect or it wasnt a guild")
             return
 
         if role := roles.get(str(payload.emoji)):
+            print("first if statement")
             if role := payload.member.guild.get_role(role):
+                print("second if statement, giving role.")
                 await payload.member.add_roles(role)
 
     @staticmethod
