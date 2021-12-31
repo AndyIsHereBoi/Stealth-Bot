@@ -173,7 +173,7 @@ class Events(commands.Cog):
     async def on_reaction_add(self, reaction: discord.Reaction, user: typing.Union[discord.Member, discord.User]):
         current_colours = filter(lambda r: r in self.colours.values(), user.roles)
         await user.remove_roles(*current_colours, reason="Color role reaction.")
-        await user.add_roles(self.colours[self.str(reaction.emoji)], reason="Color role reaction.")
+        await user.add_roles(self.colours[str(reaction.emoji)], reason="Color role reaction.")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
