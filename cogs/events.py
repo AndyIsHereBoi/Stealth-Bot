@@ -183,7 +183,7 @@ class Events(commands.Cog):
 
         current_colours = filter(lambda r: r in self.colors.values(), payload.member.roles)
         await payload.member.remove_roles(*current_colours, reason="Color role reaction.")
-        await payload.member.add_roles(self.colors[str(payload.emoji)], reason="Color role reaction.")
+        await payload.member.add_roles(self.colors[payload.emoji.name], reason="Color role reaction.")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
