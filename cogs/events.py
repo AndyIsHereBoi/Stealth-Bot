@@ -171,13 +171,13 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: typing.Union[discord.Member, discord.User]):
-        if not reaction.guild:
+        if not user.guild:
             return
 
-        if reaction.guild.id != 925067864241754132:
+        if user.guild.id != 925067864241754132:
             return
 
-        if reaction.guild.id != 926390126827937872:
+        if user.guild.id != 926390126827937872:
             return
 
         current_colours = filter(lambda r: r in self.colours.values(), user.roles)
