@@ -114,6 +114,7 @@ class Events(commands.Cog):
     def __init__(self, client):
         self.hidden = True
         self.client = client
+        self.colors = {}
         
         self.select_emoji = "<:hypesquad:895688440610422900>"
         self.select_brief = "Just some events.. but how did you find this cog?..."
