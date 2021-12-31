@@ -129,31 +129,26 @@ class Events(commands.Cog):
             self.client.edited_messages_count = 0
 
     @commands.Cog.listener('on_raw_reaction_add')
-    async def reaction_roles(self, payload: discord.RawReactionActionEvent):
-        print("event called")
+    @commands.Cog.listener('on_raw_reaction_remove')
+    async def reaction_role(self, payload: discord.RawReactionActionEvent):
         roles = {
             ":dark_red_flame:": 925071980275859476,  # Dark Red
             ":red_flame:": 925072299940544552,  # Red
             ":red_square:": 925072340453302374,  # Light Red
-
             ":yellow_flame:": 925072506413531206,  # Yellow
             ":gold_ingot:": 925072609719246858,  # Gold
             ":orange_heart:": 925072900522917888,  # Orange
             ":orange_square:": 925072937025949716,  # Light Orange
-
             ":blue_heart:": 925072395902005318,  # Dark Blue
             ":blue_square:": 925072439652778025,  # Blue
             ":blue_circle:": 925072473651814440,  # Light Blue
-
             ":green_apple:": 925073028025581639,  # Dark Green
             ":green_sparkle:": 925073079183503410,  # Green
             ":green_square:": 925073105586647080,  # Light Green
-
             ":purple_square:": 925073254979350528,  # Dark Purple
             ":purple_circle:": 925073130190417960,  # Purple
             ":heart:": 925073303348056096,  # Pink
             ":pink_sparkle:": 925073341314891886,  # Light Pink
-
             ":brown_heart:": 925073380804292618,  # Brown
             ":black_flame:": 925073459304861716,  # Black
             ":dark_sunglasses:": 925073518754922617,  # Dark Gray
@@ -161,16 +156,15 @@ class Events(commands.Cog):
             ":white_square_button:": 925073584748109854,  # Light Gray
             ":white_heart:": 925073620416479303,  # White
         }
-
-        if payload.member.bot or payload.channel_id != 926390126827937872 or not payload.member.guild:
-            print("member was a bot or the channel was incorrect or it wasnt a guild")
+        rr_channel_id = 926569505465958461
+        role = roles.get(str(payload.emoji), 0)
+        if not (channel := self.client.get_channel(payload.channel_id)) or \
+                not (member := channel.guild.get_member(payload.user_id)) \
+                or member.bot or payload.channel_id != rr_channel_id \
+                or not (role := channel.guild.get_role(role)):
             return
-
-        if role := roles.get(str(payload.emoji)):
-            print("first if statement")
-            if role := payload.member.guild.get_role(role):
-                print("second if statement, giving role.")
-                await payload.member.add_roles(role)
+        method = member.add_roles if payload.event_type == 'REACTION_ADD' else member.remove_roles
+        await method(role)
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
