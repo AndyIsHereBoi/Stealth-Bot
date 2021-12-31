@@ -162,20 +162,27 @@ class Events(commands.Cog):
             "🤍": guild.get_role(925073620416479303), # White
         }
 
+    def __str__(self) -> str:
+        if self.id is None:
+            return self.name
+        if self.animated:
+            return f'<a:{self.name}:{self.id}>'
+        return f'<:{self.name}:{self.id}>'
+
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        if not payload.guild_id:
+    async def on_reaction_add(self, reaction: discord.Reaction, user: typing.Union[discord.Member, discord.User]):
+        if not reaction.guild:
             return
 
-        if payload.guild_id != 925067864241754132:
+        if reaction.guild.id != 925067864241754132:
             return
 
-        if payload.channel_id != 926390126827937872:
+        if reaction.guild.id != 926390126827937872:
             return
 
-        current_colours = filter(lambda r: r in self.colours.values(), payload.member.roles)
-        await payload.member.remove_roles(*current_colours, reason="Colour role reaction.")
-        await payload.member.add_roles(self.colours[payload.emoji.name], reason="Colour role reaction.")
+        current_colours = filter(lambda r: r in self.colours.values(), user.roles)
+        await user.remove_roles(*current_colours, reason="Color role reaction.")
+        await user.add_roles(self.colours[self.str(reaction.emoji)], reason="Color role reaction.")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
