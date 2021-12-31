@@ -177,9 +177,6 @@ class Events(commands.Cog):
         if user.guild.id != 925067864241754132:
             return
 
-        if user.guild.id != 926390126827937872:
-            return
-
         current_colours = filter(lambda r: r in self.colours.values(), user.roles)
         await user.remove_roles(*current_colours, reason="Color role reaction.")
         await user.add_roles(self.colours[self.str(reaction.emoji)], reason="Color role reaction.")
