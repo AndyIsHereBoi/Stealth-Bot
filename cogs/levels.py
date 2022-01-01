@@ -63,7 +63,13 @@ class Levels(commands.Cog):
             await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
 
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
-        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + random.randint(10, 30), message.author.id, message.guild.id)
+
+        amount = random.randint(10, 30)
+
+        if len(discord.utils.remove_markdown(message.content.lower)) > 55:
+            amount += random.randint(10, 15)
+
+        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + amount, message.author.id, message.guild.id)
 
         if await self.level_up(user):
             if message.guild.id == 799330949686231050:
