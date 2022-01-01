@@ -22,7 +22,7 @@ class Levels(commands.Cog):
         self.select_emoji = "<:lightningbolt:903706434791956561>"
         self.select_brief = "Levelling system."
 
-        self.cd_mapping = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.member)
+        self.cd_mapping = commands.CooldownMapping.from_cooldown(1, 45, commands.BucketType.member)
 
     async def level_up(self, user):
         level = user['level']
@@ -63,7 +63,7 @@ class Levels(commands.Cog):
             await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
 
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
-        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + random.randint(310, 350), message.author.id, message.guild.id)
+        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + random.randint(10, 30), message.author.id, message.guild.id)
 
         if await self.level_up(user):
             if message.guild.id == 799330949686231050:
