@@ -165,8 +165,8 @@ class Events(commands.Cog):
                 or not (role := channel.guild.get_role(role)):
             return
 
-        roles2 = filter(lambda r: r in roles.values(), payload.member.roles)
-        await payload.member.remove_roles(*roles2)
+        # roles2 = filter(lambda r: r in roles.values(), payload.member.roles)
+        # await payload.member.remove_roles(*roles2)
 
         method = member.add_roles if payload.event_type == 'REACTION_ADD' else member.remove_roles
         await method(role)
