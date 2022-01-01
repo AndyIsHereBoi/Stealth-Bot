@@ -165,8 +165,13 @@ class Events(commands.Cog):
                 or not (role := channel.guild.get_role(role)):
             return
 
+        roles = filter(lambda r: r in roles.values(), payload.member.roles)
+        await payload.member.remove_roles(*roles)
+
         method = member.add_roles if payload.event_type == 'REACTION_ADD' else member.remove_roles
         await method(role)
+
+        await member.send(f"You have received the **{role}** role!")
 
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
