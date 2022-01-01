@@ -157,7 +157,7 @@ class Events(commands.Cog):
             "🤍": 925073620416479303,  # White
         }
 
-        rr_channel_id = 926569505465958461
+        rr_channel_id = 926390126827937872
         role = roles.get(str(payload.emoji), 0)
         if not (channel := self.client.get_channel(payload.channel_id)) or \
                 not (member := channel.guild.get_member(payload.user_id)) \
