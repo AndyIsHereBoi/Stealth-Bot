@@ -17,14 +17,12 @@ import asyncbing
 import psutil
 import random
 import pomice
-import custom_jishaku
 from discord.ext import commands, menus
 from discord.ext.menus.views import ViewMenuPages
-import importlib
-from custom_jishaku.paginators import WrappedPaginator, PaginatorInterface
-from custom_jishaku.codeblocks import codeblock_converter
+from jishaku.paginators import WrappedPaginator, PaginatorInterface
+from jishaku.codeblocks import codeblock_converter
 from helpers.context import CustomContext
-from custom_jishaku.modules import ExtensionConverter
+from jishaku.modules import ExtensionConverter
 import io
 import contextlib
 
