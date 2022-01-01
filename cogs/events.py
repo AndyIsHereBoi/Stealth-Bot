@@ -128,49 +128,6 @@ class Events(commands.Cog):
         if not hasattr(self.client, 'edited_messages_count'):
             self.client.edited_messages_count = 0
 
-    @commands.Cog.listener('on_raw_reaction_add')
-    @commands.Cog.listener('on_raw_reaction_remove')
-    async def reaction_role(self, payload: discord.RawReactionActionEvent):
-        roles = {
-            "<a:dark_red_flame:926390853415624735>": 925071980275859476,  # Dark Red
-            "<a:red_flame:926390860470448138>": 925072299940544552,  # Red
-            "🟥": 925072340453302374,  # Light Red
-            "<a:yellow_flame:926391276532793394>": 925072506413531206,  # Yellow
-            "<:gold_ingot:926391443726143549>": 925072609719246858,  # Gold
-            "🧡": 925072900522917888,  # Orange
-            "🟧": 925072937025949716,  # Light Orange
-            "💙": 925072395902005318,  # Dark Blue
-            "🟦": 925072439652778025,  # Blue
-            "🔵": 925072473651814440,  # Light Blue
-            "🍏": 925073028025581639,  # Dark Green
-            "<:green_sparkle:919660572310667294>": 925073079183503410,  # Green
-            "🟩": 925073105586647080,  # Light Green
-            "🟪": 925073254979350528,  # Dark Purple
-            "🟣": 925073130190417960,  # Purple
-            "❤️": 925073303348056096,  # Pink
-            "<:pink_sparkle:919660699674902528>": 925073341314891886,  # Light Pink
-            "🤎": 925073380804292618,  # Brown
-            "<a:black_flame:926393087989780480>": 925073459304861716,  # Black
-            "🕶️": 925073518754922617,  # Dark Gray
-            "<:cat_paw:926393214313852928>": 925073553999663196,  # Gray
-            "🔳": 925073584748109854,  # Light Gray
-            "🤍": 925073620416479303,  # White
-        }
-
-        rr_channel_id = 926390126827937872
-        role = roles.get(str(payload.emoji), 0)
-        if not (channel := self.client.get_channel(payload.channel_id)) or \
-                not (member := channel.guild.get_member(payload.user_id)) \
-                or member.bot or payload.channel_id != rr_channel_id \
-                or not (role := channel.guild.get_role(role)):
-            return
-
-        # roles2 = filter(lambda r: r in roles.values(), payload.member.roles)
-        # await payload.member.remove_roles(*roles2)
-
-        method = member.add_roles if payload.event_type == 'REACTION_ADD' else member.remove_roles
-        await method(role)
-
     @staticmethod
     def time(days: int, hours: int, minutes: int, seconds: int):
         def remove_s(string):
