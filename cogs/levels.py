@@ -1,3 +1,4 @@
+import random
 import typing
 import asyncio
 import discord
@@ -21,12 +22,15 @@ class Levels(commands.Cog):
         self.select_emoji = "<:lightningbolt:903706434791956561>"
         self.select_brief = "Levelling system."
 
+        self.cd_mapping = commands.CooldownMapping.from_cooldown(1, 60, commands.BucketType.member)
+
     async def level_up(self, user):
         level = user['level']
         xp = user['xp']
 
-        if xp >= round((4 * (level ** 3)) / 5):
-            await self.client.db.execute("UPDATE users SET level = $1 WHERE user_id = $2 AND guild_id = $3", level + 1, user['user_id'], user['guild_id'])
+        # if xp >= round((4 * (level ** 3)) / 5):
+        if xp >= (level - 1) * 300:
+            await self.client.db.execute("UPDATE users SET level = $1, xp = $2 WHERE user_id = $3 AND guild_id = $4", level + 1, 0, user['user_id'], user['guild_id'])
             return True
 
         else:
@@ -47,13 +51,19 @@ class Levels(commands.Cog):
         if message.guild.id == 799330949686231050 and message.channel.id != 829418754408317029:
             return
 
+        bucket = self.cd_mapping.get_bucket(message)
+        retry_after = bucket.update_rate_limit()
+
+        if retry_after:
+            return
+
         user = await self.client.db.fetch("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
 
         if not user:
             await self.client.db.execute("INSERT INTO users (user_id, guild_id, level, xp) VALUES ($1, $2, $3, $4)", message.author.id, message.guild.id, 1, 0)
 
         user = await self.client.db.fetchrow("SELECT * FROM users WHERE user_id = $1 AND guild_id = $2", message.author.id, message.guild.id)
-        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + 1, message.author.id, message.guild.id)
+        await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + random.randint(310, 350), message.author.id, message.guild.id)
 
         if await self.level_up(user):
             if message.guild.id == 799330949686231050:
