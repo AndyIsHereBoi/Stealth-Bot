@@ -163,6 +163,7 @@ class Events(commands.Cog):
                 or member.bot or payload.channel_id != rr_channel_id \
                 or not (role := channel.guild.get_role(role)):
             return
+
         method = member.add_roles if payload.event_type == 'REACTION_ADD' else member.remove_roles
         await method(role)
 
