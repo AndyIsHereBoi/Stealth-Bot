@@ -66,7 +66,7 @@ class Levels(commands.Cog):
 
         amount = random.randint(10, 30)
 
-        if len(discord.utils.remove_markdown(message.content.lower)) > 55:
+        if len(message.content) >= 55:
             amount += random.randint(10, 15)
 
         await self.client.db.execute("UPDATE users SET xp = $1 WHERE user_id = $2 AND guild_id = $3", user['xp'] + amount, message.author.id, message.guild.id)
