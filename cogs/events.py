@@ -2,6 +2,7 @@ import io
 import re
 import copy
 import yaml
+import urllib
 import typing
 import random
 import errors
@@ -11,6 +12,7 @@ import discord
 import inspect
 import itertools
 import traceback
+import unidecode
 
 from discord import Webhook
 from helpers import helpers as helpers
@@ -770,9 +772,16 @@ Command {ctx.command} raised the following error:
             return
         
         if message.channel.id in self.client.chatbot_channels:
-            response = await self.client.rs.get_ai_response(discord.utils.remove_markdown(message.content))
-            
-            await message.reply(response[0]['message'] or 'No response...')
+            text = unidecode.unidecode(discord.utils.remove_markdown(urllib.parse.quote(message.content)))
+            request = await self.client.session.get(f"https://api.popcat.xyz/chatbot?msg={text}&owner=Ender2K89&botname=Stealth+Bot")
+            json = await request.json()
+
+            try:
+                await message.reply(json['response'])
+
+            except:
+                await message.add_reaction('❌')
+                await message.reply(json['error']['message'])
             
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
