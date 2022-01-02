@@ -34,7 +34,6 @@ On bedrock it's a bit more difficult. To see the explanation do `{ctx.prefix}bed
     @commands.command(
         help="Shows you how to join the SignalPvP server on Bedrock Edition!",
         aliases=['pocket'])
-    @helpers.is_spvp_server()
     async def bedrock(self, ctx: CustomContext):
         embed = discord.Embed(title="How to join on bedrock", description=f"""
 First, you need to join the Minehut server using the information below.
