@@ -703,14 +703,14 @@ class Fun(commands.Cog):
         json = await request.json()
 
         try:
-            embed = discord.Embed(title="Shower Thought", description=json['result'])
-            embed.set_footer(text=f"{json['author']} - {json['upvotes']} upvotes")
+            embed = discord.Embed(title=f"{json['author']}:", description=json['result'])
+            embed.set_footer(text=f"{json['upvotes']} upvotes • Requested by {ctx.author.display_name}")
             
             return await ctx.send(embed=embed, footer=False)
         
         except:
             return await ctx.send("Rate limited!")
-            
+
     @commands.command(
         help="Sends a random roast")
     @commands.cooldown(1, 5, BucketType.user)
