@@ -699,7 +699,6 @@ class Fun(commands.Cog):
     @commands.cooldown(1, 5, BucketType.user)
     async def showerthought(self, ctx: CustomContext):
         request = await self.client.session.get("https://api.popcat.xyz/showerthoughts")
-
         json = await request.json()
 
         try:
