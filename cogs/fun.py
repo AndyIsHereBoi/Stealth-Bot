@@ -103,34 +103,29 @@ class Fun(commands.Cog):
         
     @commands.command(
         help=":frog: Sends a random meme from Reddit.")
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def meme(self, ctx: CustomContext):
         await self.reddit(self, ctx, "dankmemes", hot=True)
         
     @commands.command(
         help=":frog: Sends a random programmer meme from Reddit.",
         aliases=['programmer_meme', 'programmerhumor', 'programmer_humor', 'programmerhumour', 'programmer_humour', 'pm'])
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def programmermeme(self, ctx: CustomContext):
         await self.reddit(self, ctx, "programmerhumor", hot=True)
 
     @commands.command(
         help=":frog: Sends a random bad discord bot from Reddit.",
         aliases=['bdb', 'bad_discord_bots', 'baddiscordbot', 'bad_discord_bot'])
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def baddiscrodbots(self, ctx: CustomContext):
         await self.reddit(self, ctx, "baddiscordbots", hot=True)
         
     @commands.command(
         name="reddit",
         help=":frog: Sends a random post from the specified subreddit.")
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def _reddit(self, ctx: CustomContext, reddit: str):
         await self.reddit(self, ctx, reddit, hot=True)
         
     @commands.command(
         help=":bookmark: Searches the specified word in the dictionary.")
-    @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def dictionary(self, ctx: CustomContext, *, word):
         start = time.perf_counter()
 
