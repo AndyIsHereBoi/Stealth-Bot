@@ -79,7 +79,7 @@ class Fun(commands.Cog):
         self.select_emoji = "<:soccer:899621880120639509>"
         self.select_brief = "Fun commands like meme, hug and more!"
 
-    async def reddit(self, ctx, reddit: str, hot: bool):
+    async def reddit(self, ctx: CustomContext, reddit: str, hot: bool):
         start = time.perf_counter()
         request = await self.client.session.get(f"https://meme-api.herokuapp.com/gimme/{reddit}?hot={hot}")
         json = await request.json()
@@ -104,25 +104,25 @@ class Fun(commands.Cog):
     @commands.command(
         help=":frog: Sends a random meme from Reddit.")
     async def meme(self, ctx: CustomContext):
-        await self.reddit(ctx=ctx, reddit="dankmemes", hot=True)
+        await self.reddit(ctx, "dankmemes", True)
         
     @commands.command(
         help=":frog: Sends a random programmer meme from Reddit.",
         aliases=['programmer_meme', 'programmerhumor', 'programmer_humor', 'programmerhumour', 'programmer_humour', 'pm'])
     async def programmermeme(self, ctx: CustomContext):
-        await self.reddit(self, ctx, "programmerhumor", hot=True)
+        await self.reddit(ctx, "programmerhumor", True)
 
     @commands.command(
         help=":frog: Sends a random bad discord bot from Reddit.",
         aliases=['bdb', 'bad_discord_bots', 'baddiscordbot', 'bad_discord_bot'])
     async def baddiscrodbots(self, ctx: CustomContext):
-        await self.reddit(self, ctx, "baddiscordbots", hot=True)
+        await self.reddit(ctx, "baddiscordbots", True)
         
     @commands.command(
         name="reddit",
         help=":frog: Sends a random post from the specified subreddit.")
     async def _reddit(self, ctx: CustomContext, reddit: str):
-        await self.reddit(self, ctx, reddit, hot=True)
+        await self.reddit(ctx, reddit, True)
         
     @commands.command(
         help=":bookmark: Searches the specified word in the dictionary.")
