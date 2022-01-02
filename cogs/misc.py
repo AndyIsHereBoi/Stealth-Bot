@@ -1,14 +1,16 @@
 import re
-import typing
+import yaml
 import errors
 import random
-import asyncio
-import difflib
 import discord
-import itertools
+import contextlib
 
 from discord.ext import commands
 from helpers.context import CustomContext
+
+with open(r'/root/stealthbot/config.yaml') as file:
+    full_yaml = yaml.load(file)
+yaml_data = full_yaml
 
 def main(string):
     string = str(string).lower()
@@ -296,3 +298,28 @@ class Misc(commands.Cog):
         embed = discord.Embed(title=f"{link}")
         embed.set_image(url=f"https://api.popcat.xyz/screenshot?url={link}")
         return await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.member)
+    async def verify(self, ctx: CustomContext) -> discord.Message:
+        def check(m):
+            return m.author.id == ctx.author.id and m.guild.id == ctx.guild.id and m.channel.id == ctx.channel.id
+
+        request = await self.client.session.get('https://api.dagpi.xyz/data/captcha',
+                                                headers={'Authorization': yaml_data['DAGPI_TOKEN']})
+        json = await request.json()
+
+        embed = discord.Embed(title="You have 30 seconds to type the captcha below.")
+        embed.set_image(url=json['image'])
+        msg = await ctx.send(embed=embed)
+
+        message = await self.client.wait_for("message", check=check, timeout=30)
+
+        if discord.utils.remove_markdown(message.content.lower()) != json['answer']:
+            with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
+            with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
+            return await ctx.send("<:redTick:596576672149667840> You've failed the captcha!", delete_after=10)
+
+        with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
+        with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
+        return await ctx.send("<:greenTick:596576670815879169> You've succeeded the captcha!", delete_after=10)

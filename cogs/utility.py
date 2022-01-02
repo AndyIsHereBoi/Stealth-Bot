@@ -981,6 +981,8 @@ Usage: {emoji}
         help="Shows basic information about the bot.",
         aliases=['bi', 'about', 'info'])
     async def botinfo(self, ctx: CustomContext):
+        _commands = await self.client.db.fetch("SELECT * FROM commands")
+
         shards_guilds = {i: {"guilds": 0, "users": 0} for i in range(len(self.client.shards))}
         for guild in self.client.guilds:
             shards_guilds[guild.shard_id]["guilds"] += 1
@@ -1024,7 +1026,7 @@ I've been online for {ctx.time(days=days, hours=hours, minutes=minutes, seconds=
         embed.add_field(name=f"__**Numbers**__", value=f"""
 Guilds: `{len(self.client.guilds):,}`
 Users: `{len(self.client.users):,}`
-Commands: `{len(self.client.commands):,}`
+Commands: `{len(_commands):,}`
 Commands used: `{self.client.commands_used:,}`
 Messages seen: `{self.client.messages_count:,}`
                         """, inline=True)
