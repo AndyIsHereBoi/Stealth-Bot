@@ -482,7 +482,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<:HUGGERS:896790320572940309> Hugs the specified member.")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def hug(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User] = None):
         if member is None:
             if ctx.message.reference:
@@ -500,7 +500,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<a:stealth_bot_pat:888354636258496522> Pats the specified member.")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def pat(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -518,7 +518,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help=":kiss: Kisses the specified member.")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def kiss(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -536,7 +536,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help=":tongue: Licks the specified member.")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def lick(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -554,7 +554,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<:rooBulli:744346131324076072> Bullies the specified member.")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def bully(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -572,7 +572,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<a:aPES_Cuddle:896790837793529936> Cuddles the specified member.")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def cuddle(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -590,7 +590,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<:slap:896790905133092944> Let's you slap someone!")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def slap(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -608,7 +608,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<:yeet:787677937746182174> Let's you yeet someone!")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def yeet(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -627,7 +627,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<a:aPES_HighFiveL:896791127385051156><a:aPES_HighFiveR:896791137434599524> Let's you high five someone!",
         aliases=['high_five'])
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def highfive(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -645,7 +645,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="Let's you bite someone!")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def bite(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -663,7 +663,7 @@ class Fun(commands.Cog):
 
     @commands.command(
         help="<a:kermitkill:896791354875711569> Let's you kill someone!")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def kill(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
@@ -682,7 +682,7 @@ class Fun(commands.Cog):
     @commands.command(
         help="<:minecraft:895688440614649919> Let's you customize a minecraft achievement!",
         aliases=['minecraft_achievement', 'mc_achievement'])
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def achievement(self, ctx: CustomContext, *, text):
         text = urllib.parse.quote(text)
 
@@ -692,10 +692,28 @@ class Fun(commands.Cog):
             embed.set_image(url=request.url)
 
             await ctx.send(embed=embed)
+
+    @commands.command(
+        help="Sends a random shower thought!",
+        aliases=['shower_thought', 'shower', 'shower-thought'])
+    @commands.cooldown(1, 5, BucketType.user)
+    async def showerthought(self, ctx: CustomContext):
+        request = await self.client.session.get("https://api.popcat.xyz/showerthoughts")
+
+        json = await request.json()
+
+        try:
+            embed = discord.Embed(title="Shower Thought", description=json['text'])
+            embed.set_footer(text=f"{json['author']} - {json['upvotes']} upvotes")
+            
+            return await ctx.send(embed=embed, footer=False)
+        
+        except:
+            return await ctx.send("Rate limited!")
             
     @commands.command(
         help="Sends a random roast")
-    @commands.cooldown(1, 5, BucketType.member)
+    @commands.cooldown(1, 5, BucketType.user)
     async def roast(self, ctx: CustomContext, member: discord.Member = None):
         if member is None:
             if ctx.message.reference:
