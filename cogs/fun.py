@@ -78,103 +78,55 @@ class Fun(commands.Cog):
         self.client = client
         self.select_emoji = "<:soccer:899621880120639509>"
         self.select_brief = "Fun commands like meme, hug and more!"
+
+    async def reddit(self, ctx, reddit: str, hot: bool):
+        start = time.perf_counter()
+        request = await self.client.session.get(f"https://meme-api.herokuapp.com/gimme/{reddit}?hot={hot}")
+        json = await request.json()
+
+        try:
+            if json['code']:
+                return await ctx.send("Invalid sub-reddit!")
+
+        except:
+            if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
+                return await ctx.send("NSFW sub-reddit! Please use this command again is a NSFW channel.")
+
+            end = time.perf_counter()
+            ms = (end - start) * 1000
+
+            embed = discord.Embed(title=json['title'])
+            embed.set_image(url=json['url'] or discord.Embed.Empty)
+            embed.set_footer(text=f"Requested by {ctx.author} • {reddit} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
+
+            return await ctx.send(embed=embed, footer=False)
         
     @commands.command(
         help=":frog: Sends a random meme from Reddit.")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def meme(self, ctx: CustomContext):
-        start = time.perf_counter()
-
-        request = await self.client.session.get('https://meme-api.herokuapp.com/gimme/dankmemes?hot=True')
-        json = await request.json()
-
-        end = time.perf_counter()
-
-        ms = (end - start) * 1000
-
-        if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
-            return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
-
-        embed = discord.Embed(title=json['title'])
-        embed.set_image(url=json['url'])
-        embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
-
-        await ctx.send(embed=embed, footer=False)
+        await self.reddit(self, ctx, "dankmemes", hot=True)
         
     @commands.command(
         help=":frog: Sends a random programmer meme from Reddit.",
         aliases=['programmer_meme', 'programmerhumor', 'programmer_humor', 'programmerhumour', 'programmer_humour', 'pm'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def programmermeme(self, ctx: CustomContext):
-        start = time.perf_counter()
+        await self.reddit(self, ctx, "programmerhumor", hot=True)
 
-        request = await self.client.session.get('https://meme-api.herokuapp.com/gimme/programmerhumor?hot=True')
-        json = await request.json()
-
-        end = time.perf_counter()
-
-        ms = (end - start) * 1000
-
-        if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
-            return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
-
-        embed = discord.Embed(title=json['title'])
-        embed.set_image(url=json['url'])
-        embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
-
-        await ctx.send(embed=embed, footer=False)
-        
-        
     @commands.command(
         help=":frog: Sends a random bad discord bot from Reddit.",
         aliases=['bdb', 'bad_discord_bots', 'baddiscordbot', 'bad_discord_bot'])
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
     async def baddiscrodbots(self, ctx: CustomContext):
-        start = time.perf_counter()
-
-        request = await self.client.session.get('https://meme-api.herokuapp.com/gimme/baddiscordbots?hot=True')
-        json = await request.json()
-
-        end = time.perf_counter()
-
-        ms = (end - start) * 1000
-
-        if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
-            return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
-
-        embed = discord.Embed(title=json['title'])
-        embed.set_image(url=json['url'])
-        embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
-
-        await ctx.send(embed=embed, footer=False)
+        await self.reddit(self, ctx, "baddiscordbots", hot=True)
         
     @commands.command(
+        name="reddit",
         help=":frog: Sends a random post from the specified subreddit.")
     @commands.bot_has_permissions(send_messages=True, embed_links=True)
-    async def reddit(self, ctx: CustomContext, reddit: str):
-        start = time.perf_counter()
-
-        request = await self.client.session.get(f'https://meme-api.herokuapp.com/gimme/{reddit}?hot=True')
-        json = await request.json()
-        
-        try:
-            if json['code']:
-                return await ctx.send("Invalid sub-reddit!")
-            
-        except:
-
-            if ctx.channel.is_nsfw() is False and json['nsfw'] is True:
-                return await ctx.send("That subreddit is NSFW. Please use this command in an NSFW channel.")
-
-            end = time.perf_counter()
-
-            ms = (end - start) * 1000
-
-            embed = discord.Embed(title=json['title'])
-            embed.set_image(url=json['url'])
-            embed.set_footer(text=f"Requested by {ctx.author} • {round(ms)}ms{'' * (9 - len(str(round(ms, 3))))}", icon_url=ctx.author.avatar.url)
-
-            await ctx.send(embed=embed, footer=False)
+    async def _reddit(self, ctx: CustomContext, reddit: str):
+        await self.reddit(self, ctx, reddit, hot=True)
         
     @commands.command(
         help=":bookmark: Searches the specified word in the dictionary.")
@@ -301,7 +253,7 @@ class Fun(commands.Cog):
                 member = ctx.author
 
         embed = discord.Embed(title="smart rate machine",
-                              description=f"{'you are ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} is '} {random.randint(0, 150)} IQ :brain:")
+                              description=f"{'you have ' if member.id == ctx.author.id else f'{member.display_name if member in ctx.guild.members else member.name} has '} {random.randint(0, 150)} IQ :brain:")
 
         await ctx.send(embed=embed)
 
