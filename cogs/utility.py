@@ -674,7 +674,7 @@ UV index: {current['uv']}
         if not member.display_avatar:
             return await ctx.send(f"{'You have' if member.id == ctx.author.id else f'{member.mention} has'} no avatar.")
 
-        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': f'{yaml_data["OR_TOKEN"]}'}, params={'url': ctx.author.display_avatar.url})
+        request = await self.client.session.get(f'https://api.openrobot.xyz/api/nsfw-check', headers={'Authorization': f'{yaml_data["OR_TOKEN"]}'}, params={'url': member.display_avatar.url})
         json = await request.json()
 
         safe = round(100 - json['nsfw_score'] * 100, 2)
