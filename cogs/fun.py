@@ -703,7 +703,7 @@ class Fun(commands.Cog):
         json = await request.json()
 
         try:
-            embed = discord.Embed(title="Shower Thought", description=json['text'])
+            embed = discord.Embed(title="Shower Thought", description=json['result'])
             embed.set_footer(text=f"{json['author']} - {json['upvotes']} upvotes")
             
             return await ctx.send(embed=embed, footer=False)
