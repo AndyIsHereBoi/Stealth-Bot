@@ -104,7 +104,7 @@ class Fun(commands.Cog):
     @commands.command(
         help=":frog: Sends a random meme from Reddit.")
     async def meme(self, ctx: CustomContext):
-        await self.reddit(self, ctx, "dankmemes", hot=True)
+        await self.reddit(ctx=ctx, reddit="dankmemes", hot=True)
         
     @commands.command(
         help=":frog: Sends a random programmer meme from Reddit.",
