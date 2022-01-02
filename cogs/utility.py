@@ -681,7 +681,6 @@ UV index: {current['uv']}
         safe = int(safe) if safe % 1 == 0 else safe
         unsafe = round(json['nsfw_score'] * 100, 2)
         unsafe = int(unsafe) if unsafe % 1 == 0 else unsafe
-
         is_safe = not bool(json['labels']) and safe > unsafe
 
         embed = discord.Embed(title="NSFW Check", description=f"""
