@@ -6,6 +6,7 @@ import time
 import yaml
 import topgg
 import prsaw
+import topgg
 import typing
 import pomice
 import errors
@@ -130,6 +131,7 @@ class StealthBot(commands.AutoShardedBot):
                                        password=yaml_data['ASYNC_PRAW_PASSWORD'])
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.mystbin = mystbin.Client()
+        self.topggpy = topgg.DBLClient(self, yaml_data['DBL_TOKEN'], autopost=True, post_shard_count=True)
 
         # Custom stuff
         self.chatbot_channels = [913851034416324658, 913851042079338586, 914643410357473310, 925801564701069322]
@@ -239,6 +241,10 @@ class StealthBot(commands.AutoShardedBot):
 
     async def get_context(self, message, *, cls=CustomContext):
         return await super().get_context(message, cls=cls)
+
+    async def on_autopost_success(self):
+        channel = self.get_channel(927492170787749938)
+        return await channel.send(f"Posted server count ({self.topggpy.guild_count}) and shard count {self.shard_count}")
 
     async def on_ready(self):
         print(f"-------------================----------------")
