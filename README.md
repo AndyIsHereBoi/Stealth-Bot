@@ -5,11 +5,11 @@
   <h3 align="center">Stealth Bot</h3>
   <p align="center">
     A multi-purpose discord bot.
+    [![servers](https://top.gg/api/widget/servers/760179628122964008.svg?noavatar=true)](https://top.gg/bot/760179628122964008)
+    [![upvotes](https://top.gg/api/widget/upvotes/760179628122964008.svg?noavatar=true)](https://top.gg/bot/760179628122964008)
   </p>
 </p>
 
-[![widget](https://top.gg/api/widget/760179628122964008.svg)(https://top.gg/bot/760179628122964008)
 [![servers](https://top.gg/api/widget/servers/760179628122964008.svg?noavatar=true)](https://top.gg/bot/760179628122964008)
-[![upvotes](https://top.gg/api/widget/upvotes/760179628122964008.svg?noavatar=true)](https://top.gg/bot/760179628122964008)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/it-works-why.svg)](https://forthebadge.com)
