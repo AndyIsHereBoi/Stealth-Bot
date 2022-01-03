@@ -5,11 +5,9 @@
   <h3 align="center">Stealth Bot</h3>
   <p align="center">
     A multi-purpose discord bot.
-    
     <a href="https://top.gg/bot/760179628122964008">
       <img src="https://top.gg/api/widget/servers/760179628122964008.svg?noavatar=true">
     </a>
-    
     <a href="https://top.gg/bot/760179628122964008">
       <img src="https://top.gg/api/widget/upvotes/760179628122964008.svg?noavatar=true">
     </a>
