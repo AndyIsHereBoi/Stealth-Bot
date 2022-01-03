@@ -326,13 +326,13 @@ class Misc(commands.Cog):
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await ctx.message.delete()
 
-            return await ctx.send("<:redTick:596576672149667840> You've failed the captcha!", delete_after=10)
+            return await ctx.send(f"<:redTick:596576672149667840> {ctx.author.mention}, you've failed the captcha!", allowed_mentions=discord.AllowedMentions(users=True), delete_after=10)
 
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await ctx.message.delete()
 
-        await ctx.send("<:greenTick:596576670815879169> You've succeeded the captcha!", delete_after=10)
+        await ctx.send(f"<:greenTick:596576670815879169> {ctx.author.mention}, you've succeeded the captcha!", allowed_mentions=discord.AllowedMentions(users=True), delete_after=10)
 
         try: return await ctx.author.add_roles(role)
-        except: return await ctx.send("I was unable to give you the role. Tell the server administrators to move my role above yours.", delete_after=10)
+        except: return await ctx.send("<:greenTick:596576670815879169> {ctx.author.mention}, I was unable to give you the role. Tell the server administrators to move my role above yours.", allowed_mentions=discord.AllowedMentions(users=True), delete_after=10)
