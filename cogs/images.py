@@ -494,5 +494,5 @@ k = Cake           y = Poppy
         help="Warps.",
         usage="[member|user|emoji]")
     async def colors(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        embed = discord.Embed().set_image(url=f"attachment://colors.png")
         return await ctx.send(embed=embed, file=await self.dagpi_image_api(imageFeatures.colors(), ctx, member))
