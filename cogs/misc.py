@@ -302,24 +302,35 @@ class Misc(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.member)
     async def verify(self, ctx: CustomContext) -> discord.Message:
+        record = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+
+        if not record['verify_role_id']:
+            return await ctx.send(f"This server doesn't have a verify role. To set it do `{ctx.prefix}verifyrole set <role>`")
+
+        role = ctx.guild.get_role(record['verify_role_id'])
+
         def check(m):
             return m.author.id == ctx.author.id and m.guild.id == ctx.guild.id and m.channel.id == ctx.channel.id
 
-        request = await self.client.session.get('https://api.dagpi.xyz/data/captcha',
-                                                headers={'Authorization': yaml_data['DAGPI_TOKEN']})
+        request = await self.client.session.get('https://api.dagpi.xyz/data/captcha', headers={'Authorization': yaml_data['DAGPI_TOKEN']})
         json = await request.json()
 
-        embed = discord.Embed(title="You have 30 seconds to type the captcha below.")
+        embed = discord.Embed(title="Do the captcha to verify yourself!")
         embed.set_image(url=json['image'])
-        msg = await ctx.send(embed=embed)
 
-        message = await self.client.wait_for("message", check=check, timeout=30)
+        msg = await ctx.send(embed=embed)
+        message = await self.client.wait_for("message", check=check)
 
         if discord.utils.remove_markdown(message.content.lower()) != json['answer']:
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
+
             return await ctx.send("<:redTick:596576672149667840> You've failed the captcha!", delete_after=10)
 
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
-        return await ctx.send("<:greenTick:596576670815879169> You've succeeded the captcha!", delete_after=10)
+
+        await ctx.send("<:greenTick:596576670815879169> You've succeeded the captcha!", delete_after=10)
+
+        try: return await ctx.author.add_roles(role)
+        except: return await ctx.send("I was unable to give you the role. Tell the server administrators to move my role above yours.", delete_after=10)
