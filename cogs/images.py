@@ -42,6 +42,26 @@ class Images(commands.Cog):
         request = await self.client.session.get(f"https://api.jeyy.xyz/image/{endpoint}", params={'image_url': url})
         return discord.File(io.BytesIO(await request.read()), f"{endpoint}.gif")
 
+    async def dagpi_image_api(self, feature: imageFeatures, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji, None]], **kwargs):
+        await ctx.trigger_typing()
+
+        if member is None:
+            if ctx.message.reference:
+                member = ctx.message.reference.resolved.author
+            else:
+                member = ctx.author
+
+        if isinstance(member, discord.Emoji):
+            url = member.url
+
+        elif isinstance(member, discord.PartialEmoji):
+            url = member.url
+
+        else:
+            url = member.display_avatar.url
+
+        return await ctx.dagpi(member, feature=feature, **kwargs)
+
     @commands.command()
     async def dog(self, ctx) -> discord.Message:
         request = await self.client.session.get(f"https://some-random-api.ml/animal/dog")
@@ -469,3 +489,10 @@ k = Cake           y = Poppy
         embed.set_image(url="attachment://isometric_draw.png")
         
         await ctx.send(embed=embed, file=discord.File(buffer, "isometric_draw.png"))
+
+    @commands.command(
+        help="Warps.",
+        usage="[member|user|emoji]")
+    async def colors(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
+        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
+        return await ctx.send(embed=embed, file=await self.dagpi_image_api(imageFeatures.colors(), ctx, member))
