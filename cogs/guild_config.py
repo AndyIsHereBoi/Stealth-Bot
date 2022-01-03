@@ -70,7 +70,7 @@ This is the logging module. The logging module can log various actions in your s
         await ctx.send(embed=embed, color=False)
 
     @log.command(
-        name="disbale",
+        name="disable",
         help="Disables the logging module for the current server.",
         aliases=['remove'])
     @commands.has_permissions(manage_guild=True)
