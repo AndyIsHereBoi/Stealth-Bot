@@ -10,3 +10,6 @@
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/it-works-why.svg)](https://forthebadge.com)
+![bot status](https://top.gg/api/widget/status/760179628122964008.svg) 
+![server count](https://top.gg/api/widget/servers/760179628122964008.svg?noavatar=true) 
+![upvotes](https://top.gg/api/widget/upvotes/760179628122964008.svg?noavatar=true) 
