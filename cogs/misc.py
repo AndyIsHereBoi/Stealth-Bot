@@ -324,11 +324,13 @@ class Misc(commands.Cog):
         if discord.utils.remove_markdown(message.content.lower()) != json['answer']:
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
+            with contextlib.suppress(discord.Forbidden, discord.HTTPException): await ctx.message.delete()
 
             return await ctx.send("<:redTick:596576672149667840> You've failed the captcha!", delete_after=10)
 
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()
         with contextlib.suppress(discord.Forbidden, discord.HTTPException): await message.delete()
+        with contextlib.suppress(discord.Forbidden, discord.HTTPException): await ctx.message.delete()
 
         await ctx.send("<:greenTick:596576670815879169> You've succeeded the captcha!", delete_after=10)
 
