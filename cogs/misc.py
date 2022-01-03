@@ -315,7 +315,7 @@ class Misc(commands.Cog):
         request = await self.client.session.get('https://api.dagpi.xyz/data/captcha', headers={'Authorization': yaml_data['DAGPI_TOKEN']})
         json = await request.json()
 
-        embed = discord.Embed(title="Do the captcha to verify yourself!")
+        embed = discord.Embed(title="Solve the captcha below to verify yourself!")
         embed.set_image(url=json['image'])
 
         msg = await ctx.send(embed=embed)
@@ -335,4 +335,4 @@ class Misc(commands.Cog):
         await ctx.send(f"<:greenTick:596576670815879169> {ctx.author.mention}, you've succeeded the captcha!", allowed_mentions=discord.AllowedMentions(users=True), delete_after=10)
 
         try: return await ctx.author.add_roles(role)
-        except: return await ctx.send("<:greenTick:596576670815879169> {ctx.author.mention}, I was unable to give you the role. Tell the server administrators to move my role above yours.", allowed_mentions=discord.AllowedMentions(users=True), delete_after=10)
+        except: return await ctx.send(f"<:greenTick:596576670815879169> {ctx.author.mention}, I was unable to give you the role. Tell the server administrators about this.", allowed_mentions=discord.AllowedMentions(users=True), delete_after=10)
