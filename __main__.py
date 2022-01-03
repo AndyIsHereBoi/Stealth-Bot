@@ -1,5 +1,6 @@
 # Imports
 
+import io
 import os
 import re
 import time
@@ -409,6 +410,37 @@ This restart took {delay} seconds.
             
         request = await self.dagpi.image_process(feature, url, **kwargs)
         return discord.File(fp=request.image, filename=f"{str(feature)}.{request.format}")
+
+    async def on_error(self, event_method: str, *args: typing.Any, **kwargs: typing.Any) -> None:
+        traceback_string = traceback.format_exc()
+        for line in traceback_string.split('\n'):
+            logging.info(line)
+
+        await self.wait_until_ready()
+        channel = self.get_channel(914145662520659998)
+        send = f"""
+```py
+Event {event_method} raised the following error:
+{traceback_string}
+```"""
+
+        if len(send) < 2000:
+            try:
+                await channel.send(send)
+
+            except (discord.Forbidden, discord.HTTPException):
+                await channel.send(f"""
+```py
+Event {event_method} raised the following error:
+```
+                """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"))
+
+        else:
+            await channel.send(f"""
+```py
+Event {event_method} raised the following error:
+```
+                """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"))
 
 
 if __name__ == '__main__':
