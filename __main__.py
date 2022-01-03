@@ -157,6 +157,7 @@ class StealthBot(commands.AutoShardedBot):
         self.user_id = 760179628122964008
         self.token = "haha no"
 
+
     def _load_extension(self, name: str):
         try:
             self.load_extension(name)
@@ -165,12 +166,14 @@ class StealthBot(commands.AutoShardedBot):
             traceback.print_exc()
             print()
 
+
     def _dynamic_cogs(self):
         for filename in os.listdir(f"./cogs"):
             if filename.endswith(".py"):
                 cog = filename[:-3]
                 logging.info(f"trying to load cog: {cog}")
                 self._load_extension(f'cogs.{cog}')
+
 
     def dj_only(self, guild: discord.Guild):
         try:
@@ -185,6 +188,7 @@ class StealthBot(commands.AutoShardedBot):
         else:
             return False
 
+
     def dj_role(self, guild: discord.Guild):
         try:
             dj_role_id = self.dj_roles[guild.id]
@@ -196,6 +200,7 @@ class StealthBot(commands.AutoShardedBot):
             return role
         else:
             return False
+
 
     async def create_gist(self, *, filename: str, description: str, content: str, public: bool = True):
         headers = {
@@ -216,6 +221,7 @@ class StealthBot(commands.AutoShardedBot):
         output = await self.session.request("POST", "https://api.github.com/gists", json=data, headers=headers)
         info = await output.json()
         return info['html_url']
+
 
     async def get_pre(self, bot, message: discord.Message, raw_prefix: Optional[bool] = False):
         if not message:
@@ -239,12 +245,15 @@ class StealthBot(commands.AutoShardedBot):
         
         return commands.when_mentioned_or(*prefix)(bot, message) if not raw_prefix else prefix
 
+
     async def get_context(self, message, *, cls=CustomContext):
         return await super().get_context(message, cls=cls)
+
 
     async def on_autopost_success(self):
         channel = self.get_channel(927492170787749938)
         return await channel.send(f"Posted server count ({self.topggpy.guild_count}) and shard count {self.shard_count}")
+
 
     async def on_ready(self):
         print(f"-------------================----------------")
