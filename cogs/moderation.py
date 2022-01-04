@@ -97,6 +97,42 @@ class ServerBansEmbedPage(menus.ListPageSource):
         return embed
 
 
+class BannedMember(commands.Converter):
+    async def convert(self, ctx: CustomContext, argument):
+        await ctx.trigger_typing()
+        if argument.isdigit():
+            member_id = int(argument, base=10)
+            try:
+                return await ctx.guild.fetch_ban(discord.Object(id=member_id))
+            except discord.NotFound:
+                raise commands.BadArgument('This member has not been banned before.') from None
+
+        ban_list = await ctx.guild.bans()
+        if not (entity := discord.utils.find(lambda u: str(u.user).lower() == argument.lower(), ban_list)):
+            entity = discord.utils.find(lambda u: str(u.user.name).lower() == argument.lower(), ban_list)
+            if not entity:
+                matches = difflib.get_close_matches(argument, [str(u.user.name) for u in ban_list])
+                if matches:
+                    entity = discord.utils.find(lambda u: str(u.user.name) == matches[0], ban_list)
+                    if entity:
+                        val = await ctx.confirm(f'Found closest match: **{entity.user}**. Do you want me to unban them?',
+                                                delete_after_cancel=True, delete_after_confirm=True,
+                                                delete_after_timeout=False, timeout=60,
+                                                buttons=((None, 'Yes', discord.ButtonStyle.green), (None, 'No', discord.ButtonStyle.grey)))
+                        if val is None:
+                            raise errors.NoHideout
+                        elif val is False:
+                            try:
+                                await ctx.message.add_reaction(ctx.tick(True))
+                            except discord.HTTPException:
+                                pass
+                            raise errors.NoHideout
+
+        if entity is None:
+            raise commands.BadArgument('This member has not been banned before.')
+        return entity
+
+
 class Moderation(commands.Cog):
     """Commands useful for staff members of the server."""
 
