@@ -25,7 +25,7 @@ except ImportError:
 def natural_size(size_in_bytes: int):
     units = ('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB')
     power = int(math.log(size_in_bytes, 1024))
-    return f"{size_in_bytes / (1024 ** power):.2f} {units[power]}"
+    return f"{round(size_in_bytes / (1024 ** power))} {units[power]}"
 
 class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
     def __init__(self, *args, **kwargs):
@@ -60,7 +60,7 @@ class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
                     try:
                         mem = proc.memory_full_info()
-                        summary.append(f"Using `{round(natural_size(mem.rss))}` physical memory\nand `{round(natural_size(mem.vms))}` virtual memory,\n`{round(natural_size(mem.uss))}` of which unique to this process.")
+                        summary.append(f"Using `{natural_size(mem.rss)}` physical memory\nand `{natural_size(mem.vms)}` virtual memory,\n`{natural_size(mem.uss)}` of which unique to this process.")
 
                     except psutil.AccessDenied:
                         pass
