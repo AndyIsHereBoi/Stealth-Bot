@@ -66,7 +66,7 @@ This is the logging module. The logging module can log various actions in your s
 
         await self.client.db.execute("INSERT INTO guilds (guild_id, logs_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET logs_channel_id = $2", ctx.guild.id, channel.id)
 
-        embed = discord.Embed(title="Logs channel updated", description=f"The logs channel for this server has been set to {channel.mention}!", color=discord.Color.green())
+        embed = discord.Embed(title="Logs channel updated", description=f"The logs channel for this server has been set to {getattr(channel, 'mention', '#deleted-channel')}!", color=discord.Color.green())
         await ctx.send(embed=embed, color=False)
 
     @log.command(
