@@ -51,7 +51,7 @@ class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
         else:
             dist_version = f'unknown `{discord.__version__}`'
 
-        summary = [f"Jishaku v{package_version('jishaku')}, {dist_version},\n`Python {sys.version}` on `{sys.platform}`\nModule was loaded <t:{self.load_time.timestamp():.0f}:R>, \ncog was loaded <t:{self.start_time.timestamp():.0f}:R>, \nbot was loaded {discord.utils.format_dt(self.bot.launch_time, 'R')}.\n"]
+        summary = [f"Jishaku v{package_version('jishaku')}, {dist_version},\n`Python {sys.version}` on `{sys.platform}`\n\nModule was loaded <t:{self.load_time.timestamp():.0f}:R>, \ncog was loaded <t:{self.start_time.timestamp():.0f}:R>, \nbot was loaded {discord.utils.format_dt(self.bot.launch_time, 'R')}.\n"]
 
         if psutil:
             try:
@@ -60,7 +60,7 @@ class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
                     try:
                         mem = proc.memory_full_info()
-                        summary.append(f"Using {natural_size(mem.rss)} physical memory and\n {natural_size(mem.vms)} virtual memory,\n{natural_size(mem.uss)} of which unique to this process.")
+                        summary.append(f"Using `{round(natural_size(mem.rss))}` physical memory\nand `{round(natural_size(mem.vms))}` virtual memory,\n`{round(natural_size(mem.uss))}` of which unique to this process.")
 
                     except psutil.AccessDenied:
                         pass
@@ -69,7 +69,7 @@ class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
                         name = proc.name()
                         pid = proc.pid
                         thread_count = proc.num_threads()
-                        summary.append(f"Running on PID {pid} (`{name}`) with {thread_count} thread(s).")
+                        summary.append(f"Running on PID `{pid}` (`{name}`) with `{thread_count}` thread(s).")
 
                     except psutil.AccessDenied:
                         pass
