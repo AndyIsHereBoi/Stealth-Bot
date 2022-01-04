@@ -24,7 +24,7 @@ def natural_size(size_in_bytes: int):
     return f"{size_in_bytes / (1024 ** power):.2f} {units[power]}"
 
 
-class CustomDebugCog(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
+class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
     @Feature.Command(name="jishaku", aliases=["jsk"], invoke_without_command=True, ignore_extra=False)
     async def jsk(self, ctx: CustomContext):
@@ -137,4 +137,4 @@ class CustomDebugCog(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
 
 
 def setup(bot):
-    bot.add_cog(CustomDebugCog(bot=bot))
+    bot.add_cog(CustomJishaku(bot=bot))
