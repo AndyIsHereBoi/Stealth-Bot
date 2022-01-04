@@ -52,7 +52,7 @@ class WelcomeCog(commands.Cog):
 
         self.client.loop.create_task(self.__ainit__())
         
-    def make_ordinal(n):
+    def make_ordinal(self, n):
         '''
         Convert an integer into its ordinal representation::
 
