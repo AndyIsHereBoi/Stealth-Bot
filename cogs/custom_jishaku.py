@@ -87,7 +87,7 @@ class CustomJishaku(*OPTIONAL_FEATURES, *STANDARD_FEATURES):
                 summary.append(f"This bot is automatically sharded (`{len(self.bot.shards)}` shard of `{self.bot.shard_count}`)\nand can see {cache_summary}")
 
             else:
-                shard_ids = '`, `'.join(str(i) for i in self.bot.shards.keys())
+                shard_ids = '`,` '.join(str(i) for i in self.bot.shards.keys()) # here
                 summary.append(f"This bot is automatically sharded (Shards {shard_ids} of `{self.bot.shard_count}`)\nand can see {cache_summary}")
 
         elif self.bot.shard_count:
