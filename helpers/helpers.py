@@ -655,7 +655,7 @@ def get_guild_boosts(guild: discord.Guild):
     last_boost = max(guild.members, key=lambda m: m.premium_since or guild.created_at)
     if guild.premium_tier != 0:
 
-        if last_boost and guild.premium_subscription_count:
+        if last_boost and guild.premium_subscription_count and last_boost.premium_since:
             return f"{get_server_level_emote(guild)} Level: {guild.premium_tier:,}\n<:boost:858326699234164756> Boosts: {guild.premium_subscription_count:,}\n<:boost:858326699234164756> __**Last Boost**__\n{last_boost}\n({discord.utils.format_dt(last_boost.premium_since, style='R') if last_boost.premium_since else ''})"
 
         else:
