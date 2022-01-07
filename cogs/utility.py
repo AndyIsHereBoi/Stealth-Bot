@@ -860,7 +860,7 @@ Banner: {helpers.get_member_banner_urls(fetched_member, ctx, member.id)}
         guild = ctx.guild
 
         embed = discord.Embed(title=guild.name if guild.name else 'No name', description=f"""
-<:greyTick:596576672900186113> ID: {guild.id}
+<:greyTick:895688440690114560> ID: {guild.id}
 <:info:888768239889424444> Description: {guild.description if guild.description else 'No description'}
         """)
 
@@ -893,12 +893,12 @@ Total: {len(guild.stickers):,}/{guild.sticker_limit:,}
 :tools: Admins: {len([m for m in guild.members if m.guild_permissions.administrator]):,}
         """, inline=True)
 
-        embed.add_field(name="<:status_offline:596576752013279242> __**Member statuses**__", value=f"""
-<:status_online:596576749790429200> Online: {len([m for m in guild.members if m.status is discord.Status.online]):,}
-<:status_idle:596576773488115722> Idle: {len([m for m in guild.members if m.status is discord.Status.idle]):,}
-<:status_dnd:596576774364856321> Dnd: {len([m for m in guild.members if m.status is discord.Status.dnd]):,}
-<:status_streaming:596576747294818305> Streaming: {len([m for m in guild.members if discord.utils.find(lambda a: isinstance(a, discord.Streaming), m.activities)]):,}
-<:status_offline:596576752013279242> Offline: {len([m for m in guild.members if m.status is discord.Status.offline]):,}
+        embed.add_field(name="<:status_offline:925709091328897074> __**Member statuses**__", value=f"""
+<:status_online:925709091375026246> Online: {len([m for m in guild.members if m.status is discord.Status.online]):,}
+<:status_idle:925709091312132126> Idle: {len([m for m in guild.members if m.status is discord.Status.idle]):,}
+<:status_dnd:925709090997538867> Dnd: {len([m for m in guild.members if m.status is discord.Status.dnd]):,}
+<:status_streaming:925709091396018186> Streaming: {len([m for m in guild.members if discord.utils.find(lambda a: isinstance(a, discord.Streaming), m.activities)]):,}
+<:status_offline:925709091328897074> Offline: {len([m for m in guild.members if m.status is discord.Status.offline]):,}
         """, inline=True)
 
         embed.add_field(name="<:gear:899622456191483904> __**Other**__", value=f"""
