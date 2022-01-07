@@ -712,7 +712,7 @@ Safe: {'Yes' if is_safe else 'No'}
         if isinstance(member, discord.Member):
             fetched_member = await self.client.fetch_user(member.id)
 
-            embed = discord.Embed(title=member.name if member.name else "No name", url=f"https://discord.com/users/{member.id}", description=f"<:greyTick:596576672900186113> ID: {member.id}")
+            embed = discord.Embed(title=member.name if member.name else "No name", url=f"https://discord.com/users/{member.id}", description=f"<:greyTick:895688440690114560> ID: {member.id}")
 
             embed.add_field(name="__**General**__", value=f"""
 <:nickname:895688440912437258> Nick: {member.nick if member.nick else f'{member.name} (No nick)'}
