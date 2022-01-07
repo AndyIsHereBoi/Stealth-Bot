@@ -498,6 +498,60 @@ def get_member_client(member: discord.Member):
 
     return f"[ {desktopStatus} ] [ {mobileStatus} ] [ {webStatus} ]"
 
+def get_member_status_client(member: discord.Member):
+    desktopStatus = ""
+    mobileStatus = ""
+    webStatus = ""
+    bruh = []
+    status = []
+
+    if str(member.desktop_status) == "online":
+        status.append("<:status_online_desktop:904449910622007306>")
+
+    elif str(member.desktop_status) == "idle":
+        status.append("<:status_idle_desktop:904449910626205747>")
+
+    elif str(member.desktop_status) == "dnd":
+        status.append("<:status_dnd_desktop:904449910601035896>")
+
+    elif str(member.desktop_status) == "streaming":
+        status.append("<:status_streaming_desktop:904449910693298287>")
+
+    else:
+        bruh.append(member.id)
+
+    if str(member.mobile_status) == "online":
+        status.append("<:status_online_mobile:899267887561330728>")
+
+    elif str(member.mobile_status) == "idle":
+        status.append("<:status_idle_mobile:899267832955686943>")
+
+    elif str(member.mobile_status) == "dnd":
+        status.append("<:status_dnd_mobile:899267914304200734>")
+
+    elif str(member.mobile_status) == "streaming":
+        status.append("<:status_streaming_mobile:904449910642987069>")
+
+    else:
+        bruh.append(member.id)
+
+    if str(member.web_status) == "online":
+        status.append("<:status_online_web:899368966768689225>")
+
+    elif str(member.web_status) == "idle":
+        status.append("<:status_idle_web:899368956748501012>")
+
+    elif str(member.web_status) == "dnd":
+        status.append("<:status_dnd_web:899368975513833532>")
+
+    elif str(member.web_status) == "streaming":
+        status.append("<:status_streaming_web:904449910710108230>")
+
+    else:
+        bruh.append(member.id)
+
+    return ' '.join(status)
+
 def get_member_spotify(member: discord.Member):
     spotify = discord.utils.find(lambda act: isinstance(act, discord.Spotify), member.activities)
 

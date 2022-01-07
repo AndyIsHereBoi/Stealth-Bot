@@ -70,16 +70,16 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel):
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", channel.guild.id)
-        try :
+        try:
 
             if not database['logs_channel_id']:
                 return
             
             else:
                 embed = discord.Embed(title=f"Channel deleted", color=discord.Color.red())
-                embed.add_field(name=f"Name", value=f"{channel.name}", inline=False)
-                embed.add_field(name=f"Topic", value=f"{channel.topic}", inline=False)
-                embed.add_field(name=f"Category", value=f"{channel.category}", inline=False)
+                embed.add_field(name=f"Name", value=f"{channel.name if channel.name else 'No name'}", inline=False)
+                embed.add_field(name=f"Topic", value=f"{channel.topic if channel.topic else 'No topic'}", inline=False)
+                embed.add_field(name=f"Category", value=f"{channel.category if channel.category else 'No category'}", inline=False)
                 embed.add_field(name=f"Created at", value=f"{discord.utils.format_dt(channel.created_at, style='F')} ({discord.utils.format_dt(channel.created_at, style='R')})", inline=False)
                 
                 channel = self.client.get_channel(database['logs_channel_id'])
@@ -101,9 +101,9 @@ class Logging(commands.Cog):
             
             else:
                 embed = discord.Embed(title=f"Channel created", color=discord.Color.green())
-                embed.add_field(name=f"Name", value=f"{channel.name}", inline=False)
-                embed.add_field(name=f"Topic", value=f"{channel.topic}", inline=False)
-                embed.add_field(name=f"Category", value=f"{channel.category}", inline=False)
+                embed.add_field(name=f"Name", value=f"{channel.name if channel.name else 'No name'}", inline=False)
+                embed.add_field(name=f"Topic", value=f"{channel.topic if channel.topic else 'No topic'}", inline=False)
+                embed.add_field(name=f"Category", value=f"{channel.category if channel.category else 'No category'}", inline=False)
                 
                 channel = self.client.get_channel(database['logs_channel_id'])
                 await channel.send(embed=embed)
@@ -625,7 +625,7 @@ Uses: {invite.uses}
 
             if not database['logs_channel_id']:
                 return
-            
+
             else:
                 embed = discord.Embed(title="User banned", color=discord.Color.red())
                 embed.add_field(name=f"User", value=f"{user.name} **|** {user.mention} **|** {user.id}")
