@@ -394,19 +394,19 @@ def get_member_status_emote(member: discord.Member):
     status = str(member.status)
 
     if status == "online":
-        return "<:status_online:596576749790429200>"
+        return "<:status_online:925709091375026246>"
 
     elif status == "idle":
-        return "<:status_idle:596576773488115722>"
+        return "<:status_idle:925709091312132126>"
 
     elif status == "dnd":
-        return "<:status_dnd:596576774364856321>"
+        return "<:status_dnd:925709090997538867>"
 
     elif status == "streaming":
-        return "<:status_streaming:596576747294818305>"
+        return "<:status_streaming:925709091396018186>"
 
     else:
-        return "<:status_offline:596576752013279242>"
+        return "<:status_offline:925709091328897074>"
 
 
 def get_member_custom_status(member: discord.Member):
@@ -656,7 +656,7 @@ def get_guild_boosts(guild: discord.Guild):
     if guild.premium_tier != 0:
 
         if last_boost and guild.premium_subscription_count:
-            return f"{get_server_level_emote(guild)} Level: {guild.premium_tier:,}\n<:boost:858326699234164756> Boosts: {guild.premium_subscription_count:,}\n<:boost:858326699234164756> __**Last Boost**__\n{last_boost}\n({discord.utils.format_dt(last_boost.premium_since, style='R')})"
+            return f"{get_server_level_emote(guild)} Level: {guild.premium_tier:,}\n<:boost:858326699234164756> Boosts: {guild.premium_subscription_count:,}\n<:boost:858326699234164756> __**Last Boost**__\n{last_boost}\n({discord.utils.format_dt(last_boost.premium_since, style='R') if last_boost.premium_since else ''})"
 
         else:
             return f"{get_server_level_emote(guild)} Level: {guild.premium_tier:,}\n<:boost:858326699234164756> Boosts: {guild.premium_subscription_count:,}"
