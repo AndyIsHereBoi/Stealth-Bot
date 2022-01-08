@@ -8,6 +8,7 @@ import asyncio
 import discord
 import datetime
 import argparse
+import contextlib
 
 from collections import Counter
 from helpers import helpers as helpers
@@ -95,42 +96,6 @@ class ServerBansEmbedPage(menus.ListPageSource):
                               description="\n".join(f'{i + 1}. {v}' for i, v in enumerate(entries, start=offset)),
                               timestamp=discord.utils.utcnow(), color=color)
         return embed
-
-
-class BannedMember(commands.Converter):
-    async def convert(self, ctx: CustomContext, argument):
-        await ctx.trigger_typing()
-        if argument.isdigit():
-            member_id = int(argument, base=10)
-            try:
-                return await ctx.guild.fetch_ban(discord.Object(id=member_id))
-            except discord.NotFound:
-                raise commands.BadArgument('This member has not been banned before.') from None
-
-        ban_list = await ctx.guild.bans()
-        if not (entity := discord.utils.find(lambda u: str(u.user).lower() == argument.lower(), ban_list)):
-            entity = discord.utils.find(lambda u: str(u.user.name).lower() == argument.lower(), ban_list)
-            if not entity:
-                matches = difflib.get_close_matches(argument, [str(u.user.name) for u in ban_list])
-                if matches:
-                    entity = discord.utils.find(lambda u: str(u.user.name) == matches[0], ban_list)
-                    if entity:
-                        val = await ctx.confirm(f'Found closest match: **{entity.user}**. Do you want me to unban them?',
-                                                delete_after_cancel=True, delete_after_confirm=True,
-                                                delete_after_timeout=False, timeout=60,
-                                                buttons=((None, 'Yes', discord.ButtonStyle.green), (None, 'No', discord.ButtonStyle.grey)))
-                        if val is None:
-                            raise errors.NoHideout
-                        elif val is False:
-                            try:
-                                await ctx.message.add_reaction(ctx.tick(True))
-                            except discord.HTTPException:
-                                pass
-                            raise errors.NoHideout
-
-        if entity is None:
-            raise commands.BadArgument('This member has not been banned before.')
-        return entity
 
 
 class Moderation(commands.Cog):
@@ -297,24 +262,109 @@ class Moderation(commands.Cog):
             paginator.message = await ctx.send(embed=kwargs['embed'])
         await paginator.start(ctx)
 
-    @commands.command(
-        help="Announces a message in a specified channel. If no channel is specified it will default to the current one.")
+    @commands.group(invoke_without_command=True)
     @commands.has_permissions(manage_messages=True)
-    @commands.check_any(commands.has_permissions(manage_messages=True), commands.is_owner())
-    async def announce(self, ctx: CustomContext, channel: typing.Optional[discord.TextChannel] = None, *, message):
-        if channel is None:
+    @commands.bot_has_permissions(manage_messages=True)
+    async def announce(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @announce.command()
+    async def everyone(self, ctx, channel: typing.Optional[discord.TextChannel], *, message: str):
+        if not channel:
             channel = ctx.channel
 
-        channelid = channel.id
-        channel = self.client.get_channel(channelid)
+        if len(message) > 1500:
+            return await ctx.send("Woah that message is over 1500 characters long! Please make it shorter.")
 
-        try:
-            await ctx.message.delete()
+        message = f"""
+~~−−−−~~**[** @everyone **]**~~−−−−~~
 
-        except:
-            pass
+Hello everyone,
+{message}
 
-        await channel.send(message)
+Best regards, {ctx.author.display_name}."""
+
+        delete_confirmation = await ctx.confirm("Would you like me to delete your message as well?",
+                                                delete_after_confirm=True, delete_after_cancel=True,
+                                                delete_after_timeout=True)
+        if not delete_confirmation:
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
+                await ctx.message.add_reaction("<:greenTick:895688440690147370>")
+
+        else:
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
+                await ctx.message.delete()
+
+        return await channel.send(message,
+                                  allowed_mentions=discord.AllowedMentions(everyone=True, replied_user=True, roles=True,
+                                                                           users=True))
+
+    @announce.command()
+    async def here(self, ctx, channel: typing.Optional[discord.TextChannel], *, message: str):
+        if not channel:
+            channel = ctx.channel
+
+        if len(message) > 1500:
+            return await ctx.send("Woah that message is over 1500 characters long! Please make it shorter.")
+
+        message = f"""
+~~−−−−~~**[** @here **]**~~−−−−~~
+
+Hello everyone,
+{message}
+
+Best regards, {ctx.author.display_name}."""
+
+        delete_confirmation = await ctx.confirm("Would you like me to delete your message as well?",
+                                                delete_after_confirm=True, delete_after_cancel=True,
+                                                delete_after_timeout=True)
+        if not delete_confirmation:
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
+                await ctx.message.add_reaction("<:greenTick:895688440690147370>")
+
+        else:
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
+                await ctx.message.delete()
+
+        return await channel.send(message,
+                                  allowed_mentions=discord.AllowedMentions(everyone=True, replied_user=True, roles=True,
+                                                                           users=True))
+
+    @announce.command()
+    async def role(self, ctx, role: typing.Optional[discord.Role], channel: typing.Optional[discord.TextChannel], *,
+                   message: str):
+        if not role:
+            role = ctx.guild.default_role
+
+        if not channel:
+            channel = ctx.channel
+
+        if len(message) > 1500:
+            return await ctx.send("Woah that message is over 1500 characters long! Please make it shorter.")
+
+        message = f"""
+~~−−−−~~**[** {role.mention} **]**~~−−−−~~
+
+Hello everyone,
+{message}
+
+Best regards, {ctx.author.display_name}."""
+
+        delete_confirmation = await ctx.confirm("Would you like me to delete your message as well?",
+                                                delete_after_confirm=True, delete_after_cancel=True,
+                                                delete_after_timeout=True)
+        if not delete_confirmation:
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
+                await ctx.message.add_reaction("<:greenTick:895688440690147370>")
+
+        else:
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
+                await ctx.message.delete()
+
+        return await channel.send(message,
+                                  allowed_mentions=discord.AllowedMentions(everyone=True, replied_user=True, roles=True,
+                                                                           users=True))
 
     @commands.command(
         help="With this command you can ban the specified member with a specified reason. You can also specify if I should delete messages. If no reason is provided it will not add a reason. The reason cannot be more than 500 characters.",

@@ -604,7 +604,7 @@ This might also be a issue with role hierarchy, try moving my role to the top of
         elif isinstance(error, commands.BadArgument):
             name = "Bad argument"
             icon_url = None
-            message = f"The argument you provided was invalid."
+            message = error or f"That argument was invalid."
 
         elif isinstance(error, commands.BadUnionArgument):
             name = "Bad union argument"
