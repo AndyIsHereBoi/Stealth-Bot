@@ -789,8 +789,11 @@ Command {ctx.command} raised the following error:
             return
 
         if re.match(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", message.content.lower):
-            try: await message.delete()
-            except: pass
+            try:
+                return await message.delete()
+
+            except:
+                pass
             
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
