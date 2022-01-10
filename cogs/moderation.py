@@ -262,14 +262,17 @@ class Moderation(commands.Cog):
             paginator.message = await ctx.send(embed=kwargs['embed'])
         await paginator.start(ctx)
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(
+        invoke_without_command=True,
+        help="Announces a message to the server.")
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
     async def announce(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @announce.command()
+    @announce.command(
+        help="Pings @everyone and announces the message to the specified channel. If no channel is specified, it will send it to the current one.")
     async def everyone(self, ctx, channel: typing.Optional[discord.TextChannel], *, message: str):
         if not channel:
             channel = ctx.channel
@@ -300,7 +303,8 @@ Best regards, {ctx.author.display_name}."""
                                   allowed_mentions=discord.AllowedMentions(everyone=True, replied_user=True, roles=True,
                                                                            users=True))
 
-    @announce.command()
+    @announce.command(
+        help="Pings @here and announces the message to the specified channel. If no channel is specified, it will send it to the current one.")
     async def here(self, ctx, channel: typing.Optional[discord.TextChannel], *, message: str):
         if not channel:
             channel = ctx.channel
@@ -331,9 +335,9 @@ Best regards, {ctx.author.display_name}."""
                                   allowed_mentions=discord.AllowedMentions(everyone=True, replied_user=True, roles=True,
                                                                            users=True))
 
-    @announce.command()
-    async def role(self, ctx, role: typing.Optional[discord.Role], channel: typing.Optional[discord.TextChannel], *,
-                   message: str):
+    @announce.command(
+        help="Pings the specified role and announces the message to the specified channel. If no channel is specified, it will send it to the current one.")
+    async def role(self, ctx, role: typing.Optional[discord.Role], channel: typing.Optional[discord.TextChannel], *, message: str):
         if not role:
             role = ctx.guild.default_role
 
@@ -355,12 +359,10 @@ Best regards, {ctx.author.display_name}."""
                                                 delete_after_confirm=True, delete_after_cancel=True,
                                                 delete_after_timeout=True)
         if not delete_confirmation:
-            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
-                await ctx.message.add_reaction("<:greenTick:895688440690147370>")
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden): await ctx.message.add_reaction("<:greenTick:895688440690147370>")
 
         else:
-            with contextlib.suppress(discord.HTTPException, discord.Forbidden):
-                await ctx.message.delete()
+            with contextlib.suppress(discord.HTTPException, discord.Forbidden): await ctx.message.delete()
 
         return await channel.send(message,
                                   allowed_mentions=discord.AllowedMentions(everyone=True, replied_user=True, roles=True,

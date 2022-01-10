@@ -782,6 +782,15 @@ Command {ctx.command} raised the following error:
             except:
                 await message.add_reaction('❌')
                 await message.reply(json['error']['message'])
+
+    @commands.Cog.listener('on_message')
+    async def delete_vicente_links(self, message: discord.Message):
+        if message.author.id != 555818548291829792:
+            return
+
+        if re.match(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", message.content.lower):
+            try: await message.delete()
+            except: pass
             
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
