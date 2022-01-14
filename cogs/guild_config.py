@@ -33,6 +33,8 @@ class GuildSettings(commands.Cog, name="Guild settings"):
         invoke_without_command=True,
         help="<:lock:904037834141364275> | Logging commands. If no argument is specified it will show you the current logs channel.",
         aliases=['logs'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def log(self, ctx):
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
@@ -86,6 +88,8 @@ This is the logging module. The logging module can log various actions in your s
     @commands.group(
         invoke_without_command=True,
         help=":wave: | Welcome commands. If no argument is specified it will show you the current welcome channel.")
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def welcome(self, ctx):
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
@@ -194,6 +198,8 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
     @welcome.command(
         help="Sends a fake welcome message.",
         aliases=['fake', 'fake-msg', 'fake-message'])
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def fake_message(self, ctx):
         database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
@@ -260,9 +266,9 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
 
         return await ctx.send(embed=embed)
 
-    @commands.has_permissions(manage_roles=True)
-    @commands.bot_has_permissions(manage_roles=True)
     @muterole.command(name="create")
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def muterole_create(self, ctx: CustomContext):
         starting_time = time.monotonic()
 
@@ -311,8 +317,8 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
                            f"\nSet permissions for {modified} channel{'' if modified == 1 else 's'}!")
 
     @muterole.command(name="delete")
-    @commands.has_permissions(manage_roles=True)
-    @commands.bot_has_permissions(manage_roles=True)
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def muterole_delete(self, ctx: CustomContext):
         """
         Deletes the server's mute role if it exists.
@@ -351,8 +357,8 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
         await ctx.send("🚮")
 
     @muterole.command(name="fix")
-    @commands.has_permissions(manage_roles=True)
-    @commands.bot_has_permissions(manage_roles=True)
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def muterole_fix(self, ctx: CustomContext):
         async with ctx.typing():
             starting_time = time.monotonic()
@@ -416,12 +422,16 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @verifyrole.command(
         name="set",
         help="Changes the verify role to the specified role.")
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def _set(self, ctx: CustomContext, role: discord.Role):
         await self.client.db.execute("INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2", ctx.guild.id, role.id)
         await ctx.send(f"Successfully set the verify role for this server to {role.mention}.")
 
     @verifyrole.command(
         help="Removes the verify role")
+    @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(manage_guild=True)
     async def remove(self, ctx: CustomContext):
         await self.client.db.execute("INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2", ctx.guild.id, None)
         await ctx.send(f"Successfully removed the verify role for this server.")
