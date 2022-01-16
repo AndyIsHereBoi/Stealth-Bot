@@ -746,8 +746,8 @@ Safe: {'Yes' if is_safe else 'No'}
             embed.add_field(name="__**Other**__", value=f"""
 <:role:895688440513974365> Top role: {member.top_role.mention if member.top_role else 'No top role'}
 <:role:895688440513974365> Roles: {helpers.get_member_roles(member, ctx.guild)}
-<:badges:876507747292700713> Staff permissions: {helpers.get_member_permissions(member.guild_permissions)}
-<:badges:876507747292700713> Badges: {helpers.get_member_badges(member, fetched_member)}
+<:staff:895688440887279647> Staff permissions: {helpers.get_member_permissions(member.guild_permissions)}
+<a:badges:932296423070896150> Badges: {helpers.get_member_badges(member, fetched_member)}
 <:voice_channel:904474834526937120> Voice: {member.voice.channel.mention if member.voice else 'Not in a VC'} {f'**|** Muted: {"Yes" if member.voice.mute or member.voice.self_mute else "No"} **|** Deafened: {"Yes" if member.voice.deaf or member.voice.self_deaf else "No"}' if member.voice else ''}
 Mutual servers: {len(member.mutual_guilds) if member.id != 760179628122964008 else 'No mutual servers'}
 :star: Acknowledgments: {ack if ack else 'No acknowledgments'}

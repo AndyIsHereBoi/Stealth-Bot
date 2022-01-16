@@ -233,10 +233,9 @@ But you can only use **{self.usable_commands}** of those in this server.
         """, inline=False)
 
         embed.add_field(name=f"**Important news**", value=f"""
-The economy is getting revamped!
-We have a dev team of 4 people working on it.
-We plan to release it within 6 months.
-We have a lot of plans and they might take a while.
+The developers of this bot are currently taking a break.
+Don't expect many updates, only bug fixes.
+We will be back soon!
         """, inline=False)
 
         return embed
