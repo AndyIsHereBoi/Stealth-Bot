@@ -139,7 +139,7 @@ class StealthBot(commands.AutoShardedBot):
         self.no_prefix = False
         self.maintenance = False
         self.launch_time = discord.utils.utcnow()
-        self.theme = "christmas"
+        self.theme = "default"
 
         # Cache stuff
         self.afk_users = {}
