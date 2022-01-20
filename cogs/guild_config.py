@@ -19,7 +19,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
         self.select_emoji = "<:gear:899622456191483904>"
         self.select_brief = "Commands for managing guild settings."
 
-    def make_ordinal(n):
+    def make_ordinal(self, n):
         n = int(n)
         suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
         if 11 <= (n % 100) <= 13:
