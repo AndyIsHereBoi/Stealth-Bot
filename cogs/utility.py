@@ -1930,10 +1930,13 @@ With the reason being: {info['reason']}""")
         if ctx.message.reference:
             custom_emoji = re.compile(r"<a?:[a-zA-Z0-9_]+:[0-9]+>")
             emojis = custom_emoji.findall(ctx.message.reference.resolved.content)
+
             if not emojis:
-                return await ctx.send("what about you specify some emotes you fucker")
+                return await ctx.send("You didn't specify any emoji?")
+
             try:
                 server_emoji = await commands.PartialEmojiConverter().convert(ctx, emojis[index - 1])
+
             except IndexError:
                 return await ctx.send(f"Emoji out of index {index}/{len(emojis)}!"
                                       f"\nIndex must be lower or equal to {len(emojis)}")
@@ -1946,7 +1949,5 @@ With the reason being: {info['reason']}""")
 
         valid_name = re.compile('^[a-zA-Z0-9_]+$')
 
-        server_emoji = await guild.create_custom_emoji(name=name if valid_name.match(name) else server_emoji.name,
-                                                       image=file,
-                                                       reason=f"Cloned emoji, requested by {ctx.author}")
+        server_emoji = await guild.create_custom_emoji(name=name if valid_name.match(name) else server_emoji.name, image=file)
         await ctx.send(f"**Done!** cloned {server_emoji} **|** `{server_emoji}`")

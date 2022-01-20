@@ -203,7 +203,7 @@ class WelcomeCog(commands.Cog):
 
         message = message.replace("[server]", f"{member.guild.name}")
         message = message.replace("[user]", f"{member.display_name}").replace("[full-user]", f"{member}").replace("[user-mention]", f"{member.mention}")
-        message = message.replace("[count]", f"{self.make_ordinal(member.guild.member_count)}")
+        message = message.replace("[count]" f"{member.guild.member_count}").replace("[ordinal-count]", f"{self.make_ordinal(member.guild.member_count)}")
         message = message.replace("[code]", f"{str(invite.code)}").replace("[full-code]", f"discord.gg/{invite.code}").replace("[full-url]", f"{str(invite.url)}").replace("[inviter]", f"{str(((member.guild.get_member(invite.inviter.id).display_name) or invite.inviter.name) if invite.inviter else 'N/A')}").replace("[full-inviter]", f"{str(invite.inviter if invite.inviter else 'N/A')}").replace("[inviter-mention]", f"{str(invite.inviter.mention if invite.inviter else 'N/A')}")
         
         channel = self.client.get_channel(database['welcome_channel_id'])
