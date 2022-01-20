@@ -625,7 +625,7 @@ class Utility(commands.Cog):
             return await ctx.send(f"Failed to post to mystbin, here's the error: {e}")
 
     @commands.command()
-    async def weather(self, ctx, location: str) -> discord.Message:
+    async def weather(self, ctx, *, location: str) -> discord.Message:
         request = await self.client.session.get(f"http://api.weatherapi.com/v1/current.json?key={yaml_data['WEATHER_TOKEN']}&q={location}")
         data = await request.json()
 
