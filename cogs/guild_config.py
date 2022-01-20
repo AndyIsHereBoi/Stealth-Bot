@@ -173,7 +173,7 @@ To use placeholders, surround them with `[]`. (e.g. `[server]`)
 `full-inviter` - The inviter's name and discriminator (e.g. John#1234)
 `inviter-mention` - The inviter's mention (e.g. <@123456789>)
 """,
-        brief="sb!welcome message Welcome to **[server]**, [user-mention]\nsb!welcome message Welcome, [full-user]\nsb!welcome message [user] is the [count]th to join!",
+        brief="sb!welcome message Welcome to **[server]**, [user-mention]\nsb!welcome message Welcome, [full-user]\nsb!welcome message [user] is the [ordinal-count] to join!",
         aliases=['msg', 'messages'])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
