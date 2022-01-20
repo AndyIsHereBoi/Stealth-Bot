@@ -1922,3 +1922,31 @@ With the reason being: {info['reason']}""")
         name='pomice')
     async def rtfm_pomice(self, ctx: CustomContext, *, obj: str = None):
         await self.do_rtfm(ctx, 'pomice', obj)
+
+    @commands.command()
+    @commands.has_permissions(manage_emojis=True)
+    @commands.bot_has_permissions(manage_emojis=True)
+    async def emoji_clone(self, ctx: CustomContext, server_emoji: typing.Optional[discord.PartialEmoji], index: typing.Optional[int] = 1, *, name: typing.Optional[str] = '#'):
+        if ctx.message.reference:
+            custom_emoji = re.compile(r"<a?:[a-zA-Z0-9_]+:[0-9]+>")
+            emojis = custom_emoji.findall(ctx.message.reference.resolved.content)
+            if not emojis:
+                return await ctx.send("what about you specify some emotes you fucker")
+            try:
+                server_emoji = await commands.PartialEmojiConverter().convert(ctx, emojis[index - 1])
+            except IndexError:
+                return await ctx.send(f"Emoji out of index {index}/{len(emojis)}!"
+                                      f"\nIndex must be lower or equal to {len(emojis)}")
+
+        if not server_emoji:
+            return await ctx.send("what the fuck did you do you mother fucker")
+
+        file = await server_emoji.read()
+        guild = ctx.guild
+
+        valid_name = re.compile('^[a-zA-Z0-9_]+$')
+
+        server_emoji = await guild.create_custom_emoji(name=name if valid_name.match(name) else server_emoji.name,
+                                                       image=file,
+                                                       reason=f"Cloned emoji, requested by {ctx.author}")
+        await ctx.send(f"**Done!** cloned {server_emoji} **|** `{server_emoji}`")
