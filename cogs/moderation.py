@@ -404,7 +404,7 @@ Best regards, {ctx.author.display_name}."""
             embed = discord.Embed(description=f":hammer: Successfully banned `{member}` for `{reason}`")
             embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-            await ctx.send(embed=embed, footer=False)
+            return await ctx.send(embed=embed, footer=False)
 
         return await ctx.send("You can't ban that user!")
 
@@ -428,9 +428,9 @@ Best regards, {ctx.author.display_name}."""
             embed = discord.Embed(description=f":hammer: Successfully soft-banned `{member}` for `{reason}`")
             embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-            await ctx.send(embed=embed, footer=False)
+            return await ctx.send(embed=embed, footer=False)
 
-        return await ctx.send("You can't ban that user!")
+        return await ctx.send("You can't soft-ban that user!")
 
     @commands.command(
         help="With this command you can kick the specified member with a specified reason. If no reason is provided it will not add a reason. The reason cannot be more than 500 characters.",
@@ -455,9 +455,9 @@ Best regards, {ctx.author.display_name}."""
             embed = discord.Embed(description=f":boot: Successfully kicked `{member}` for `{reason}`")
             embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-            await ctx.send(embed=embed, footer=False)
+            return await ctx.send(embed=embed, footer=False)
 
-        return await ctx.send("You can't ban that user!")
+        return await ctx.send("You can't kick that user!")
         
     @commands.command(
         help="With this command you can kick a lot of members at once.",
