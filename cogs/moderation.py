@@ -52,9 +52,22 @@ class Arguments(argparse.ArgumentParser):
 
 
 def can_execute_action(ctx, user, target):
-    return user.id == ctx.bot.owner_id or \
-           user == ctx.guild.owner or \
-           user.top_role > target.top_role
+    if isinstance(target, discord.Member):
+        return user == ctx.guild.owner or (user.top_role > target.top_role and target != ctx.guild.owner)
+    elif isinstance(target, discord.User):
+        return True
+    raise TypeError(f'argument \'target\' expected discord.User, received {type(target)} instead')
+
+
+def bot_can_execute_action(ctx: CustomContext, target: discord.Member):
+    if isinstance(target, discord.Member):
+        if target.top_role > ctx.guild.me.top_role:
+            raise commands.BadArgument('This member has a higher role than me.')
+        elif target == ctx.guild.owner:
+            raise commands.BadArgument('I cannot perform that action, as the target is the owner.')
+        elif target == ctx.guild.me:
+            raise commands.BadArgument('I cannot perform that action on myself.')
+        return True
 
 
 class MemberID(commands.Converter):
@@ -374,39 +387,27 @@ Best regards, {ctx.author.display_name}."""
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
-        if delete_days and 7 < delete_days < 0:
-            return await ctx.send("Delete days must be between 0 and 7")
-        
-        if member.id == ctx.author.id:
-            return await ctx.send("You can't ban yourself!")
-        
-        if member.id == self.client.user.id:
-            return await ctx.send("Noooo! Don't ban me :(")
-
-        if member.id == ctx.guild.owner.id:
-            return await ctx.send("You can't ban the owner of this server!")
-        
-        if member.guild_permissions.administrator:
-            return await ctx.send("You can't ban that user since they have the administrator permission!")
-
-        if isinstance(member, discord.Member):
-            if member.top_role >= ctx.me.top_role:
-                raise errors.Forbidden
-
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
 
-        embed = discord.Embed(description=f":hammer: Successfully banned `{member}` for `{reason}`")
-        embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+        bot_can_execute_action(ctx, member)
 
-        await ctx.send(embed=embed, footer=False)
+        if can_execute_action(ctx, ctx.author, member):
+            await ctx.guild.ban(member, reason=f"{reason} | Banned by {ctx.author}")
 
-        try:
-            await member.send(f"You have been banned from {ctx.guild}\nReason: {reason}")
-            return await member.ban(reason=reason)
+            try:
+                await member.send(f"You have been banned from {ctx.guild}\nReason: {reason}")
 
-        except:
-            return await member.ban(reason=reason)
+            except:
+                pass
+
+            embed = discord.Embed(description=f":hammer: Successfully banned `{member}` for `{reason}`")
+            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+            await ctx.send(embed=embed, footer=False)
+
+        return await ctx.send("You can't ban that user!")
+
         
     @commands.command(
         help="With this command you can soft-ban the specified member. A soft-ban is basically banning the member and then unbanning them right after.",
@@ -415,41 +416,21 @@ Best regards, {ctx.author.display_name}."""
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def softban(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
-        if delete_days and 7 < delete_days < 0:
-            return await ctx.send("Delete days must be between 0 and 7")
-        
-        if member.id == ctx.author.id:
-            return await ctx.send("You can't soft-ban yourself!")
-        
-        if member.id == self.client.user.id:
-            return await ctx.send("Noooo! Don't soft-ban me :(")
-
-        if member.id == ctx.guild.owner.id:
-            return await ctx.send("You can't soft-ban the owner of this server!")
-        
-        if member.guild_permissions.administrator:
-            return await ctx.send("You can't soft-ban that user since they have the administrator permission!")
-
-        if isinstance(member, discord.Member):
-            if member.top_role >= ctx.me.top_role:
-                raise errors.Forbidden
-
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
 
-        embed = discord.Embed(description=f":hammer: Successfully soft-banned `{member}` for `{reason}`")
-        embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+        bot_can_execute_action(ctx, member)
 
-        await ctx.send(embed=embed, footer=False)
+        if can_execute_action(ctx, ctx.author, member):
+            await ctx.guild.ban(member, reason=f"{reason} | Soft-banned by {ctx.author}")
+            await ctx.guild.unban(member, reason=f"{reason} | Soft-banned by {ctx.author}")
 
-        try:
-            await member.send(f"You have been soft-banned from {ctx.guild}\nReason: {reason}")
-            await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
-            return await ctx.guild.unban(member, reason=reason)
+            embed = discord.Embed(description=f":hammer: Successfully soft-banned `{member}` for `{reason}`")
+            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-        except:
-            await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
-            return await ctx.guild.unban(member, reason=reason)
+            await ctx.send(embed=embed, footer=False)
+
+        return await ctx.send("You can't ban that user!")
 
     @commands.command(
         help="With this command you can kick the specified member with a specified reason. If no reason is provided it will not add a reason. The reason cannot be more than 500 characters.",
@@ -457,36 +438,26 @@ Best regards, {ctx.author.display_name}."""
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
     async def kick(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, reason=None):
-        if member.id == ctx.author.id:
-            return await ctx.send("You can't kick yourself!")
-        
-        if member.id == self.client.user.id:
-            return await ctx.send("Noooo! Don't kick me :(")
-
-        if member.id == ctx.guild.owner.id:
-            return await ctx.send("You can't kick the owner of this server!")
-        
-        if member.guild_permissions.administrator:
-            return await ctx.send("You can't kick that user since they have the administrator permission!")
-
-        if isinstance(member, discord.Member):
-            if member.top_role >= ctx.me.top_role:
-                raise errors.Forbidden
-
         if reason is None or len(reason) > 500:
             reason = "Reason was not provided or it exceeded the 500-character limit."
-            
-        embed = discord.Embed(description=f":boot: Successfully kicked `{member}` for `{reason}`")
-        embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
 
-        await ctx.send(embed=embed, footer=False)
+        bot_can_execute_action(ctx, member)
 
-        try:
-            await member.message(f"You have been kicked from {ctx.guild}\nReason: {reason}")
+        if can_execute_action(ctx, ctx.author, member):
             await member.kick(reason=reason)
 
-        except:
-            return await member.kick(reason=reason)
+            try:
+                await member.send(f"You have been kicked from {ctx.guild}\nReason: {reason}")
+
+            except:
+                pass
+
+            embed = discord.Embed(description=f":boot: Successfully kicked `{member}` for `{reason}`")
+            embed.set_footer(text=f"Executed by {ctx.author}", icon_url=ctx.author.avatar.url)
+
+            await ctx.send(embed=embed, footer=False)
+
+        return await ctx.send("You can't ban that user!")
         
     @commands.command(
         help="With this command you can kick a lot of members at once.",
