@@ -451,10 +451,13 @@ Event {event_method} raised the following error:
 if __name__ == '__main__':
     bot = StealthBot()
     try:
+        webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
+        webhook.send(content=":white_check_mark: Stealth Bot IPC is starting up...")
         bot.ipc.start()
         
-    except:
-        pass
+    finally:
+        webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
+        webhook.send(content=":x: Stealth Bot IPC is shutting up...")
 
     try:
         webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
