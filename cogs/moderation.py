@@ -6,6 +6,7 @@ import random
 import typing
 import asyncio
 import discord
+import difflib
 import datetime
 import argparse
 import contextlib
@@ -88,6 +89,43 @@ class MemberID(commands.Converter):
         if not can_execute_action(ctx, ctx.author, m):
             raise commands.BadArgument('You cannot do this action on this user due to role hierarchy.')
         return m
+
+class BannedMember(commands.Converter):
+    async def convert(self, ctx: CustomContext, argument):
+        await ctx.trigger_typing()
+        if argument.isdigit():
+            member_id = int(argument, base=10)
+            try:
+                return await ctx.guild.fetch_ban(discord.Object(id=member_id))
+            except discord.NotFound:
+                raise commands.BadArgument('This member has not been banned before.') from None
+
+        ban_list = await ctx.guild.bans()
+        if not (entity := discord.utils.find(lambda u: str(u.user).lower() == argument.lower(), ban_list)):
+            entity = discord.utils.find(lambda u: str(u.user.name).lower() == argument.lower(), ban_list)
+            if not entity:
+                matches = difflib.get_close_matches(argument, [str(u.user.name) for u in ban_list])
+                if matches:
+                    entity = discord.utils.find(lambda u: str(u.user.name) == matches[0], ban_list)
+                    if entity:
+                        val = await ctx.confirm(f"Closest match: {entity.user}. Are you sure you want to unban this user?",
+                                                delete_after_cancel=True, delete_after_confirm=True,
+                                                delete_after_timeout=False, timeout=60,
+                                                buttons=((None, 'Yes', discord.ButtonStyle.green), (None, 'No', discord.ButtonStyle.grey)))
+                        if val is None:
+                            raise commands.BadArgument('You did not respond in time.')
+                        elif val is False:
+                            try:
+                                await ctx.message.add_reaction(ctx.tick(True))
+
+                            except discord.HTTPException:
+                                pass
+
+                            raise commands.BadArgument('Cancelled.')
+
+        if entity is None:
+            raise commands.BadArgument('This member has not been banned before.')
+        return entity
 
 
 def setup(client):
@@ -458,6 +496,20 @@ Best regards, {ctx.author.display_name}."""
             return await ctx.send(embed=embed, footer=False)
 
         return await ctx.send("You can't kick that user!")
+
+    @commands.command(
+        help="Unbans the given member.")
+    @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
+    async def unban(self, ctx: CustomContext, *, user: BannedMember):
+        user: discord.guild.BanEntry
+
+        await ctx.guild.unban(user.user)
+
+        extra = f"Previously banned for: {user.reason}" if user.reason else ''
+        embed = discord.Embed(title=f"Unbanned {discord.utils.escape_markdown(str(user.user))}", description=f"{extra}")
+
+        return await ctx.send(embed=embed)
         
     @commands.command(
         help="With this command you can kick a lot of members at once.",
@@ -1268,7 +1320,7 @@ You may want to fix that using the `mute_role fix` command.
 
         else:
 
-            await self.client.db.execute("INSERT INTO temporary_mutes(guild_id, member_id, reason, end_time) VALUES ($1, $2, $3, $4) ON CONFLICT (guild_id, member_id) DO UPDATE SET reason = $3, end_time = $4", ctx.guild.id, member.id, f"Temporary mute by {ctx.author} ({ctx.author.id})", duration.dt)
+            await self.client.db.execute("INSERT INTO temporary_mutes(guild_id, member_id, reason, end_time) VALUES ($1, $2, $3, $4) ON CONFLICT (guild_id, member_id) DO UPDATE SET reason = $3, end_time = $4", ctx.guild.id, ctx.author.id, f"Self-mute mute by {ctx.author} ({ctx.author.id})", duration.dt)
 
             self.mute_task()
 

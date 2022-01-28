@@ -152,6 +152,7 @@ class StealthBot(commands.AutoShardedBot):
         self.dj_roles = {}
         self.disable_commands_guilds = {}
         self.dm_webhooks = defaultdict(str)
+        self.logging_guilds = []
 
         # Useless stuff
         self.brain_cells = 0
@@ -343,6 +344,10 @@ class StealthBot(commands.AutoShardedBot):
         self.disable_commands_guilds = dict(
             [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, disable_commands FROM guilds')) if
              r['disable_commands']])
+
+        self.logging_guilds = dict(
+            [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, logging_channel_id FROM guilds')) if
+             r['logging_channel_id']])
 
         values = await self.db.fetch("SELECT guild_id, dj_only FROM music")
 
