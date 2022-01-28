@@ -345,10 +345,6 @@ class StealthBot(commands.AutoShardedBot):
             [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, disable_commands FROM guilds')) if
              r['disable_commands']])
 
-        self.logging_guilds = dict(
-            [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, logging_channel_id FROM guilds')) if
-             r['logging_channel_id']])
-
         values = await self.db.fetch("SELECT guild_id, dj_only FROM music")
 
         for value in values:
@@ -450,14 +446,7 @@ Event {event_method} raised the following error:
 
 if __name__ == '__main__':
     bot = StealthBot()
-    try:
-        webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
-        webhook.send(content=":white_check_mark: Stealth Bot IPC is starting up...")
-        bot.ipc.start()
-        
-    finally:
-        webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
-        webhook.send(content=":x: Stealth Bot IPC is shutting up...")
+    bot.ipc.start()
 
     try:
         webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
