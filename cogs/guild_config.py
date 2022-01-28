@@ -256,7 +256,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
 
     @muterole.command(
         name="remove",
-        help="Un-sets the mute-role for the server.\nNote that this will not delete the role from the server. It'll only remove it from the bot's database.\nIf you want to delete it, do `mute-role delete` instead.",
+        help="Removes the mute-role for the server.\nNote that this will not delete the role from the server. It'll only remove it from the bot's database.\nIf you want to delete it, do it manually.",
         aliases=['unset'])
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -267,140 +267,98 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
 
         return await ctx.send(embed=embed)
 
-    @muterole.command(name="create")
+    @muterole.command(
+        name="create",
+        help="Creates a new mute-role for the server.\nThis will make a new role called `Muted` and setup all permissions for it in all channels.",
+        aliases=[])
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def muterole_create(self, ctx: CustomContext):
-        starting_time = time.monotonic()
-
         mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if mute_role:
             mute_role = ctx.guild.get_role(mute_role)
             if mute_role:
-                raise commands.BadArgument('You already have a mute role')
+                return await ctx.send(f"This server already has a mute role! It's {mute_role.mention}")
 
-        await ctx.send(f"Creating Muted role, and applying it to all channels."
-                       f"\nThis may take awhile ETA: {len(ctx.guild.channels)} seconds.")
+        embed = discord.Embed(title="<a:Loading:936549536770457620> Creating mute role...", description=f"This might take a while. ETA: {len(ctx.guild.channels)} seconds", color=discord.Color.yellow())
+        await ctx.send(embed=embed, color=False)
 
-        async with ctx.typing():
-            permissions = discord.Permissions(send_messages=False,
-                                              add_reactions=False,
-                                              connect=False,
-                                              speak=False)
-            role = await ctx.guild.create_role(name="Muted", colour=0xff4040, permissions=permissions,
-                                               reason=f"DuckBot mute-role creation. Requested "
-                                                      f"by {ctx.author} ({ctx.author.id})")
-            await self.bot.db.execute(
-                "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
-                "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
-                ctx.guild.id, role.id)
+        await ctx.trigger_typing()
+        permissions = discord.Permissions(send_messages=False,
+                                          add_reactions=False,
+                                          connect=False,
+                                          speak=False)
 
-            modified = 0
-            for channel in ctx.guild.channels:
-                perms = channel.overwrites_for(role)
-                perms.update(send_messages=None,
-                             add_reactions=None,
-                             create_public_threads=None,
-                             create_private_threads=None)
-                try:
-                    await channel.set_permissions(role, overwrite=perms,
-                                                  reason=f"DuckBot mute-role creation. Requested "
-                                                         f"by {ctx.author} ({ctx.author.id})")
-                    modified += 1
-                except (discord.Forbidden, discord.HTTPException):
-                    continue
-                await asyncio.sleep(1)
+        role = await ctx.guild.create_role(name="Muted", permissions=permissions, reason=f"Mute role created by {ctx.author} ({ctx.author.id})")
 
-            ending_time = time.monotonic()
-            complete_time = (ending_time - starting_time)
-            await ctx.send(f"done! took {round(complete_time, 2)} seconds"
-                           f"\nSet permissions for {modified} channel{'' if modified == 1 else 's'}!")
+        await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, role.id)
 
-    @muterole.command(name="delete")
+        modified = 0
+        for channel in ctx.guild.channels:
+            perms = channel.overwrites_for(role)
+            perms.update(send_messages=None,
+                         add_reactions=None,
+                         create_public_threads=None,
+                         create_private_threads=None)
+
+            try:
+                await channel.set_permissions(role, overwrite=perms, reason=f"Mute role creation by {ctx.author} ({ctx.author.id})")
+                modified += 1
+
+            except (discord.Forbidden, discord.HTTPException):
+                continue
+
+            await asyncio.sleep(0.5)
+
+        embed = discord.Embed(title="Mute role created", description=f"The mute-role has been created.\n{modified} channel(s) have been modified.", color=discord.Color.green())
+
+        await ctx.send(embed=embed, color=False)
+
+    @muterole.command(
+        name="fix",
+        help="Fixes the mute role permissions for all channels in the server.")
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
-    async def muterole_delete(self, ctx: CustomContext):
-        """
-        Deletes the server's mute role if it exists.
-        # If you want to keep the role but not
-        """
-        mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
+    async def muterole_fix(self, ctx: CustomContext):
+        await ctx.trigger_typing()
+        mute_role = await self.client.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
+
         if not mute_role:
             raise errors.MuteRoleNotFound
 
         role = ctx.guild.get_role(int(mute_role))
+
         if not isinstance(role, discord.Role):
-            await self.bot.db.execute(
-                "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
-                "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
-                ctx.guild.id, None)
+            raise errors.MuteRoleNotFound
 
-            return await ctx.send("It seems like the muted role was already deleted, or I can't find it right now!"
-                                  "\n I removed it from my database. If the mute role still exists, delete it manually")
+        confirm = await ctx.confirm(f"Are you sure, you want to change the permissions of {role.mention} in all channels?")
+        if not confirm:
+            return
 
-        if role > ctx.me.top_role:
-            return await ctx.send("I'm not high enough in role hierarchy to delete that role!")
+        modified = 0
+        for channel in ctx.guild.channels:
+            perms = channel.overwrites_for(role)
+            perms.update(send_messages=False,
+                         add_reactions=False,
+                         connect=False,
+                         speak=False,
+                         create_public_threads=False,
+                         create_private_threads=False,
+                         send_messages_in_threads=False)
 
-        if role > ctx.author.top_role:
-            return await ctx.send("You're not high enough in role hierarchy to delete that role!")
+            try:
+                await channel.set_permissions(role, overwrite=perms, reason=f"Mute role fix by {ctx.author} ({ctx.author.id})")
+                modified += 1
 
-        try:
-            await role.delete(reason=f"Mute role deletion. Requested by {ctx.author} ({ctx.author.id})")
-        except discord.Forbidden:
-            return await ctx.send("I can't delete that role! But I deleted it from my database")
-        except discord.HTTPException:
-            return await ctx.send("Something went wrong while deleting the muted role!")
-        await self.bot.db.execute(
-            "INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) "
-            "ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2",
-            ctx.guild.id, None)
-        await ctx.send("🚮")
+            except (discord.Forbidden, discord.HTTPException):
+                continue
 
-    @muterole.command(name="fix")
-    @commands.has_permissions(manage_guild=True)
-    @commands.bot_has_permissions(manage_guild=True)
-    async def muterole_fix(self, ctx: CustomContext):
-        async with ctx.typing():
-            starting_time = time.monotonic()
-            mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
+            await asyncio.sleep(1)
 
-            if not mute_role:
-                raise errors.MuteRoleNotFound
+        embed = discord.Embed(title="Mute role fixed", description=f"Changed permissions for {modified} channel(s)")
 
-            role = ctx.guild.get_role(int(mute_role))
-            if not isinstance(role, discord.Role):
-                raise errors.MuteRoleNotFound
-
-            cnf = await ctx.confirm(
-                f'Are you sure you want to change the permissions for **{role.name}** in all channels?')
-            if not cnf:
-                return
-
-            modified = 0
-            for channel in ctx.guild.channels:
-                perms = channel.overwrites_for(role)
-                perms.update(send_messages=False,
-                             add_reactions=False,
-                             connect=False,
-                             speak=False,
-                             create_public_threads=False,
-                             create_private_threads=False,
-                             send_messages_in_threads=False,
-                             )
-                try:
-                    await channel.set_permissions(role, overwrite=perms,
-                                                  reason=f"DuckBot mute-role creation. Requested "
-                                                         f"by {ctx.author} ({ctx.author.id})")
-                    modified += 1
-                except (discord.Forbidden, discord.HTTPException):
-                    continue
-                await asyncio.sleep(1)
-
-            ending_time = time.monotonic()
-            complete_time = (ending_time - starting_time)
-            await ctx.send(f"done! took {round(complete_time, 2)} seconds"
-                           f"\nSet permissions for {modified} channel{'' if modified == 1 else 's'}!")
+        await ctx.send(embed=embed)
 
     # Verify commands
 
