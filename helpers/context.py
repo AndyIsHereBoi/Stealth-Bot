@@ -190,7 +190,7 @@ class CustomContext(commands.Context):
 
         if embed:
             if embed.description:
-                embed.description = '\n'.join([l.strip() for l in embed.description.split('\n')])
+                embed.description = embed.description # '\n'.join([l.strip() for l in content.split('\n')])
 
             if footer:
                 embed.set_footer(text=f"{f'{random.choice(unicode_emotes)} ' if unicode_emotes else ''}Requested by {self.author}", icon_url=self.author.display_avatar.url)
@@ -215,10 +215,10 @@ class CustomContext(commands.Context):
                 content = f"{random.choice(answers)}\n\n{str(content) if content else ''}"
 
         try:
-            return await super().send(content='\n'.join([l.strip() for l in content.split('\n')]), embed=embed, reference=reference, **kwargs)
+            return await super().send(content=content, embed=embed, reference=reference, **kwargs)
 
         except discord.HTTPException:
-            return await super().send(content='\n'.join([l.strip() for l in content.split('\n')]), embed=embed, reference=None, **kwargs)
+            return await super().send(content=content, embed=embed, reference=None, **kwargs)
 
     async def confirm(self, message: str = 'Do you want to confirm?',
                       buttons: typing.Tuple[typing.Union[discord.PartialEmoji, str],
