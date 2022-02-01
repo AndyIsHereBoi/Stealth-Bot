@@ -3,6 +3,7 @@
 import io
 import os
 import re
+import ast
 import time
 import yaml
 import topgg
@@ -11,6 +12,7 @@ import topgg
 import typing
 import pomice
 import errors
+import inspect
 import mystbin
 import asyncpg
 import discord
@@ -25,6 +27,21 @@ from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
 from helpers.paginator import PersistentExceptionView, PersistentVerifyView
+
+# Mobile status
+def source(o):
+    s = inspect.getsource(o).split("\n")
+    indent = len(s[0]) - len(s[0].lstrip())
+    return "\n".join(i[indent:] for i in s)
+source_ = source(discord.gateway.DiscordWebSocket.identify)
+patched = re.sub(
+    r'([\'"]\$browser[\'"]:\s?[\'"]).+([\'"])',
+    r"\1Discord Android\2",
+    source_
+)
+loc = {}
+exec(compile(ast.parse(patched), "<string>", "exec"), discord.gateway.__dict__, loc)
+discord.gateway.DiscordWebSocket.identify = loc["identify"]
 
 PRE: tuple = ("sb!",)
 
