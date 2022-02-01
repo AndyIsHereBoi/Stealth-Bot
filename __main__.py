@@ -98,7 +98,7 @@ class StealthBot(commands.AutoShardedBot):
 
     def __init__(self):
         super().__init__(
-            activity=discord.Streaming(name="sb!help", url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+            activity=discord.Game(name="sb!help"),
             intents=discord.Intents(
                 guild_reactions=True,  # reaction add/remove/clear
                 guild_messages=True,  # message create/update/delete
