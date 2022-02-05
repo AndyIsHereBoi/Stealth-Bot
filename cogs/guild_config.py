@@ -523,7 +523,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
             except discord.HTTPException:
                 raise commands.BadArgument(
                     f'There was an unexpected error while creating a webhook in {channel.mention} (HTTP exception) - Perhaps try again?')
-        await self.client.db.execute('INSERT INTO prefixes (guild_id) VALUES ($1) '
+        await self.client.db.execute('INSERT INTO guilds (guild_id) VALUES ($1) '
                                   'ON CONFLICT (guild_id) DO NOTHING', ctx.guild.id)
         await self.client.db.execute(
             "INSERT INTO log_channels(guild_id, default_channel, default_chid) VALUES ($1, $2, $3) "
@@ -774,7 +774,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
                                                                             member=member_webhook.url,
                                                                             voice=voice_webhook.url)
                 self.client.guild_loggings[ctx.guild.id] = LoggingEventsFlags.all()
-                await self.client.db.execute('INSERT INTO prefixes (guild_id) VALUES ($1) '
+                await self.client.db.execute('INSERT INTO guilds (guild_id) VALUES ($1) '
                                           'ON CONFLICT (guild_id) DO NOTHING', ctx.guild.id)
                 await self.client.db.execute("""
                 INSERT INTO log_channels(guild_id, default_channel, default_chid, message_channel, message_chid, 
