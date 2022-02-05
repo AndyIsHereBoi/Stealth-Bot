@@ -22,11 +22,11 @@ import asyncpraw
 import traceback
 
 from typing import Optional
-from collections import defaultdict
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
 from helpers.helpers import LoggingEventsFlags
+from collections import defaultdict, deque, namedtuple
 from helpers.paginator import PersistentExceptionView, PersistentVerifyView
 
 # Mobile status
@@ -173,7 +173,7 @@ class StealthBot(commands.AutoShardedBot):
         self.dj_roles = {}
         self.disable_commands_guilds = {}
         self.dm_webhooks = defaultdict(str)
-        log_wh = self.log_webhooks = typing.namedtuple('log_wh',
+        log_wh = self.log_webhooks = namedtuple('log_wh',
                                                 ['default', 'message', 'member', 'join_leave', 'voice', 'server'])
         self.log_channels: typing.Dict[int, log_wh] = {}
         self.log_cache = defaultdict(lambda: defaultdict(list))
