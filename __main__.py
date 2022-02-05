@@ -26,6 +26,7 @@ from collections import defaultdict
 from discord.ext import commands, ipc
 from helpers.context import CustomContext
 from asyncdagpi import Client, ImageFeatures
+from helpers.helpers import LoggingEventsFlags
 from helpers.paginator import PersistentExceptionView, PersistentVerifyView
 
 # Mobile status
@@ -172,7 +173,11 @@ class StealthBot(commands.AutoShardedBot):
         self.dj_roles = {}
         self.disable_commands_guilds = {}
         self.dm_webhooks = defaultdict(str)
-        self.logging_guilds = []
+        log_wh = self.log_webhooks = typing.namedtuple('log_wh',
+                                                ['default', 'message', 'member', 'join_leave', 'voice', 'server'])
+        self.log_channels: typing.Dict[int, log_wh] = {}
+        self.log_cache = defaultdict(lambda: defaultdict(list))
+        self.guild_loggings: typing.Dict[int, LoggingEventsFlags] = {}
 
         # Useless stuff
         self.brain_cells = 0
@@ -187,6 +192,22 @@ class StealthBot(commands.AutoShardedBot):
         except (commands.ExtensionNotFound, commands.ExtensionAlreadyLoaded, commands.NoEntryPointError, commands.ExtensionFailed):
             traceback.print_exc()
             print()
+
+
+    def update_log(self, deliver_type: str, webhook_url: str, guild_id: int):
+        guild_id = getattr(guild_id, 'id', guild_id)
+        if deliver_type == 'default':
+            self.log_channels[guild_id]._replace(default=webhook_url)
+        elif deliver_type == 'message':
+            self.log_channels[guild_id]._replace(message=webhook_url)
+        elif deliver_type == 'member':
+            self.log_channels[guild_id]._replace(member=webhook_url)
+        elif deliver_type == 'join_leave':
+            self.log_channels[guild_id]._replace(join_leave=webhook_url)
+        elif deliver_type == 'voice':
+            self.log_channels[guild_id]._replace(voice=webhook_url)
+        elif deliver_type == 'server':
+            self.log_channels[guild_id]._replace(server=webhook_url)
 
 
     def _dynamic_cogs(self):
@@ -374,6 +395,26 @@ class StealthBot(commands.AutoShardedBot):
 
         for value in values:
             self.dj_roles[value['guild_id']] = (value['dj_role_id'] or False)
+
+        for entry in await self.db.fetch('SELECT * FROM log_channels'):
+            guild_id = entry['guild_id']
+            await self.db.execute('INSERT INTO logging_events(guild_id) VALUES ($1) ON CONFLICT (guild_id) DO NOTHING',
+                                 entry['guild_id'])
+
+            self.log_channels[guild_id] = self.log_webhooks(default=entry['default_channel'],
+                                                            message=entry['message_channel'],
+                                                            join_leave=entry['join_leave_channel'],
+                                                            member=entry['member_channel'],
+                                                            voice=entry['voice_channel'],
+                                                            server=entry['server_channel'])
+
+            flags = dict(await self.db.fetchrow(
+                'SELECT message_delete, message_purge, message_edit, member_join, member_leave, member_update, user_ban, user_unban, '
+                'user_update, invite_create, invite_delete, voice_join, voice_leave, voice_move, voice_mod, emoji_create, emoji_delete, '
+                'emoji_update, sticker_create, sticker_delete, sticker_update, server_update, stage_open, stage_close, channel_create, '
+                'channel_delete, channel_edit, role_create, role_delete, role_edit FROM logging_events WHERE guild_id = $1',
+                guild_id))
+            self.guild_loggings[guild_id] = LoggingEventsFlags(**flags)
 
         self._dynamic_cogs()
         self.load_extension("jishaku")

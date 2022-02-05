@@ -77,13 +77,17 @@ class Confirm(discord.ui.View):
 class CustomContext(commands.Context):
 
     @staticmethod
-    def tick(option: bool):
+    def tick(option: bool, text: str = None):
         ticks = {
             True: '<:greenTick:895688440690147370>',
             False: '<:redTick:895688440568508518>',
             None: '<:greyTick:895688440690114560>'}
 
         emoji = ticks.get(option, "<:redTick:596576672149667840>")
+
+        if text:
+            return f"{emoji} {text}"
+
         return emoji
 
     @staticmethod
