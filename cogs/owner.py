@@ -372,7 +372,7 @@ Average: {average_latency}
                     self._last_result = ret
                     to_send = f'{value}{ret}'
                 if to_send:
-                    to_send = to_send.replace(self.bot.http.token, '[discord token redacted]')
+                    to_send = to_send.replace(self.client.http.token, '[discord token redacted]')
                     if len(to_send) > 1985:
                         await ctx.send(file=discord.File(io.StringIO(to_send), filename='output.py'))
                     else:
