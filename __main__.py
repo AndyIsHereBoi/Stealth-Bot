@@ -130,7 +130,6 @@ class StealthBot(commands.AutoShardedBot):
         # Important stuff
         self.allowed_mentions = discord.AllowedMentions.none()
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
-        self.owner_id = 564890536947875868
         self.owner_ids = [564890536947875868, 555818548291829792, # Ender and vicente
                           349373972103561218, 675104167345258506, 855775178893426719]  # Leo and yoni and perez
         self.ipc = ipc.Server(self, secret_key=yaml_data['IPC_SECRET'])
@@ -142,6 +141,11 @@ class StealthBot(commands.AutoShardedBot):
         self.add_check(self.maintenance)
         self.add_check(self.blacklist)
         self.persistent_views_added = False
+        self._initial_extensions = (
+            'jishaku',
+        )
+
+        self._extensions = ('cogs.events', 'cogs')
 
         # Tokens
         self.dagpi_cooldown = commands.CooldownMapping.from_cooldown(60, 60, commands.BucketType.default)
@@ -208,14 +212,6 @@ class StealthBot(commands.AutoShardedBot):
             self.log_channels[guild_id]._replace(voice=webhook_url)
         elif deliver_type == 'server':
             self.log_channels[guild_id]._replace(server=webhook_url)
-
-
-    def _dynamic_cogs(self):
-        for filename in os.listdir(f"./cogs"):
-            if filename.endswith(".py"):
-                cog = filename[:-3]
-                logging.info(f"trying to load cog: {cog}")
-                self._load_extension(f'cogs.{cog}')
 
 
     def dj_only(self, guild: discord.Guild):
@@ -307,60 +303,27 @@ class StealthBot(commands.AutoShardedBot):
         print(f"users: {len(self.users)}")
         print(f"-------------================----------------")
 
-        # try:
-        #     await self.pomice.create_node(
-        #         bot=self,
-        #         host=yaml_data['NODE1_HOST'],
-        #         port=yaml_data['NODE1_PORT'],
-        #         password=yaml_data['NODE1_PASSWORD'],S
-        #         identifier=yaml_data['NODE1_IDENTIFIER'],
-        #         spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
-        #         spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
-        #     )
-        #     print("node1 has successfully been loaded")
-            
-        # except:
-        #     print("an unexpected error occurred while loading node1")
-
-        try:
-            await self.pomice.create_node(
-                bot=self,
-                host=yaml_data['NODE2_HOST'],
-                port=yaml_data['NODE2_PORT'],
-                password=yaml_data['NODE2_PASSWORD'],
-                identifier=yaml_data['NODE2_IDENTIFIER'],
-                spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
-                spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
-            )
-            print("node2 has successfully been loaded")
-            
-        except:
-            print("an unexpected error occurred while loading node2")
-
-        # try:
-        #     await self.pomice.create_node(
-        #         bot=self,
-        #         host=yaml_data['NODE3_HOST'],
-        #         port=yaml_data['NODE3_PORT'],
-        #         password=yaml_data['NODE3_PASSWORD'],
-        #         identifier=yaml_data['NODE3_IDENTIFIER'],
-        #         spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
-        #         spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
-        #     )
-        #     print("node3 has successfully been loaded")
-        #
-        # except:
-        #     print("an unexpected error occurred while loading node3")
-        
-        channel = self.get_channel(895683561737297934)
+        await self.pomice.create_node(
+            bot=self,
+            host=yaml_data['NODE2_HOST'],
+            port=yaml_data['NODE2_PORT'],
+            password=yaml_data['NODE2_PASSWORD'],
+            identifier=yaml_data['NODE2_IDENTIFIER'],
+            spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
+            spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
+        )
 
         values = await self.db.fetch("SELECT user_id, is_blacklisted FROM blacklist")
 
+        # BLACKLIST
         for value in values:
             self.blacklist[value['user_id']] = (value['is_blacklisted'] or False)
 
-        print("blacklist system has been loaded")
+        print("blacklist has been loaded")
+        # BLACKLIST
 
+
+        # PREFIXES
         values = await self.db.fetch("SELECT guild_id, prefix FROM guilds")
 
         for value in values:
@@ -374,6 +337,11 @@ class StealthBot(commands.AutoShardedBot):
             except KeyError:
                 self.prefixes[guild.id] = PRE
 
+        print("prefixes have been loaded")
+        # PREFIXES
+
+
+        # AFK
         self.afk_users = dict(
             [(r['user_id'], True) for r in (await self.db.fetch('SELECT user_id, start_time FROM afk')) if
              r['start_time']])
@@ -382,10 +350,20 @@ class StealthBot(commands.AutoShardedBot):
             [(r['user_id'], r['auto_un_afk']) for r in (await self.db.fetch('SELECT user_id, auto_un_afk FROM afk')) if
              r['auto_un_afk'] is not None])
 
+        print("afk users have been loaded")
+        # AFK
+
+
+        # DISABLE COMMANDS GUILDS
         self.disable_commands_guilds = dict(
             [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, disable_commands FROM guilds')) if
              r['disable_commands']])
 
+        print("disable command guilds have been loaded")
+        # DISABLE COMMANDS GUILDS
+
+
+        # MUSIC STUFF
         values = await self.db.fetch("SELECT guild_id, dj_only FROM music")
 
         for value in values:
@@ -396,6 +374,11 @@ class StealthBot(commands.AutoShardedBot):
         for value in values:
             self.dj_roles[value['guild_id']] = (value['dj_role_id'] or False)
 
+        print("music stuff has been loaded")
+        # MUSIC STUFF
+
+
+        # LOGGING STUFF
         for entry in await self.db.fetch('SELECT * FROM log_channels'):
             guild_id = entry['guild_id']
             await self.db.execute('INSERT INTO logging_events(guild_id) VALUES ($1) ON CONFLICT (guild_id) DO NOTHING',
@@ -416,14 +399,28 @@ class StealthBot(commands.AutoShardedBot):
                 guild_id))
             self.guild_loggings[guild_id] = LoggingEventsFlags(**flags)
 
-        self._dynamic_cogs()
-        self.load_extension("jishaku")
+        print("logging guilds have been loaded")
+        # LOGGING STUFF
+
+
+        # LOAD EXTENSIONS
+        for ext in self._initial_extensions:
+            self.load_extension(ext)
+
+        for ext in self._extensions:
+            self.load_extension(ext)
+
+        print("successfuly loaded all extensions")
+        # LOAD EXTENSIONS
+
+
+        # PERSISTENT VIEWS
         self.add_view(PersistentExceptionView(self))
-        self.add_view(PersistentVerifyView(self))
         self.persistent_views_added = True
 
-        print(f"-------------================----------------")
-        print("all cogs have successfully been loaded")
+        print("persistent views have been loaded")
+        # PERSISTENT VIEWS
+
         print(f"-------------================----------------")
         
         if os.path.exists("data/restart_log.log"):
