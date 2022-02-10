@@ -421,8 +421,10 @@ class StealthBot(commands.AutoShardedBot):
         print("persistent views have been loaded")
         # PERSISTENT VIEWS
 
+
         print(f"-------------================----------------")
-        
+
+
         if os.path.exists("data/restart_log.log"):
             file = open("data/restart_log.log", "r")
             channel_id = int(file.readline())
