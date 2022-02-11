@@ -262,7 +262,9 @@ class StealthBot(commands.AutoShardedBot):
             self._load_extension(ext)
 
         for ext in self._extensions:
-            self._load_extension(ext)
+            for file in os.listdir(f'{ext}.{file[:-3]}'):
+                if file.endswith('py'):
+                    self._load_extension(f'{ext}.{file[:-3]}')
 
 
     async def populate_cache(self):
