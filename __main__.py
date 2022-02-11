@@ -90,7 +90,7 @@ class StealthBot(commands.AutoShardedBot):
         else:
             raise errors.BotMaintenance
 
-    def blacklist(self, ctx: commands.Context):
+    def blacklist_check(self, ctx: commands.Context):
         try:
             is_blacklisted = self.blacklist[ctx.author.id]
 
@@ -145,7 +145,7 @@ class StealthBot(commands.AutoShardedBot):
         self.rs = prsaw.RandomStuff(api_key=yaml_data['PRSAW_KEY'], async_mode=True)
         self.add_check(self.guild_only)
         self.add_check(self.maintenance)
-        self.add_check(self.blacklist)
+        self.add_check(self.blacklist_check)
         self.persistent_views_added = False
         self.loop.run_until_complete(self.load_cogs())
         self.loop.run_until_complete(self.populate_cache())
@@ -268,6 +268,7 @@ class StealthBot(commands.AutoShardedBot):
             self._load_extension(ext)
 
     async def populate_cache(self):
+        await self.wait_until_ready()
         print("[CACHE] populating cache...")
         # BLACKLIST
         values = await self.db.fetch("SELECT user_id, is_blacklisted FROM blacklist")

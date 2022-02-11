@@ -7,9 +7,9 @@ from .rtfm import RTFM
 from .todo import Todo
 
 
-class Handler(AFK, Bot, Info, _List, Misc, RTFM, Todo):
+class Utility(AFK, Bot, Info, _List, Misc, RTFM, Todo):
     pass
 
 
 def setup(bot):
-    bot.add_cog(Handler(bot))
+    bot.add_cog(Utility(bot))
