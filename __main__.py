@@ -371,6 +371,9 @@ class StealthBot(commands.AutoShardedBot):
             spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
         )
 
+        await self.load_cogs()
+        await self.populate_cache()
+
         # PERSISTENT VIEWS
         self.add_view(PersistentExceptionView(self))
         self.persistent_views_added = True
