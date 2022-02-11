@@ -57,7 +57,8 @@ initial_extensions = (
     'jishaku',
 )
 
-extensions = ('cogs.events', 'cogs.fun', 'cogs.images', 'cogs.owner', 'cogs.utility')
+extensions = ('cogs.events', 'cogs.fun', 'cogs.images', 'cogs.levels', 'cogs.logger', 'cogs.moderation', 'cogs.owner', 'cogs.utility', 'cogs.guild_config',
+              'cogs.help', 'cogs.misc', 'cogs.nsfw', 'cogs.welcome')
 
 target_type = typing.Union[discord.Member, discord.User, discord.PartialEmoji, discord.Guild, discord.Invite]
 

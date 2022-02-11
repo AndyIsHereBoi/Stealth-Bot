@@ -1,12 +1,9 @@
 import discord
 
+from ._base import EventsBase
 from discord.ext import commands
 from discord.errors import HTTPException
 from discord.ext.commands.errors import UserNotFound
-
-
-def setup(client):
-    client.add_cog(ModMail(client))
 
 
 async def get_webhook(channel) -> discord.Webhook:
@@ -24,25 +21,23 @@ async def get_webhook(channel) -> discord.Webhook:
     return hook
 
 
-class ModMail(commands.Cog):
-    def __init__(self, bot):
-        self.client = bot
-
+class ModMail(EventsBase):
+    
     async def get_dm_hook(self, channel: discord.TextChannel) -> discord.Webhook:
-        if url := self.client.dm_webhooks.get(channel.id, None):
-            return discord.Webhook.from_url(url, session=self.client.session, bot_token=self.client.http.token)
+        if url := self.bot.dm_webhooks.get(channel.id, None):
+            return discord.Webhook.from_url(url, session=self.bot.session, bot_token=self.bot.http.token)
         wh = await get_webhook(channel)
-        self.client.dm_webhooks[channel.id] = wh.url
+        self.bot.dm_webhooks[channel.id] = wh.url
         return wh
 
     @commands.Cog.listener('on_message')
     async def on_mail(self, message: discord.Message):
-        if message.guild or message.author == self.client.user:
+        if message.guild or message.author == self.bot.user:
             return
 
-        ctx = await self.client.get_context(message)
+        ctx = await self.bot.get_context(message)
 
-        category = self.client.get_guild(879050715660697622).get_channel(919172324610170930)
+        category = self.bot.get_guild(879050715660697622).get_channel(919172324610170930)
         channel = discord.utils.get(category.channels, topic=str(message.author.id))
 
         if not channel:
@@ -75,7 +70,7 @@ class ModMail(commands.Cog):
 
         channel = message.channel
         try:
-            user = self.client.get_user(int(channel.topic)) or await self.client.fetch_user(int(channel.topic))
+            user = self.bot.get_user(int(channel.topic)) or await self.bot.fetch_user(int(channel.topic))
 
         except (HTTPException, UserNotFound):
             embed = discord.Embed(description="I couldn't find that user", color=discord.Color.red())
@@ -98,7 +93,7 @@ class ModMail(commands.Cog):
         if str(before) == str(after) or before.bot:
             return
 
-        category = self.client.get_guild(879050715660697622).get_channel(919172324610170930)
+        category = self.bot.get_guild(879050715660697622).get_channel(919172324610170930)
         channel = discord.utils.get(category.channels, topic=str(after.id))
 
         if channel:
