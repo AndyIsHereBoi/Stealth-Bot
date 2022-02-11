@@ -1,26 +1,13 @@
 import io
-import time
-import random
-import errors
 import typing
 import discord
 
+from ._base import ImagesBase
 from discord.ext import commands
 from helpers.context import CustomContext
-from asyncdagpi import ImageFeatures as imageFeatures
 
-def setup(client):
-    client.add_cog(Images(client))
-
-
-class Images(commands.Cog):
-    """Commands that manipulate/send images."""
-
-    def __init__(self, client):
-        self.client = client
-        self.select_emoji = "<:frame_photo:899621559520595968>"
-        self.select_brief = "Commands that manipulate/send images."
-
+class Jeyy(ImagesBase):
+    
     async def jeyy_image_api(self, endpoint: str, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji, None]]):
         await ctx.trigger_typing()
 
@@ -39,150 +26,8 @@ class Images(commands.Cog):
         else:
             url = member.display_avatar.url
 
-        request = await self.client.session.get(f"https://api.jeyy.xyz/image/{endpoint}", params={'image_url': url})
+        request = await self.bot.session.get(f"https://api.jeyy.xyz/image/{endpoint}", params={'image_url': url})
         return discord.File(io.BytesIO(await request.read()), f"{endpoint}.gif")
-
-    async def dagpi_image_api(self, feature: imageFeatures, ctx: CustomContext, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji, None]], **kwargs):
-        await ctx.trigger_typing()
-
-        if member is None:
-            if ctx.message.reference:
-                member = ctx.message.reference.resolved.author
-            else:
-                member = ctx.author
-
-        if isinstance(member, discord.Emoji):
-            url = member.url
-
-        elif isinstance(member, discord.PartialEmoji):
-            url = member.url
-
-        else:
-            url = member.display_avatar.url
-
-        return await ctx.dagpi(member, feature=feature, **kwargs)
-
-    @commands.command()
-    async def dog(self, ctx) -> discord.Message:
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/dog")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def cat(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/cat")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def fox(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/fox")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def koala(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/koala")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def panda(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/panda----------")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def redpanda(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/redpanda")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def bird(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/birb")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def raccoon(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/raccoon")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def kangaroo(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/kangaroo")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def whale(self, ctx):
-        request = await self.client.session.get(f"https://some-random-api.ml/animal/cat")
-        data = await request.json()
-
-        embed = discord.Embed(description=str(data['fact']).replace(". ", ".\n"))
-        embed.set_image(url=data['image'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def duck(self, ctx):
-        request = await self.client.session.get(f"https://random-d.uk/api/v2/random")
-        data = await request.json()
-
-        embed = discord.Embed()
-        embed.set_image(url=data['url'])
-
-        return await ctx.send(embed=embed)
-
-    @commands.command()
-    async def bunny(self, ctx):
-        return
-
-    @commands.command()
-    async def penguin(self, ctx):
-        return
-
-    @commands.command()
-    async def lizard(self, ctx):
-        return
 
     @commands.command(
         help=":piccasso:",
@@ -460,39 +305,3 @@ class Images(commands.Cog):
     async def youtube(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
         embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.gif")
         return await ctx.send(embed=embed, file=await self.jeyy_image_api(f"{ctx.command.name}", ctx, member))
-
-    @commands.command( # 14
-        help="""
-Draw your own blocks!
-There are currently **25** codes corresponding to a unique block.
-```
-0 = blank block    g = Gold Block
-1 = Grass Block    p = Purple Block
-2 = Water          l = Leaf Block
-3 = Sand Block     o = Log Block
-4 = Stone block    c = Coal Block
-5 = Wood Planks    d = Diamond Block
-6 = Glass Block    v = Lava
-7 = Redstone Block h = Hay Bale
-8 = Iron Block     s = Snow Layer
-9 = Brick Block    f = Wooden Fence
-w = Redstone Dust  r = Redstone Lamp
-e = Lever (off)    # = Lever (on)
-k = Cake           y = Poppy
-```""",
-    brief="jeyy iso 401 133 332 - 1 0 5 - 6\njeyy iso 401 133 332 - 1 0 5 - 6") # 14
-    async def iso(self, ctx: CustomContext, *, iso):
-        request = await self.client.session.get("https://api.jeyy.xyz/isometric", params={'iso_code': f"{iso}"})
-        buffer = io.BytesIO(await request.read())
-        
-        embed = discord.Embed(title="Isometric drawing")
-        embed.set_image(url="attachment://isometric_draw.png")
-        
-        await ctx.send(embed=embed, file=discord.File(buffer, "isometric_draw.png"))
-
-    @commands.command(
-        help="Warps.",
-        usage="[member|user|emoji]")
-    async def colors(self, ctx, member: typing.Optional[typing.Union[discord.Member, discord.User, discord.Emoji, discord.PartialEmoji]] = None) -> discord.Message:
-        embed = discord.Embed().set_image(url=f"attachment://{ctx.command.name}.png")
-        return await ctx.send(embed=embed, file=await self.dagpi_image_api(imageFeatures.colors(), ctx, member))
