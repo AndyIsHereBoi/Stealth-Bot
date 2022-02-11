@@ -251,21 +251,31 @@ class StealthBot(commands.AutoShardedBot):
         channel = self.get_channel(927492170787749938)
         return await channel.send(f"Posted server count ({self.topggpy.guild_count}) and shard count {self.shard_count}")
 
+    def _load_extension(self, ext):
+        try:
+            self.load_extension(ext)
+            print(f"[EXT] {ext} has been loaded")
+
+        except Exception as e:
+            print(f"[EXT] {ext} failed to load.\n{type(e).__name__}: {e}")
 
     async def load_cogs(self) -> None:
+        print("[EXT] loading cogs...")
         for ext in initial_extensions:
             self._load_extension(ext)
+
         for ext in extensions:
             self._load_extension(ext)
 
     async def populate_cache(self):
+        print("[CACHE] populating cache...")
         # BLACKLIST
         values = await self.db.fetch("SELECT user_id, is_blacklisted FROM blacklist")
 
         for value in values:
             self.blacklist[value['user_id']] = (value['is_blacklisted'] or False)
 
-        print("blacklist has been loaded")
+        print("[CACHE] blacklist has been loaded")
         # BLACKLIST
 
         # PREFIXES
@@ -282,7 +292,7 @@ class StealthBot(commands.AutoShardedBot):
             except KeyError:
                 self.prefixes[guild.id] = PRE
 
-        print("prefixes have been loaded")
+        print("[CACHE] prefixes have been loaded")
         # PREFIXES
 
         # AFK
@@ -294,7 +304,7 @@ class StealthBot(commands.AutoShardedBot):
             [(r['user_id'], r['auto_un_afk']) for r in (await self.db.fetch('SELECT user_id, auto_un_afk FROM afk')) if
              r['auto_un_afk'] is not None])
 
-        print("afk users have been loaded")
+        print("[CACHE] afk users have been loaded")
         # AFK
 
         # DISABLE COMMANDS GUILDS
@@ -302,7 +312,7 @@ class StealthBot(commands.AutoShardedBot):
             [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, disable_commands FROM guilds')) if
              r['disable_commands']])
 
-        print("disable command guilds have been loaded")
+        print("[CACHE] disable command guilds have been loaded")
         # DISABLE COMMANDS GUILDS
 
         # MUSIC STUFF
@@ -316,7 +326,7 @@ class StealthBot(commands.AutoShardedBot):
         for value in values:
             self.dj_roles[value['guild_id']] = (value['dj_role_id'] or False)
 
-        print("music stuff has been loaded")
+        print("[CACHE] music stuff has been loaded")
         # MUSIC STUFF
 
         # LOGGING STUFF
@@ -340,7 +350,7 @@ class StealthBot(commands.AutoShardedBot):
                 guild_id))
             self.guild_loggings[guild_id] = LoggingEventsFlags(**flags)
 
-        print("logging guilds have been loaded")
+        print("[CACHE] logging guilds have been loaded")
         # LOGGING STUFF
 
 
@@ -367,12 +377,6 @@ class StealthBot(commands.AutoShardedBot):
         # PERSISTENT VIEWS
         self.add_view(PersistentExceptionView(self))
         self.persistent_views_added = True
-
-        print("persistent views have been loaded")
-        # PERSISTENT VIEWS
-
-
-        print(f"-------------================----------------")
 
 
         if os.path.exists("data/restart_log.log"):
