@@ -53,6 +53,12 @@ with open(r'/root/stealthbot/config.yaml') as file:
     full_yaml = yaml.load(file)
 yaml_data = full_yaml
 
+initial_extensions = (
+    'jishaku',
+)
+
+extensions = ('cogs.events', 'cogs')
+
 target_type = typing.Union[discord.Member, discord.User, discord.PartialEmoji, discord.Guild, discord.Invite]
 
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
@@ -141,11 +147,8 @@ class StealthBot(commands.AutoShardedBot):
         self.add_check(self.maintenance)
         self.add_check(self.blacklist)
         self.persistent_views_added = False
-        self.initial_extensions = (
-            'jishaku',
-        )
-
-        self._extensions = ('cogs.events', 'cogs')
+        self.loop.run_until_complete(self.load_cogs())
+        self.loop.run_until_complete(self.populate_cache())
 
         # Tokens
         self.dagpi_cooldown = commands.CooldownMapping.from_cooldown(60, 60, commands.BucketType.default)
@@ -249,23 +252,11 @@ class StealthBot(commands.AutoShardedBot):
         return await channel.send(f"Posted server count ({self.topggpy.guild_count}) and shard count {self.shard_count}")
 
 
-    def _load_extension(self, name: str):
-        try:
-            print(f'Attempting to load {name}')
-            self.load_extension(name)
-
-        except Exception as e:
-            print(f'Failed to load extension {name}')
-
-    async def load_cogs(self):
-        for ext in self.initial_extensions:
+    async def load_cogs(self) -> None:
+        for ext in initial_extensions:
             self._load_extension(ext)
-
-        for ext in self._extensions:
-            for file in os.listdir(f'./{ext}'):
-                if file.endswith('py'):
-                    self._load_extension(f'{ext}.{file[:-3]}')
-
+        for ext in extensions:
+            self._load_extension(ext)
 
     async def populate_cache(self):
         # BLACKLIST
@@ -372,9 +363,6 @@ class StealthBot(commands.AutoShardedBot):
             spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
             spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
         )
-
-        await self.load_cogs()
-        await self.populate_cache()
 
         # PERSISTENT VIEWS
         self.add_view(PersistentExceptionView(self))
