@@ -189,15 +189,6 @@ class StealthBot(commands.AutoShardedBot):
         self.token = "haha no"
 
 
-    def _load_extension(self, name: str):
-        try:
-            self.load_extension(name)
-
-        except (commands.ExtensionNotFound, commands.ExtensionAlreadyLoaded, commands.NoEntryPointError, commands.ExtensionFailed):
-            traceback.print_exc()
-            print()
-
-
     def update_log(self, deliver_type: str, webhook_url: str, guild_id: int):
         guild_id = getattr(guild_id, 'id', guild_id)
         if deliver_type == 'default':
@@ -215,51 +206,15 @@ class StealthBot(commands.AutoShardedBot):
 
 
     def dj_only(self, guild: discord.Guild):
-        try:
-            dj_only = self.dj_modes[guild.id]
-
-        except KeyError:
-            dj_only = True
-
-        if dj_only:
-            return True
-
-        else:
-            return False
-
-
+        try: dj_only = self.dj_modes[guild.id]
+        except KeyError: dj_only = True
+        if dj_only: return True
+        else: return False
     def dj_role(self, guild: discord.Guild):
-        try:
-            dj_role_id = self.dj_roles[guild.id]
-        except KeyError:
-            dj_role_id = False
-
-        if dj_role_id:
-            role = guild.get_role(dj_role_id)
-            return role
-        else:
-            return False
-
-
-    async def create_gist(self, *, filename: str, description: str, content: str, public: bool = True):
-        headers = {
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "Stealth-Bot",
-            "Authorization": f"token {yaml_data['GITHUB_TOKEN']}"
-        }
-
-        data = {
-            "public": public,
-            "files": {
-                filename: {
-                    "content": content
-                }
-            },
-            "description": description
-        }
-        output = await self.session.request("POST", "https://api.github.com/gists", json=data, headers=headers)
-        info = await output.json()
-        return info['html_url']
+        try: dj_role_id = self.dj_roles[guild.id]
+        except KeyError: dj_role_id = False
+        if dj_role_id: return guild.get_role(dj_role_id)
+        else:return False
 
 
     async def get_pre(self, bot, message: discord.Message, raw_prefix: Optional[bool] = False):
@@ -294,34 +249,31 @@ class StealthBot(commands.AutoShardedBot):
         return await channel.send(f"Posted server count ({self.topggpy.guild_count}) and shard count {self.shard_count}")
 
 
-    async def on_ready(self):
-        print(f"-------------================----------------")
-        print(f"bot name: {self.user.name}")
-        print(f"bot ID: {self.user.id}")
-        print(f"-------------================----------------")
-        print(f"servers: {len(self.guilds)}")
-        print(f"users: {len(self.users)}")
-        print(f"-------------================----------------")
+    def _load_extension(self, name: str):
+        try:
+            print(f'Attempting to load {name}')
+            self.load_extension(name)
 
-        await self.pomice.create_node(
-            bot=self,
-            host=yaml_data['NODE2_HOST'],
-            port=yaml_data['NODE2_PORT'],
-            password=yaml_data['NODE2_PASSWORD'],
-            identifier=yaml_data['NODE2_IDENTIFIER'],
-            spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
-            spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
-        )
+        except Exception as e:
+            print(f'Failed to load extension {name}')
 
+    async def load_cogs(self):
+        for ext in self.initial_extensions:
+            self._load_extension(ext)
+
+        for ext in self.extensions:
+            self._load_extension(ext)
+
+
+    async def populate_cache(self):
+        # BLACKLIST
         values = await self.db.fetch("SELECT user_id, is_blacklisted FROM blacklist")
 
-        # BLACKLIST
         for value in values:
             self.blacklist[value['user_id']] = (value['is_blacklisted'] or False)
 
         print("blacklist has been loaded")
         # BLACKLIST
-
 
         # PREFIXES
         values = await self.db.fetch("SELECT guild_id, prefix FROM guilds")
@@ -340,7 +292,6 @@ class StealthBot(commands.AutoShardedBot):
         print("prefixes have been loaded")
         # PREFIXES
 
-
         # AFK
         self.afk_users = dict(
             [(r['user_id'], True) for r in (await self.db.fetch('SELECT user_id, start_time FROM afk')) if
@@ -353,7 +304,6 @@ class StealthBot(commands.AutoShardedBot):
         print("afk users have been loaded")
         # AFK
 
-
         # DISABLE COMMANDS GUILDS
         self.disable_commands_guilds = dict(
             [(r['guild_id'], True) for r in (await self.db.fetch('SELECT guild_id, disable_commands FROM guilds')) if
@@ -361,7 +311,6 @@ class StealthBot(commands.AutoShardedBot):
 
         print("disable command guilds have been loaded")
         # DISABLE COMMANDS GUILDS
-
 
         # MUSIC STUFF
         values = await self.db.fetch("SELECT guild_id, dj_only FROM music")
@@ -377,12 +326,11 @@ class StealthBot(commands.AutoShardedBot):
         print("music stuff has been loaded")
         # MUSIC STUFF
 
-
         # LOGGING STUFF
         for entry in await self.db.fetch('SELECT * FROM log_channels'):
             guild_id = entry['guild_id']
             await self.db.execute('INSERT INTO logging_events(guild_id) VALUES ($1) ON CONFLICT (guild_id) DO NOTHING',
-                                 entry['guild_id'])
+                                  entry['guild_id'])
 
             self.log_channels[guild_id] = self.log_webhooks(default=entry['default_channel'],
                                                             message=entry['message_channel'],
@@ -403,16 +351,25 @@ class StealthBot(commands.AutoShardedBot):
         # LOGGING STUFF
 
 
-        # LOAD EXTENSIONS
-        for ext in self._initial_extensions:
-            self.load_extension(ext)
 
-        for ext in self._extensions:
-            self.load_extension(ext)
+    async def on_ready(self):
+        print(f"-------------================----------------")
+        print(f"bot name: {self.user.name}")
+        print(f"bot ID: {self.user.id}")
+        print(f"-------------================----------------")
+        print(f"servers: {len(self.guilds)}")
+        print(f"users: {len(self.users)}")
+        print(f"-------------================----------------")
 
-        print("successfuly loaded all extensions")
-        # LOAD EXTENSIONS
-
+        await self.pomice.create_node(
+            bot=self,
+            host=yaml_data['NODE2_HOST'],
+            port=yaml_data['NODE2_PORT'],
+            password=yaml_data['NODE2_PASSWORD'],
+            identifier=yaml_data['NODE2_IDENTIFIER'],
+            spotify_client_id=yaml_data['SPOTIFY_CLIENT_ID'],
+            spotify_client_secret=yaml_data['SPOTIFY_CLIENT_SECRET'],
+        )
 
         # PERSISTENT VIEWS
         self.add_view(PersistentExceptionView(self))
