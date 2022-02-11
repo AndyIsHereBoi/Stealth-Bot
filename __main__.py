@@ -262,7 +262,7 @@ class StealthBot(commands.AutoShardedBot):
             self._load_extension(ext)
 
         for ext in self._extensions:
-            for file in os.listdir(f'{ext}.{file[:-3]}'):
+            for file in os.listdir(f'./{ext}'):
                 if file.endswith('py'):
                     self._load_extension(f'{ext}.{file[:-3]}')
 
