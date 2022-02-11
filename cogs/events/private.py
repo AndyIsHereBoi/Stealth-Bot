@@ -10,10 +10,8 @@ class Private(EventsBase):
     async def on_owner_forgor(self, message: discord.Message):
         """ Event to detect if the bot owner said 'forgor' in a message and react with 💀 to it. """
 
-        if message.author.id != 564890536947875868 and "forgor" not in message.content.lower():
-            return
-
-        return await message.add_reaction("💀")
+        if message.author.id == 564890536947875868 and "forgor" in message.content.lower():
+            return await message.add_reaction("💀")
 
     @commands.Cog.listener('on_message')
     async def send_emote(self, message: discord.Message):
@@ -64,9 +62,6 @@ class Private(EventsBase):
                                 """, color=discord.Color.red())
 
                         return await message.channel.send(message.author.mention, embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
-
-            else:
-                return
 
     @commands.Cog.listener('on_message')
     async def on_mention_spam(self, message: discord.Message):
