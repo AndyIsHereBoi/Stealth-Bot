@@ -2,7 +2,12 @@ import discord
 from discord.ext import commands
 
 from ._base import LoggingBase
-from DuckBot.helpers import constants
+
+CUSTOM_TICKS = {
+    True: '<:greenTick:895390596599017493>',
+    False: '<:redTick:895390643210305536>',
+    None: '<:greyTick:895390690396229753>',
+}
 
 
 class VoiceLogs(LoggingBase):
@@ -62,8 +67,8 @@ class VoiceLogs(LoggingBase):
         embed = discord.Embed(title='Stage opened', colour=discord.Colour.teal(), timestamp=discord.utils.utcnow(),
                               description=f"**Channel** <#{stage_instance.channel_id}> ({stage_instance.channel_id})\n"
                                           f"**Topic:** {stage_instance.topic}\n"
-                                          f"**Public** {constants.DEFAULT_TICKS[stage_instance.is_public()]}\n"
-                                          f"**Discoverable:** {constants.DEFAULT_TICKS[stage_instance.discoverable_disabled]}\n")
+                                          f"**Public** {CUSTOM_TICKS[stage_instance.is_public()]}\n"
+                                          f"**Discoverable:** {CUSTOM_TICKS[stage_instance.discoverable_disabled]}\n")
         embed.set_footer(text=f"Channel ID: {stage_instance.channel_id}")
         self.log(embed, guild=stage_instance.guild, send_to=self.send_to.voice)
 

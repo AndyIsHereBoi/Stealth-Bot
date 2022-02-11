@@ -2,8 +2,13 @@ import discord
 import typing
 from discord.ext import commands
 
-from DuckBot.helpers import constants
 from ._base import LoggingBase
+
+CUSTOM_TICKS = {
+    True: '<:greenTick:895390596599017493>',
+    False: '<:redTick:895390643210305536>',
+    None: '<:greyTick:895390690396229753>',
+}
 
 
 class JoinLeaveLogs(LoggingBase):
@@ -49,7 +54,7 @@ class JoinLeaveLogs(LoggingBase):
                                           f"**Expires:** {discord.utils.format_dt(invite.expires_at, style='R') if invite.expires_at else 'Never'}\n"
                                           f"**Max Uses:** {invite.max_uses if invite.max_uses > 0 else 'Unlimited'}\n"
                                           f"**Channel:** {invite.channel}\n"
-                                          f"**Grants Temporary Membership:** {constants.DEFAULT_TICKS[invite.temporary]}")
+                                          f"**Grants Temporary Membership:** {CUSTOM_TICKS[invite.temporary]}")
         if invite.inviter:
             embed.set_author(icon_url=invite.inviter.display_avatar.url, name=str(invite.inviter))
         embed.set_footer(text=f"Invite ID: {invite.id}")
@@ -63,7 +68,7 @@ class JoinLeaveLogs(LoggingBase):
                               description=f"**Inviter:** {invite.inviter}{f' ({invite.inviter.id})' if invite.inviter else ''}\n"
                                           f"**Invite Code:** [{invite.code}]({invite.url})\n"
                                           f"**Channel:** {invite.channel}\n"
-                                          f"**Grants Temporary Membership:** {constants.DEFAULT_TICKS[invite.temporary]}")
+                                          f"**Grants Temporary Membership:** {CUSTOM_TICKS[invite.temporary]}")
         if invite.inviter:
             embed.set_author(icon_url=invite.inviter.display_avatar.url, name=str(invite.inviter))
         embed.set_footer(text=f"Invite ID: {invite.id}")

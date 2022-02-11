@@ -1,12 +1,14 @@
 import discord
-
 import typing
-from discord.ext import commands
 
-from DuckBot.helpers import constants
+from discord.ext import commands
 from ._base import LoggingBase, guild_channels
 
-
+CUSTOM_TICKS = {
+    True: '<:greenTick:895688440690147370>',
+    False: '<:redTick:895688440568508518>',
+    None: '<:greyTick:895688440690114560>',
+}
 
 class ServerLogs(LoggingBase):
 
@@ -37,7 +39,7 @@ class ServerLogs(LoggingBase):
             perms = []
             for perm, value in dict(over).items():
                 if value is not None:
-                    perms.append(f"{str(perm).replace('guild', 'server').replace('_', ' ').title()} {constants.DEFAULT_TICKS[value]}")
+                    perms.append(f"{str(perm).replace('guild', 'server').replace('_', ' ').title()} {CUSTOM_TICKS[value]}")
             if perms:
                 embed.add_field(name=f'Permissions for {target}', value='\n'.join(perms), inline=False)
         embed.set_footer(text=f'Channel ID: {channel.id}')
@@ -69,7 +71,7 @@ class ServerLogs(LoggingBase):
                 a_o = dict(after.overwrites_for(target))
                 for perm, value in b_o.items():
                     if value != a_o[perm]:
-                        updated_perms.append(f"{str(perm).replace('server', 'guild').replace('_', ' ').title()}: {constants.SQUARE_TICKS[value]} ➜ {constants.SQUARE_TICKS[a_o[perm]]}")
+                        updated_perms.append(f"{str(perm).replace('server', 'guild').replace('_', ' ').title()}: {CUSTOM_TICKS[value]} ➜ {CUSTOM_TICKS[a_o[perm]]}")
                 if updated_perms:
                     perm_emb = discord.Embed(title=f'Permissions for {target} updated', colour=discord.Colour.blurple(), timestamp=discord.utils.utcnow(),
                                              description='\n'.join(updated_perms))
@@ -113,8 +115,8 @@ class ServerLogs(LoggingBase):
             return
         embed = discord.Embed(title='New Role Created', timestamp=discord.utils.utcnow(), colour=discord.Colour.green(),
                               description=f"**Name:** {role.name}\n"
-                                          f"**Show Separately:** {constants.DEFAULT_TICKS[role.hoist]} • **Color:** {role.color}\n"
-                                          f"**Mentionable:** {constants.DEFAULT_TICKS[role.mentionable]} • **Position:** {role.position}\n")
+                                          f"**Show Separately:** {CUSTOM_TICKS[role.hoist]} • **Color:** {role.color}\n"
+                                          f"**Mentionable:** {CUSTOM_TICKS[role.mentionable]} • **Position:** {role.position}\n")
         enabled = ', '.join([str(name).replace('guild', 'server').replace('_', ' ').title() for name, value in set(role.permissions) if value is True])
         embed.add_field(name='Permissions enabled:', value=enabled, inline=False)
         embed.set_footer(text=f'Role ID: {role.id}')
@@ -126,8 +128,8 @@ class ServerLogs(LoggingBase):
             return
         embed = discord.Embed(title='Role Deleted', timestamp=discord.utils.utcnow(), colour=discord.Colour.red(),
                               description=f"**Name:** {role.name}\n"
-                                          f"**Show Separately:** {constants.DEFAULT_TICKS[role.hoist]} • **Color:** {role.color}\n"
-                                          f"**Mentionable:** {constants.DEFAULT_TICKS[role.mentionable]} • **Position:** {role.position}\n"
+                                          f"**Show Separately:** {CUSTOM_TICKS[role.hoist]} • **Color:** {role.color}\n"
+                                          f"**Mentionable:** {CUSTOM_TICKS[role.mentionable]} • **Position:** {role.position}\n"
                                           f"**Created At:** {discord.utils.format_dt(role.created_at)} ({discord.utils.format_dt(role.created_at, style='R')})\n"
                                           f"**Amount of Members:** {len(role.members)}")
         enabled = ', '.join([str(name).replace('guild', 'server').replace('_', ' ').title() for name, value in set(role.permissions) if value is True])
@@ -166,12 +168,12 @@ class ServerLogs(LoggingBase):
 
         hoist_update = ''
         if before.hoist != after.hoist:
-            hoist_update = f"\n**Show Separately:** {constants.DEFAULT_TICKS[before.hoist]} ➜ {constants.DEFAULT_TICKS[after.hoist]}"
+            hoist_update = f"\n**Show Separately:** {CUSTOM_TICKS[before.hoist]} ➜ {CUSTOM_TICKS[after.hoist]}"
             deliver = True
 
         ping_update = ''
         if before.mentionable != after.mentionable:
-            ping_update = f"\n**Mentionable:** {constants.DEFAULT_TICKS[before.mentionable]} ➜ {constants.DEFAULT_TICKS[after.mentionable]}"
+            ping_update = f"\n**Mentionable:** {CUSTOM_TICKS[before.mentionable]} ➜ {CUSTOM_TICKS[after.mentionable]}"
             deliver = True
 
         role_update = f'**Name:** {after.name}'
@@ -217,8 +219,8 @@ class ServerLogs(LoggingBase):
             embed.set_footer(text=f"Emoji ID: {emoji.id}")
             self.log(embed, guild=guild, send_to=self.send_to.server)
 
-        existant = set.union(set(after) - set(added), set(before) - set(removed))
-        for emoji in existant:
+        existent = set.union(set(after) - set(added), set(before) - set(removed))
+        for emoji in existent:
             if not self.bot.guild_loggings[guild.id].emoji_update:
                 break
             before_emoji = discord.utils.get(before, id=emoji.id)
@@ -275,8 +277,8 @@ class ServerLogs(LoggingBase):
             embed.set_footer(text=f"Sticker ID: {sticker.id}")
             self.log(embed, guild=guild, send_to=self.send_to.server)
 
-        existant = set.union(set(after) - set(added), set(before) - set(removed))
-        for sticker in existant:
+        existent = set.union(set(after) - set(added), set(before) - set(removed))
+        for sticker in existent:
             if not self.bot.guild_loggings[guild.id].sticker_update:
                 break
             before_sticker = discord.utils.get(before, id=sticker.id)

@@ -1,13 +1,7 @@
-import asyncio
-from collections import namedtuple
-
 import discord
-import typing
-from discord.ext import commands, tasks
-
-from DuckBot.__main__ import DuckBot
 
 from ._base import LoggingBase
+from discord.ext import commands
 
 
 class MessageLogs(LoggingBase):
