@@ -141,7 +141,7 @@ class StealthBot(commands.AutoShardedBot):
         self.add_check(self.maintenance)
         self.add_check(self.blacklist)
         self.persistent_views_added = False
-        self._initial_extensions = (
+        self.initial_extensions = (
             'jishaku',
         )
 
@@ -261,7 +261,7 @@ class StealthBot(commands.AutoShardedBot):
         for ext in self.initial_extensions:
             self._load_extension(ext)
 
-        for ext in self.extensions:
+        for ext in self._extensions:
             self._load_extension(ext)
 
 
