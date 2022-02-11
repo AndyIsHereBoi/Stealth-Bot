@@ -147,8 +147,6 @@ class StealthBot(commands.AutoShardedBot):
         self.add_check(self.maintenance)
         self.add_check(self.blacklist_check)
         self.persistent_views_added = False
-        self.loop.run_until_complete(self.load_cogs())
-        self.loop.run_until_complete(self.populate_cache())
 
         # Tokens
         self.dagpi_cooldown = commands.CooldownMapping.from_cooldown(60, 60, commands.BucketType.default)
@@ -190,6 +188,8 @@ class StealthBot(commands.AutoShardedBot):
         self.brain_cells = 0
         self.user_id = 760179628122964008
         self.token = "haha no"
+        self.loop.run_until_complete(self.load_cogs())
+        self.loop.run_until_complete(self.populate_cache())
 
 
     def update_log(self, deliver_type: str, webhook_url: str, guild_id: int):
