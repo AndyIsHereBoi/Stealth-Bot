@@ -166,6 +166,7 @@ class StealthBot(commands.AutoShardedBot):
         self.maintenance = False
         self.launch_time = discord.utils.utcnow()
         self.theme = "default"
+        self.messages_count = 0
 
         # Cache stuff
         self.afk_users = {}

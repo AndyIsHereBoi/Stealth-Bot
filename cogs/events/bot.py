@@ -7,4 +7,4 @@ class Bot(EventsBase):
 
     @commands.Cog.listener('on_message')
     async def update_messages_seen_count(self, message: discord.Message):
-        self.bot.messages_count = self.bot.messages_count + 1
+        self.bot.messages_count =+ 1
