@@ -268,7 +268,6 @@ class StealthBot(commands.AutoShardedBot):
             self._load_extension(ext)
 
     async def populate_cache(self):
-        await self.wait_until_ready()
         print("[CACHE] populating cache...")
         # BLACKLIST
         values = await self.db.fetch("SELECT user_id, is_blacklisted FROM blacklist")
