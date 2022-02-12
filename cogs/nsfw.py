@@ -13,7 +13,7 @@ class NSFW(commands.Cog):
     """NSFW commands, type 'gif' as the type, and it'll be animated."""
 
     def __init__(self, client):
-        self.client = client
+        self.bot = client
         self.hidden = True
         self.select_emoji = "<:underage:899622685930323978>"
         self.select_brief = "NSFW commands, type 'gif' as the type and it'll be animated."
@@ -27,7 +27,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/ass/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/ass/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/ass/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/ass/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -49,7 +49,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/ecchi/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/ecchi/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/ecchi/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/ecchi/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -71,7 +71,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/ero/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/ero/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/ero/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/ero/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -93,7 +93,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/hentai/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/hentai/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/hentai/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/hentai/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -115,7 +115,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/hmaid/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/hmaid/ero/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/hmaid/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/hmaid/ero/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -137,7 +137,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/milf/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/milf/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/milf/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/milf/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -159,7 +159,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/oppai/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/oppai/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/oppai/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/oppai/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -181,7 +181,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/oral/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/oral/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/oral/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/oral/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -203,7 +203,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/paizuri/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/paizuri/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/paizuri/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/paizuri/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -225,7 +225,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/selfie/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/selfie/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/selfie/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/selfie/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()
@@ -247,7 +247,7 @@ class NSFW(commands.Cog):
 
         start = time.perf_counter()
 
-        request = await self.client.session.get('https://api.waifu.im/nsfw/uniform/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/uniform/')
+        request = await self.bot.session.get('https://api.waifu.im/nsfw/uniform/?gif=True' if str(type).lower() == 'gif' else 'https://api.waifu.im/nsfw/uniform/')
         json = (await request.json())['images'][0]
 
         end = time.perf_counter()

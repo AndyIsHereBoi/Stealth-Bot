@@ -170,7 +170,7 @@ class Owner(OwnerBase):
         ver = sys.version_info
         full_version = f"{ver.major}.{ver.minor}.{ver.micro}"
 
-        delta_uptime = discord.utils.utcnow() - self.client.launch_time
+        delta_uptime = discord.utils.utcnow() - self.bot.launch_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
@@ -211,7 +211,7 @@ class Owner(OwnerBase):
 
         # discords = time.monotonic()
         # url = "https://discordapp.com/"
-        # resp = await self.client.session.get(url)
+        # resp = await self.bot.session.get(url)
         # if resp.status == 200:
         #         discorde = time.monotonic()
         #         discordms = (discorde - discords) * 1000
@@ -219,11 +219,11 @@ class Owner(OwnerBase):
         # else:
         #         discordms = 0
 
-        latencyms = self.client.latency * 1000
+        latencyms = self.bot.latency * 1000
         pings.append(latencyms)
 
         pstart = time.perf_counter()
-        await self.client.db.fetch("SELECT 1")
+        await self.bot.db.fetch("SELECT 1")
         pend = time.perf_counter()
         psqlms = (pend - pstart) * 1000
         pings.append(psqlms)
@@ -294,8 +294,8 @@ Average: {average_latency}
     async def _eval(self, ctx: CustomContext, *, body: str, return_result: bool = False):
         """ Evaluates arbitrary python code """
         env = {
-            'bot': self.client,
-            '_b': self.client,
+            'bot': self.bot,
+            '_b': self.bot,
             'ctx': ctx,
             'channel': ctx.channel,
             '_c': ctx.channel,
@@ -365,7 +365,7 @@ Average: {average_latency}
                     self._last_result = ret
                     to_send = f'{value}{ret}'
                 if to_send:
-                    to_send = to_send.replace(self.client.http.token, '[discord token redacted]')
+                    to_send = to_send.replace(self.bot.http.token, '[discord token redacted]')
                     if len(to_send) > 1985:
                         await ctx.send(file=discord.File(io.StringIO(to_send), filename='output.py'))
                     else:
@@ -384,7 +384,7 @@ Average: {average_latency}
 
         for extension in itertools.chain(*extensions):
             everything.append(f"{extension}")
-            method, icon = ((self.client.reload_extension, ":repeat:") if extension in self.client.extensions else (self.client.load_extension, ":mailbox:"))
+            method, icon = ((self.bot.reload_extension, ":repeat:") if extension in self.bot.extensions else (self.bot.load_extension, ":mailbox:"))
 
             try:
                 method(extension)
@@ -430,10 +430,10 @@ Average: {average_latency}
         aliases=['upd', 'gitpull', 'pull'])
     @commands.is_owner()
     async def update(self, ctx: CustomContext):
-        command = self.client.get_command("jsk git")
+        command = self.bot.get_command("jsk git")
         await ctx.invoke(command, argument=codeblock_converter("pull"))
 
-        command = self.client.get_command('jsk reload')
+        command = self.bot.get_command('jsk reload')
         await ctx.invoke(command, argument="~")
 
     @dev.command(
@@ -442,14 +442,14 @@ Average: {average_latency}
     @commands.is_owner()
     async def acknowledge(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, message=None):
         if message:
-            await self.client.db.execute(
+            await self.bot.db.execute(
                 "INSERT INTO acknowledgments (user_id, acknowledgment) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET acknowledgment = $2",
                 member.id, message)
             return await ctx.send(
                 f"Successfully added {member.mention if isinstance(member, discord.Member) else member} to the acknowledgements list.")
 
         else:
-            await self.client.db.execute("DELETE FROM acknowledgments WHERE user_id = $1", member.id)
+            await self.bot.db.execute("DELETE FROM acknowledgments WHERE user_id = $1", member.id)
             return await ctx.send(
                 f"Successfully deleted {member.mention if isinstance(member, discord.Member) else member} from the acknowledgements list.")
 
@@ -498,12 +498,12 @@ Average: {average_latency}
         aliases=["no_prefix", "silentprefix", "silent_prefix"])
     @commands.is_owner()
     async def noprefix(self, ctx: CustomContext):
-        if self.client.no_prefix:
-            self.client.no_prefix = False
+        if self.bot.no_prefix:
+            self.bot.no_prefix = False
             await ctx.send("Successfully turned off no-prefix mode.")
 
         else:
-            self.client.no_prefix = True
+            self.bot.no_prefix = True
             await ctx.send("Successfully turned on no-prefix mode.")
 
     @dev.command(
@@ -511,15 +511,15 @@ Average: {average_latency}
         aliases=["bot_maintenance", "maintenancebot", "maintenance_bot", 'botmaintenance'])
     @commands.is_owner()
     async def maintenance(self, ctx: CustomContext):
-        if self.client.maintenance:
-            self.client.maintenance = False
+        if self.bot.maintenance:
+            self.bot.maintenance = False
 
             embed = discord.Embed(description=f"{ctx.toggle(False)} Successfully turned off maintenance mode.")
 
             await ctx.send(embed=embed)
 
         else:
-            self.client.maintenance = True
+            self.bot.maintenance = True
 
             embed = discord.Embed(description=f"{ctx.toggle(True)} Successfully turned on maintenance mode.")
 
@@ -539,8 +539,8 @@ Average: {average_latency}
         aliases=['a'])
     @commands.is_owner()
     async def add(self, ctx: CustomContext, member: discord.User, *, reason: str):
-        await self.client.db.execute("INSERT INTO blacklist(user_id, is_blacklisted, reason) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET is_blacklisted = $2", member.id, True, reason[0:1800])
-        self.client.blacklist[member.id] = True
+        await self.bot.db.execute("INSERT INTO blacklist(user_id, is_blacklisted, reason) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET is_blacklisted = $2", member.id, True, reason[0:1800])
+        self.bot.blacklist[member.id] = True
 
         embed = discord.Embed(description=f"Successfully added {member} to the blacklist with the reason being {reason[0:1800]}")
 
@@ -551,8 +551,8 @@ Average: {average_latency}
         aliases=['r', 'rm'])
     @commands.is_owner()
     async def remove(self, ctx: CustomContext, member: discord.User):
-        await self.client.db.execute("DELETE FROM blacklist where user_id = $1", member.id)
-        self.client.blacklist[member.id] = False
+        await self.bot.db.execute("DELETE FROM blacklist where user_id = $1", member.id)
+        self.bot.blacklist[member.id] = False
 
         embed = discord.Embed(description=f"Successfully removed {member} from the blacklist")
 
@@ -567,8 +567,8 @@ Average: {average_latency}
         reason = None
 
         try:
-            status = self.client.blacklist[member.id]
-            reason = await self.client.db.fetchval("SELECT reason FROM blacklist WHERE user_id = $1", member.id)
+            status = self.bot.blacklist[member.id]
+            reason = await self.bot.db.fetchval("SELECT reason FROM blacklist WHERE user_id = $1", member.id)
 
         except KeyError:
             status = False
@@ -584,9 +584,9 @@ Average: {average_latency}
     async def list(self, ctx: CustomContext):
         blacklistedUsers = []
 
-        blacklist = await self.client.db.fetch("SELECT * FROM blacklist")
+        blacklist = await self.bot.db.fetch("SELECT * FROM blacklist")
         for stuff in blacklist:
-            user = self.client.get_user(stuff["user_id"])
+            user = self.bot.get_user(stuff["user_id"])
             reason = stuff["reason"]
 
             blacklistedUsers.append(f"{user.name} **|** {user.id} **|** [Hover over for reason]({ctx.message.jump_url} '{reason}')")
@@ -609,12 +609,12 @@ Average: {average_latency}
         aliases=['ch', 'cmds'])
     @commands.is_owner()
     async def _commands(self, ctx: CustomContext):
-        executed_commands = await self.client.db.fetch("SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
+        executed_commands = await self.bot.db.fetch("SELECT command, user_id, guild_id, timestamp FROM commands ORDER BY timestamp DESC")
 
         if not executed_commands:
             return await ctx.send("No results found...")
 
-        table = [(command, self.client.get_user(user_id) or user_id, guild_id, str(timestamp).replace('+00:00', '')) for command, user_id, guild_id, timestamp in executed_commands]
+        table = [(command, self.bot.get_user(user_id) or user_id, guild_id, str(timestamp).replace('+00:00', '')) for command, user_id, guild_id, timestamp in executed_commands]
 
         table = tabulate.tabulate(table, headers=["Command", "User/UID", "Guild ID", "Timestamp"], tablefmt="presto")
         lines = table.split("\n")
@@ -622,6 +622,6 @@ Average: {average_latency}
         header = f"Latest executed commands".center(len(lines[0]))
         pages = WrappedPaginator(prefix=f'```\n{header}\n{headers}', max_size=1950)
         [pages.add_line(line) for line in lines]
-        interface = PaginatorInterface(self.client, pages)
+        interface = PaginatorInterface(self.bot, pages)
         await interface.send_to(ctx)
 

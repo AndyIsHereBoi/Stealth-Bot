@@ -16,7 +16,7 @@ class Games(commands.Cog):
     """Commands used to play games when you're bored!"""
 
     def __init__(self, client):
-        self.client = client
+        self.bot = client
         self.select_emoji = "<:video_game:899622306148675594>"
         self.select_brief = "Commands used to play games when you're bored!"
 
@@ -201,7 +201,7 @@ Item: {str(botItem).title()}
         await ctx.send("Pick one! `rock`, `paper`, `scissors`")
 
         try:
-            msg = await self.client.wait_for(event='message', check=check, timeout=15)
+            msg = await self.bot.wait_for(event='message', check=check, timeout=15)
 
         except asyncio.TimeoutError:
             return await ctx.send("It's been over 15 seconds, please try again by doing `-rpg`.")
@@ -289,7 +289,7 @@ Stealth Bot's answer: {str(botAnswer).title()}
         main = await ctx.send(embed=embed, footer=False)
 
         try:
-            message = await self.client.wait_for("message", check=lambda msg: msg.channel == ctx.channel and msg.content == doneWords, timeout=60)
+            message = await self.bot.wait_for("message", check=lambda msg: msg.channel == ctx.channel and msg.content == doneWords, timeout=60)
 
         except asyncio.TimeoutError:
             await main.edit(content="Time is over! No one won.")

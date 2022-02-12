@@ -49,7 +49,7 @@ class ChannelsView(discord.ui.View):
         super().__init__()
         self.message: discord.Message = None
         self.ctx = ctx
-        self.client = ctx.bot
+        self.bot = ctx.bot
         self.lock = asyncio.Lock()
         self.valid_channels = ['default', 'message', 'member', 'join_leave', 'voice', 'server']
 
@@ -74,7 +74,7 @@ class ChannelsView(discord.ui.View):
                 return False
 
             while True:
-                message: discord.Message = await self.client.wait_for('message', check=check)
+                message: discord.Message = await self.bot.wait_for('message', check=check)
                 if message.content == 'cancel':
                     break
                 else:
@@ -91,10 +91,10 @@ class ChannelsView(discord.ui.View):
             else:
                 try:
                     webhook_url = await get_wh(channel)
-                    await self.client.db.execute(
+                    await self.bot.db.execute(
                         'UPDATE log_channels SET default_channel = $2, default_chid = $3 WHERE guild_id = $1',
                         self.ctx.guild.id, webhook_url, channel.id)
-                    self.client.update_log('default', webhook_url, message.guild.id)
+                    self.bot.update_log('default', webhook_url, message.guild.id)
                 except commands.ChannelNotFound:
                     pass
                 except (commands.BadArgument, discord.Forbidden):
@@ -129,7 +129,7 @@ class ChannelsView(discord.ui.View):
                 return False
 
             while True:
-                message: discord.Message = await self.client.wait_for('message', check=check)
+                message: discord.Message = await self.bot.wait_for('message', check=check)
                 if message.content == 'cancel':
                     break
                 else:
@@ -146,10 +146,10 @@ class ChannelsView(discord.ui.View):
             else:
                 try:
                     webhook_url = await get_wh(channel)
-                    await self.client.db.execute(
+                    await self.bot.db.execute(
                         'UPDATE log_channels SET message_channel = $2, message_chid = $3 WHERE guild_id = $1',
                         self.ctx.guild.id, webhook_url, channel.id)
-                    self.client.update_log('message', webhook_url, message.guild.id)
+                    self.bot.update_log('message', webhook_url, message.guild.id)
                 except commands.ChannelNotFound:
                     pass
                 except (commands.BadArgument, discord.Forbidden):
@@ -184,7 +184,7 @@ class ChannelsView(discord.ui.View):
                 return False
 
             while True:
-                message: discord.Message = await self.client.wait_for('message', check=check)
+                message: discord.Message = await self.bot.wait_for('message', check=check)
                 if message.content == 'cancel':
                     break
                 else:
@@ -201,10 +201,10 @@ class ChannelsView(discord.ui.View):
             else:
                 try:
                     webhook_url = await get_wh(channel)
-                    await self.client.db.execute(
+                    await self.bot.db.execute(
                         'UPDATE log_channels SET join_leave_channel = $2, join_leave_chid = $3 WHERE guild_id = $1',
                         self.ctx.guild.id, webhook_url, channel.id)
-                    self.client.update_log('join_leave', webhook_url, message.guild.id)
+                    self.bot.update_log('join_leave', webhook_url, message.guild.id)
                 except commands.ChannelNotFound:
                     pass
                 except (commands.BadArgument, discord.Forbidden):
@@ -240,7 +240,7 @@ class ChannelsView(discord.ui.View):
                 return False
 
             while True:
-                message: discord.Message = await self.client.wait_for('message', check=check)
+                message: discord.Message = await self.bot.wait_for('message', check=check)
                 if message.content == 'cancel':
                     break
                 else:
@@ -257,10 +257,10 @@ class ChannelsView(discord.ui.View):
             else:
                 try:
                     webhook_url = await get_wh(channel)
-                    await self.client.db.execute(
+                    await self.bot.db.execute(
                         'UPDATE log_channels SET member_channel = $2, member_chid = $3 WHERE guild_id = $1',
                         self.ctx.guild.id, webhook_url, channel.id)
-                    self.client.update_log('member', webhook_url, message.guild.id)
+                    self.bot.update_log('member', webhook_url, message.guild.id)
                 except commands.ChannelNotFound:
                     pass
                 except (commands.BadArgument, discord.Forbidden):
@@ -295,7 +295,7 @@ class ChannelsView(discord.ui.View):
                 return False
 
             while True:
-                message: discord.Message = await self.client.wait_for('message', check=check)
+                message: discord.Message = await self.bot.wait_for('message', check=check)
                 if message.content == 'cancel':
                     break
                 else:
@@ -312,10 +312,10 @@ class ChannelsView(discord.ui.View):
             else:
                 try:
                     webhook_url = await get_wh(channel)
-                    await self.client.db.execute(
+                    await self.bot.db.execute(
                         'UPDATE log_channels SET server_channel = $2, server_chid = $3 WHERE guild_id = $1',
                         self.ctx.guild.id, webhook_url, channel.id)
-                    self.client.update_log('server', webhook_url, message.guild.id)
+                    self.bot.update_log('server', webhook_url, message.guild.id)
                 except commands.ChannelNotFound:
                     pass
                 except (commands.BadArgument, discord.Forbidden):
@@ -351,7 +351,7 @@ class ChannelsView(discord.ui.View):
                 return False
 
             while True:
-                message: discord.Message = await self.client.wait_for('message', check=check)
+                message: discord.Message = await self.bot.wait_for('message', check=check)
                 if message.content == 'cancel':
                     break
                 else:
@@ -368,10 +368,10 @@ class ChannelsView(discord.ui.View):
             else:
                 try:
                     webhook_url = await get_wh(channel)
-                    await self.client.db.execute(
+                    await self.bot.db.execute(
                         'UPDATE log_channels SET voice_channel = $2, voice_chid = $3 WHERE guild_id = $1',
                         self.ctx.guild.id, webhook_url, channel.id)
-                    self.client.update_log('voice', webhook_url, message.guild.id)
+                    self.bot.update_log('voice', webhook_url, message.guild.id)
                 except commands.ChannelNotFound:
                     pass
                 except (commands.BadArgument, discord.Forbidden):
@@ -408,15 +408,15 @@ class ChannelsView(discord.ui.View):
         return False
 
     async def update_message(self, edit: bool = True):
-        channels = await self.client.db.fetchrow('SELECT * FROM log_channels WHERE guild_id = $1', self.ctx.guild.id)
+        channels = await self.bot.db.fetchrow('SELECT * FROM log_channels WHERE guild_id = $1', self.ctx.guild.id)
         embed = discord.Embed(title='Logging Channels', colour=discord.Colour.blurple(),
                               timestamp=self.ctx.message.created_at)
-        default = self.client.get_channel(channels['default_chid'] or 1)
-        message = self.client.get_channel(channels['message_chid'] or 1)
-        join_leave = self.client.get_channel(channels['join_leave_chid'] or 1)
-        member = self.client.get_channel(channels['member_chid'] or 1)
-        server = self.client.get_channel(channels['server_chid'] or 1)
-        voice = self.client.get_channel(channels['voice_chid'] or 1)
+        default = self.bot.get_channel(channels['default_chid'] or 1)
+        message = self.bot.get_channel(channels['message_chid'] or 1)
+        join_leave = self.bot.get_channel(channels['join_leave_chid'] or 1)
+        member = self.bot.get_channel(channels['member_chid'] or 1)
+        server = self.bot.get_channel(channels['server_chid'] or 1)
+        voice = self.bot.get_channel(channels['voice_chid'] or 1)
         embed.description = f"**♾ Default channel:** {default.mention}" \
                             f"\n**📨 Message events:** {message.mention if message else ''}" \
                             f"\n**👋 Joining and Leaving:** {join_leave.mention if join_leave else ''}" \
@@ -426,7 +426,7 @@ class ChannelsView(discord.ui.View):
                             f"\n" \
                             f"\n_Channels not shown here will be_" \
                             f"\n_delivered to the default channel._"
-        loggings = self.client.guild_loggings[self.ctx.guild.id]
+        loggings = self.bot.guild_loggings[self.ctx.guild.id]
         enabled = [x for x, y in set(loggings) if y is True]
         embed.set_footer(text=f'{len(enabled)}/{len(set(loggings))} events enabled.')
         for child in self.children:
@@ -449,7 +449,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
     """Commands for managing guild settings like logging system, welcome system etc."""
 
     def __init__(self, client):
-        self.client = client
+        self.bot = client
         self.select_emoji = "<:gear:899622456191483904>"
         self.select_brief = "Commands for managing guild settings."
 
@@ -495,7 +495,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
         """Enables the logging module to deliver to one channel.
         If logging is already enabled, it will set the default logging channel to the one specified.
         _Note: This will not modify your enabled/disabled events, if any._"""
-        if ctx.guild.id in self.client.log_channels:
+        if ctx.guild.id in self.bot.log_channels:
             raise commands.BadArgument('This server already has a logging enabled.')
         if not channel.permissions_for(ctx.me).manage_webhooks and not channel.permissions_for(ctx.me).send_messages:
             raise commands.BadArgument(f"I'm missing the Manage Webhooks permission in {channel.mention}")
@@ -507,7 +507,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
             raise commands.BadArgument(
                 f'I was unable to get the list of webhooks in {channel.mention}. (Missing Permissions - Manage Webhooks)')
         for w in webhooks:
-            if w.user == self.client.user:
+            if w.user == self.bot.user:
                 webhook_url = w.url
                 break
         else:
@@ -523,19 +523,19 @@ class GuildSettings(commands.Cog, name="Guild settings"):
             except discord.HTTPException:
                 raise commands.BadArgument(
                     f'There was an unexpected error while creating a webhook in {channel.mention} (HTTP exception) - Perhaps try again?')
-        await self.client.db.execute('INSERT INTO guilds (guild_id) VALUES ($1) '
+        await self.bot.db.execute('INSERT INTO guilds (guild_id) VALUES ($1) '
                                   'ON CONFLICT (guild_id) DO NOTHING', ctx.guild.id)
-        await self.client.db.execute(
+        await self.bot.db.execute(
             "INSERT INTO log_channels(guild_id, default_channel, default_chid) VALUES ($1, $2, $3) "
             "ON CONFLICT (guild_id) DO UPDATE SET default_channel = $2, default_chid = $3",
             ctx.guild.id, webhook_url, channel.id)
-        await self.client.db.execute("INSERT INTO logging_events(guild_id) VALUES ($1) ON CONFLICT (guild_id) DO NOTHING",
+        await self.bot.db.execute("INSERT INTO logging_events(guild_id) VALUES ($1) ON CONFLICT (guild_id) DO NOTHING",
                                   ctx.guild.id)
-        self.client.guild_loggings[ctx.guild.id] = LoggingEventsFlags.all()
+        self.bot.guild_loggings[ctx.guild.id] = LoggingEventsFlags.all()
         try:
-            self.client.log_channels[ctx.guild.id]._replace(default=webhook_url)
+            self.bot.log_channels[ctx.guild.id]._replace(default=webhook_url)
         except KeyError:
-            self.client.log_channels[ctx.guild.id] = self.client.log_webhooks(default=webhook_url, voice=None, message=None,
+            self.bot.log_channels[ctx.guild.id] = self.bot.log_webhooks(default=webhook_url, voice=None, message=None,
                                                                         member=None, server=None, join_leave=None)
         await ctx.send(f'Successfully set the logging channel to {channel.mention}'
                        f'\n_see `{ctx.clean_prefix}help log` for more customization commands!_')
@@ -545,7 +545,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
     @commands.max_concurrency(1, commands.BucketType.guild)
     async def log_disable(self, ctx: CustomContext):
         """Disables logging for this server, and deletes all the bots logging webhooks."""
-        if ctx.guild.id not in self.client.log_channels:
+        if ctx.guild.id not in self.bot.log_channels:
             raise commands.BadArgument('Logging is not enabled for this server!')
         confirm = await ctx.confirm('**Are you sure you want to disable logging?**'
                                     '\nThis will overwrite and disable **all** delivery channels, and delete all my webhooks.',
@@ -554,10 +554,10 @@ class GuildSettings(commands.Cog, name="Guild settings"):
             return
         async with ctx.typing():
             try:
-                self.client.log_channels.pop(ctx.guild.id)
+                self.bot.log_channels.pop(ctx.guild.id)
             except KeyError:
                 pass
-            channels = await self.client.db.fetchrow('DELETE FROM log_channels WHERE guild_id = $1 RETURNING *',
+            channels = await self.bot.db.fetchrow('DELETE FROM log_channels WHERE guild_id = $1 RETURNING *',
                                                   ctx.guild.id)
 
             channel_ids = channels['default_chid'], channels['message_chid'], channels['join_leave_chid'], channels[
@@ -565,7 +565,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
             failed = 0
             success = 0
             for channel in channel_ids:
-                channel = self.client.get_channel(channel)
+                channel = self.bot.get_channel(channel)
                 if isinstance(channel, discord.TextChannel):
                     try:
                         webhooks = await channel.webhooks()
@@ -582,17 +582,17 @@ class GuildSettings(commands.Cog, name="Guild settings"):
     @commands.has_permissions(manage_guild=True)
     async def log_channels(self, ctx: CustomContext):
         """Shows this server's logging channels"""
-        if ctx.guild.id not in self.client.log_channels:
+        if ctx.guild.id not in self.bot.log_channels:
             raise commands.BadArgument('This server doesn\'t have logging enabled.')
-        channels = await self.client.db.fetchrow('SELECT * FROM log_channels WHERE guild_id = $1', ctx.guild.id)
+        channels = await self.bot.db.fetchrow('SELECT * FROM log_channels WHERE guild_id = $1', ctx.guild.id)
         embed = discord.Embed(title='Logging Channels', colour=discord.Colour.blurple(),
                               timestamp=discord.utils.utcnow())
-        default = self.client.get_channel(channels['default_chid'] or 1)
-        message = self.client.get_channel(channels['message_chid'] or 1)
-        join_leave = self.client.get_channel(channels['join_leave_chid'] or 1)
-        member = self.client.get_channel(channels['member_chid'] or 1)
-        server = self.client.get_channel(channels['server_chid'] or 1)
-        voice = self.client.get_channel(channels['voice_chid'] or 1)
+        default = self.bot.get_channel(channels['default_chid'] or 1)
+        message = self.bot.get_channel(channels['message_chid'] or 1)
+        join_leave = self.bot.get_channel(channels['join_leave_chid'] or 1)
+        member = self.bot.get_channel(channels['member_chid'] or 1)
+        server = self.bot.get_channel(channels['server_chid'] or 1)
+        voice = self.bot.get_channel(channels['voice_chid'] or 1)
         embed.description = f"**Default channel:** {default.mention}" \
                             f"\n**Message events:** {message.mention if message else ''}" \
                             f"\n**Joining and Leaving:** {join_leave.mention if join_leave else ''}" \
@@ -602,7 +602,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
                             f"\n" \
                             f"\n_Channels not shown here will be_" \
                             f"\n_delivered to the default channel._"
-        loggings = self.client.guild_loggings[ctx.guild.id]
+        loggings = self.bot.guild_loggings[ctx.guild.id]
         enabled = [x for x, y in set(loggings) if y is True]
         embed.set_footer(text=f'{len(enabled)}/{len(set(loggings))} events enabled.')
         await ctx.send(embed=embed)
@@ -616,15 +616,15 @@ class GuildSettings(commands.Cog, name="Guild settings"):
         You can either use underscore `_` or dash `-` when specifying the event.
         _Note that the command will attempt to auto-complete to the closest match, if not specified._
         """
-        if ctx.guild.id not in self.client.log_channels:
+        if ctx.guild.id not in self.bot.log_channels:
             raise commands.BadArgument('This server doesn\'t have logging enabled.')
-        arg = getattr(self.client.guild_loggings[ctx.guild.id], event, None)
+        arg = getattr(self.bot.guild_loggings[ctx.guild.id], event, None)
         if arg is False:
             raise commands.BadArgument(
                 f'❌ **|** **{str(event).replace("_", " ").title()} Events** are already disabled!')
-        await self.client.db.execute(f'UPDATE logging_events SET {event} = $2 WHERE guild_id = $1',
+        await self.bot.db.execute(f'UPDATE logging_events SET {event} = $2 WHERE guild_id = $1',
                                   ctx.guild.id, False)
-        setattr(self.client.guild_loggings[ctx.guild.id], event, False)
+        setattr(self.bot.guild_loggings[ctx.guild.id], event, False)
         await ctx.send(f'✅ **|** Successfully disabled **{str(event).replace("_", " ").title()} Events**')
 
     @log.command(name='enable-event', aliases=['enable_event', 'ee'])
@@ -636,15 +636,15 @@ class GuildSettings(commands.Cog, name="Guild settings"):
         You can either use underscore `_` or dash `-` when specifying the event.
         _Note that the command will attempt to auto-complete to the closest match, if not specified._
         """
-        if ctx.guild.id not in self.client.log_channels:
+        if ctx.guild.id not in self.bot.log_channels:
             raise commands.BadArgument('This server doesn\'t have logging enabled.')
-        arg = getattr(self.client.guild_loggings[ctx.guild.id], event, None)
+        arg = getattr(self.bot.guild_loggings[ctx.guild.id], event, None)
         if arg is True:
             raise commands.BadArgument(
                 f'❌ **|** **{str(event).replace("_", " ").title()} Events** are already enabled!')
-        await self.client.db.execute(f'UPDATE logging_events SET {event} = $2 WHERE guild_id = $1',
+        await self.bot.db.execute(f'UPDATE logging_events SET {event} = $2 WHERE guild_id = $1',
                                   ctx.guild.id, True)
-        setattr(self.client.guild_loggings[ctx.guild.id], event, True)
+        setattr(self.bot.guild_loggings[ctx.guild.id], event, True)
         await ctx.send(f'✅ **|** Successfully enabled **{str(event).replace("_", " ").title()} Events**')
 
     @log.command(name='edit-channels', aliases=['edit_channels', 'ec'], preview='https://i.imgur.com/FO9e9VC.gif')
@@ -652,7 +652,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
     @commands.max_concurrency(1, commands.BucketType.guild)
     async def log_edit_channels(self, ctx):
         """Shows an interactive menu to modify the server's logging channels."""
-        if ctx.guild.id not in self.client.log_channels:
+        if ctx.guild.id not in self.bot.log_channels:
             raise commands.BadArgument('This server doesn\'t have logging enabled.')
         view = ChannelsView(ctx)
         await view.start()
@@ -661,10 +661,10 @@ class GuildSettings(commands.Cog, name="Guild settings"):
     @log.command(name='all-events')
     @commands.has_permissions(manage_guild=True)
     async def log_all_events(self, ctx: CustomContext):
-        if ctx.guild.id not in self.client.log_channels:
+        if ctx.guild.id not in self.bot.log_channels:
             raise commands.BadArgument('This server doesn\'t have logging enabled.')
         await ctx.trigger_typing()
-        events = self.client.guild_loggings[ctx.guild.id]
+        events = self.bot.guild_loggings[ctx.guild.id]
         embed = discord.Embed(title='Logging events for this server', colour=discord.Colour.blurple(),
                               timestamp=ctx.message.created_at)
         message_events = [ctx.tick(events.message_delete, 'Message Delete'),
@@ -736,7 +736,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
         `#member-log`
         `#server-log`
         """
-        if ctx.guild in self.client.log_channels:
+        if ctx.guild in self.bot.log_channels:
             raise commands.BadArgument('This server already has Logging Set up!')
         c = await ctx.confirm('**Do you want to proceed?**'
                               '\nThis command will set up logging for you,'
@@ -767,16 +767,16 @@ class GuildSettings(commands.Cog, name="Guild settings"):
                 member_webhook = await member_channel.create_webhook(name='Stealth Bot logging', avatar=avatar)
                 server_channel = await cat.create_text_channel(name='server-log')
                 server_webhook = await server_channel.create_webhook(name='Stealth Bot logging', avatar=avatar)
-                self.client.log_channels[ctx.guild.id] = self.client.log_webhooks(join_leave=join_leave_webhook.url,
+                self.bot.log_channels[ctx.guild.id] = self.bot.log_webhooks(join_leave=join_leave_webhook.url,
                                                                             server=server_webhook.url,
                                                                             default=server_webhook.url,
                                                                             message=message_webhook.url,
                                                                             member=member_webhook.url,
                                                                             voice=voice_webhook.url)
-                self.client.guild_loggings[ctx.guild.id] = LoggingEventsFlags.all()
-                await self.client.db.execute('INSERT INTO guilds (guild_id) VALUES ($1) '
+                self.bot.guild_loggings[ctx.guild.id] = LoggingEventsFlags.all()
+                await self.bot.db.execute('INSERT INTO guilds (guild_id) VALUES ($1) '
                                           'ON CONFLICT (guild_id) DO NOTHING', ctx.guild.id)
-                await self.client.db.execute("""
+                await self.bot.db.execute("""
                 INSERT INTO log_channels(guild_id, default_channel, default_chid, message_channel, message_chid, 
                                          join_leave_channel, join_leave_chid, member_channel, member_chid,
                                          voice_channel, voice_chid, server_channel, server_chid) 
@@ -800,7 +800,7 @@ class GuildSettings(commands.Cog, name="Guild settings"):
                                           member_webhook.url, member_channel.id,
                                           voice_webhook.url, voice_channel.id,
                                           server_webhook.url, server_channel.id)
-                await self.client.db.execute('INSERT INTO logging_events(guild_id) VALUES ($1)'
+                await self.bot.db.execute('INSERT INTO logging_events(guild_id) VALUES ($1)'
                                           'ON CONFLICT (guild_id) DO NOTHING', ctx.guild.id)
                 try:
                     embed = discord.Embed(title='Successfully set up!', colour=discord.Colour.blurple(),
@@ -824,13 +824,13 @@ class GuildSettings(commands.Cog, name="Guild settings"):
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def welcome(self, ctx):
-        database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+        database = await self.bot.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not database['welcome_channel_id']:
             message = f"This server doesn't have a welcome channel set-up.\nTo set it up do `{ctx.prefix}welcome enable <channel>`"
 
         else:
-            channel = self.client.get_channel(database['welcome_channel_id'])
+            channel = self.bot.get_channel(database['welcome_channel_id'])
             message = f"This server has a welcome channel set up. It's {channel.mention}.\nTo remove it do `{ctx.prefix}welcome disable`"
 
         if not database['welcome_message']:
@@ -858,7 +858,7 @@ This is the welcome module. This module can log when a user joins the server and
         if not channel:
             channel = ctx.channel
 
-        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, channel.id)
+        await self.bot.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, channel.id)
 
         embed = discord.Embed(title="Welcome channel updated", description=f"""
 The welcome channel for this server has been set to {channel.mention}!
@@ -875,8 +875,8 @@ If you would like to set a custom welcome message do `{ctx.prefix}welcome messag
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def welcome_disable(self, ctx):
-        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, None)
-        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, None)
+        await self.bot.db.execute("INSERT INTO guilds (guild_id, welcome_channel_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_channel_id = $2", ctx.guild.id, None)
+        await self.bot.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, None)
 
         embed = discord.Embed(title="Welcome module disabled", description=f"""
 The welcome module has been disabled for this server.
@@ -911,7 +911,7 @@ To use placeholders, surround them with `[]`. (e.g. `[server]`)
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def welcome_message(self, ctx, *, message):
-        database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+        database = await self.bot.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not database['welcome_channel_id']:
             return await ctx.send(
@@ -920,7 +920,7 @@ To use placeholders, surround them with `[]`. (e.g. `[server]`)
         if len(message) > 500:
             return await ctx.send(f"Your message exceeded the 500-character limit!")
 
-        await self.client.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, message)
+        await self.bot.db.execute("INSERT INTO guilds (guild_id, welcome_message) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET welcome_message = $2", ctx.guild.id, message)
 
         embed = discord.Embed(title="Welcome message updated", description=f"""
 The welcome message for this server has been set to: {message}
@@ -935,7 +935,7 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def fake_message(self, ctx):
-        database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+        database = await self.bot.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not database['welcome_channel_id']:
             return await ctx.send(f"You need to set-up a welcome channel first!\nTo do that do `{ctx.prefix}welcome enable <channel>`")
@@ -964,13 +964,13 @@ To disable the welcome module do `{ctx.prefix}welcome disable`
     async def muterole(self, ctx: CustomContext, role: discord.Role = None):
         if ctx.invoked_subcommand is None:
             if role:
-                await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, role.id)
+                await self.bot.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, role.id)
 
                 embed = discord.Embed(title="Mute role updated", description=f"The mute-role for this server has been changed to {role.mention}", color=discord.Color.green())
 
                 return await ctx.send(embed=embed, color=False)
 
-            mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
+            mute_role = await self.bot.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
             if not mute_role:
                 raise errors.MuteRoleNotFound
@@ -994,7 +994,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def muterole_remove(self, ctx: CustomContext):
-        await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, None)
+        await self.bot.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, None)
 
         embed = discord.Embed(title="Mute role removed", description="The mute-role for this server has been removed.", color=discord.Color.green())
 
@@ -1007,7 +1007,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def muterole_create(self, ctx: CustomContext):
-        mute_role = await self.client.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
+        mute_role = await self.bot.db.fetchval("SELECT muted_role_id FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if mute_role:
             mute_role = ctx.guild.get_role(mute_role)
@@ -1025,7 +1025,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
 
         role = await ctx.guild.create_role(name="Muted", permissions=permissions, reason=f"Mute role created by {ctx.author} ({ctx.author.id})")
 
-        await self.client.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, role.id)
+        await self.bot.db.execute("INSERT INTO guilds(guild_id, muted_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET muted_role_id = $2", ctx.guild.id, role.id)
 
         modified = 0
         for channel in ctx.guild.channels:
@@ -1055,7 +1055,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @commands.bot_has_permissions(manage_guild=True)
     async def muterole_fix(self, ctx: CustomContext):
         await ctx.trigger_typing()
-        mute_role = await self.client.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
+        mute_role = await self.bot.db.fetchval('SELECT muted_role_id FROM guilds WHERE guild_id = $1', ctx.guild.id)
 
         if not mute_role:
             raise errors.MuteRoleNotFound
@@ -1102,7 +1102,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def verifyrole(self, ctx: CustomContext):
-        role = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+        role = await self.bot.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not role['verify_role_id']:
             return await ctx.send(f"This server doesn't have a verify role. To set it do `{ctx.prefix}verifyrole set <role>`")
@@ -1117,7 +1117,7 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def _set(self, ctx: CustomContext, role: discord.Role):
-        await self.client.db.execute("INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2", ctx.guild.id, role.id)
+        await self.bot.db.execute("INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2", ctx.guild.id, role.id)
         await ctx.send(f"Successfully set the verify role for this server to {role.mention}.")
 
     @verifyrole.command(
@@ -1125,5 +1125,5 @@ And to remove it, do `{ctx.prefix}mute-role remove`.
     @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(manage_guild=True)
     async def remove(self, ctx: CustomContext):
-        await self.client.db.execute("INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2", ctx.guild.id, None)
+        await self.bot.db.execute("INSERT INTO guilds (guild_id, verify_role_id) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET verify_role_id = $2", ctx.guild.id, None)
         await ctx.send(f"Successfully removed the verify role for this server.")

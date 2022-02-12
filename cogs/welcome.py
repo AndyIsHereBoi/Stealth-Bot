@@ -37,7 +37,7 @@ def setup(client):
 class WelcomeCog(commands.Cog):
     """Welcome system"""
     def __init__(self, client):
-        self.client = client
+        self.bot = client
         self.hidden = True
         
         self.select_emoji = "👋"
@@ -46,11 +46,11 @@ class WelcomeCog(commands.Cog):
         self._invites_ready = asyncio.Event()
         self._dict_filled = asyncio.Event()
 
-        self.client.invites = {}
-        self.client.get_invite = self.get_invite
-        self.client.wait_for_invites = self.wait_for_invites
+        self.bot.invites = {}
+        self.bot.get_invite = self.get_invite
+        self.bot.wait_for_invites = self.wait_for_invites
 
-        self.client.loop.create_task(self.__ainit__())
+        self.bot.loop.create_task(self.__ainit__())
         
     def make_ordinal(self, n):
         '''
@@ -68,11 +68,11 @@ class WelcomeCog(commands.Cog):
         return str(n) + suffix
 
     async def __ainit__(self):
-        await self.client.wait_until_ready()
+        await self.bot.wait_until_ready()
 
-        for guild in self.client.guilds:
+        for guild in self.bot.guilds:
             fetched = await self.fetch_invites(guild)
-            invites = self.client.invites[guild.id] = fetched or {}
+            invites = self.bot.invites[guild.id] = fetched or {}
 
             if "VANITY_URL" in guild.features:
                 with contextlib.suppress(discord.HTTPException):
@@ -87,17 +87,17 @@ class WelcomeCog(commands.Cog):
 
     @tasks.loop()
     async def delete_expired(self):
-        if not self.client.expiring_invites:
+        if not self.bot.expiring_invites:
             await self._dict_filled.wait()
             
-        invites = self.client.expiring_invites
+        invites = self.bot.expiring_invites
         expiry_time = min(invites.keys())
         inv = invites[expiry_time]
-        sleep_time = expiry_time - (int(time.time()) - self.client.last_update)
-        self.client.shortest_invite = expiry_time
+        sleep_time = expiry_time - (int(time.time()) - self.bot.last_update)
+        self.bot.shortest_invite = expiry_time
         await asyncio.sleep(sleep_time)
         self.delete_invite(inv)
-        self.client.expiring_invites.pop(self.client.shortest_invite, None)
+        self.bot.expiring_invites.pop(self.bot.shortest_invite, None)
 
     @delete_expired.before_loop
     async def wait_for_list(self):
@@ -105,32 +105,32 @@ class WelcomeCog(commands.Cog):
 
     @tasks.loop(minutes=POLL_PERIOD)
     async def update_invite_expiry(self):
-        flattened = [invite for inner in self.client.invites.values() for invite in inner.values()]
+        flattened = [invite for inner in self.bot.invites.values() for invite in inner.values()]
         current = time.time()
-        self.client.expiring_invites = {
+        self.bot.expiring_invites = {
             inv.max_age - int(current - inv.created_at.replace(tzinfo=datetime.timezone.utc).timestamp()): inv
             for inv in flattened if inv.max_age != 0}
 
         exists = True
 
         try:
-            self.client.shortest_invite = self.client.shortest_invite - int(time.time() - self.client.last_update)
+            self.bot.shortest_invite = self.bot.shortest_invite - int(time.time() - self.bot.last_update)
 
         except AttributeError:
             exists = False
 
         if self.update_invite_expiry.current_loop == 0:
-            self.client.last_update = int(current)
+            self.bot.last_update = int(current)
             self._invites_ready.set()
 
-        elif exists and self.client.expiring_invites and self.client.shortest_invite > min(self.client.expiring_invites.keys()):
+        elif exists and self.bot.expiring_invites and self.bot.shortest_invite > min(self.bot.expiring_invites.keys()):
             self.delete_expired.restart()
-            self.client.last_update = int(current)
+            self.bot.last_update = int(current)
 
         else:
-            self.client.last_update = int(current)
+            self.bot.last_update = int(current)
 
-        if self.client.expiring_invites:
+        if self.bot.expiring_invites:
             self._dict_filled.set()
             self._dict_filled.clear()
 
@@ -139,7 +139,7 @@ class WelcomeCog(commands.Cog):
         entry_found.pop(invite.code, None)
 
     def get_invite(self, code: str) -> Optional[discord.Invite]:
-        for invites in self.client.invites.values():
+        for invites in self.bot.invites.values():
             find = invites.get(code)
 
             if find:
@@ -147,7 +147,7 @@ class WelcomeCog(commands.Cog):
         return None
 
     def get_invites(self, guild_id: int) -> Optional[Dict[str, discord.Invite]]:
-        return self.client.invites.get(guild_id, None)
+        return self.bot.invites.get(guild_id, None)
 
     async def wait_for_invites(self) -> None:
         if not self._invites_ready.is_set():
@@ -167,16 +167,16 @@ class WelcomeCog(commands.Cog):
         while seconds_passed < 300:
             seconds_passed += 1
 
-            if guild in self.client.guilds:
+            if guild in self.bot.guilds:
                 return
             await asyncio.sleep(1)
 
-        if guild not in self.client.guilds:
-            self.client.invites.pop(guild.id, None)
+        if guild not in self.bot.guilds:
+            self.bot.invites.pop(guild.id, None)
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite: discord.Invite) -> None:
-        cached = self.client.invites.get(invite.guild.id, None)
+        cached = self.bot.invites.get(invite.guild.id, None)
 
         if cached:
             cached[invite.code] = invite
@@ -187,7 +187,7 @@ class WelcomeCog(commands.Cog):
         
     @commands.Cog.listener()
     async def on_invite_update(self, member: discord.Member, invite: discord.Invite) -> None:
-        database = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", member.guild.id)
+        database = await self.bot.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", member.guild.id)
         
         if not database:
             return
@@ -206,13 +206,13 @@ class WelcomeCog(commands.Cog):
         message = message.replace("[count]", f"{member.guild.member_count}").replace("[ordinal-count]", f"{self.make_ordinal(member.guild.member_count)}")
         message = message.replace("[code]", f"{str(invite.code)}").replace("[full-code]", f"discord.gg/{invite.code}").replace("[full-url]", f"{str(invite.url)}").replace("[inviter]", f"{str(((member.guild.get_member(invite.inviter.id).display_name) or invite.inviter.name) if invite.inviter else 'N/A')}").replace("[full-inviter]", f"{str(invite.inviter if invite.inviter else 'N/A')}").replace("[inviter-mention]", f"{str(invite.inviter.mention if invite.inviter else 'N/A')}")
         
-        channel = self.client.get_channel(database['welcome_channel_id'])
+        channel = self.bot.get_channel(database['welcome_channel_id'])
         
         await channel.send(message)
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel) -> None:
-        invites = self.client.invites.get(channel.guild.id)
+        invites = self.bot.invites.get(channel.guild.id)
 
         if invites:
             for invite in list(invites.values()):
@@ -222,15 +222,15 @@ class WelcomeCog(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild) -> None:
         invites = await self.fetch_invites(guild) or {}
-        self.client.invites[guild.id] = invites
+        self.bot.invites[guild.id] = invites
 
     @commands.Cog.listener()
     async def on_guild_available(self, guild: discord.Guild) -> None:
-        self.client.invites[guild.id] = await self.fetch_invites(guild) or {}
+        self.bot.invites[guild.id] = await self.fetch_invites(guild) or {}
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild) -> None:
-        self.client.loop.create_task(self._schedule_deletion(guild))
+        self.bot.loop.create_task(self._schedule_deletion(guild))
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
@@ -238,11 +238,11 @@ class WelcomeCog(commands.Cog):
 
         if invites:
             invites = sorted(invites.values(), key=lambda i: i.code)
-            cached = sorted(self.client.invites[member.guild.id].values(),
+            cached = sorted(self.bot.invites[member.guild.id].values(),
                             key=lambda i: i.code)
 
             for old, new in zip(cached, invites):
                 if old.uses < new.uses:
-                    self.client.invites[member.guild.id][old.code] = new
-                    self.client.dispatch("invite_update", member, new)
+                    self.bot.invites[member.guild.id][old.code] = new
+                    self.bot.dispatch("invite_update", member, new)
                     break

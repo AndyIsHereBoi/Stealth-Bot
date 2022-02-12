@@ -108,7 +108,7 @@ class Misc(commands.Cog):
     """Commands that don't belong under any category."""
 
     def __init__(self, client):
-        self.client = client
+        self.bot = client
         self.select_emoji = "<:gear:899622456191483904>"
         self.select_brief = "Commands that don't belong under any category."
 
@@ -215,7 +215,7 @@ class Misc(commands.Cog):
         help="<:rich_presence:895688440887246858> | Shows you a list of the bot's prefixes",
         aliases=['prefix'])
     async def prefixes(self, ctx: CustomContext):
-        prefixes = await self.client.get_pre(self.client, ctx.message, raw_prefix=True)
+        prefixes = await self.bot.get_pre(self.bot, ctx.message, raw_prefix=True)
         embed = discord.Embed(title="Here's a list of my prefixes for this server:", description=ctx.me.mention + '\n' + '\n'.join(prefixes))
 
         return await ctx.send(embed=embed)
@@ -226,7 +226,7 @@ class Misc(commands.Cog):
         help="Adds a prefix to the bot's prefixes",
         aliases=['a', 'create'])
     async def prefixes_add(self, ctx: CustomContext, new: str):
-        old = list(await self.client.get_pre(self.client, ctx.message, raw_prefix=True))
+        old = list(await self.bot.get_pre(self.bot, ctx.message, raw_prefix=True))
 
         if len(new) > 50:
             raise errors.TooLongPrefix
@@ -236,10 +236,10 @@ class Misc(commands.Cog):
 
         if new not in old:
             old.append(new)
-            await self.client.db.execute("INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
+            await self.bot.db.execute("INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
                                          ctx.guild.id, old)
 
-            self.client.prefixes[ctx.guild.id] = old
+            self.bot.prefixes[ctx.guild.id] = old
 
             return await ctx.send(f"Successfully added `{new}` to the prefixes.\nMy prefixes are: `{'`, `'.join(old)}`")
 
@@ -252,14 +252,14 @@ class Misc(commands.Cog):
         help="Removes a prefix from the bot's prefixes",
         aliases=['r', 'delete'])
     async def prefixes_remove(self, ctx: CustomContext, prefix: str) -> discord.Message:
-        old = list(await self.client.get_pre(self.client, ctx.message, raw_prefix=True))
+        old = list(await self.bot.get_pre(self.bot, ctx.message, raw_prefix=True))
 
         if prefix in old:
             old.remove(prefix)
-            await self.client.db.execute("INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
+            await self.bot.db.execute("INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
                                          ctx.guild.id, old)
 
-            self.client.prefixes[ctx.guild.id] = old
+            self.bot.prefixes[ctx.guild.id] = old
 
             if prefix == "sb!":
                 return await ctx.send("You can't remove that prefix!")
@@ -278,9 +278,9 @@ class Misc(commands.Cog):
         help="Clears the bot's prefixes",
         aliases=['c', 'deleteall'])
     async def prefixes_clear(self, ctx: CustomContext) -> discord.Message:
-        await self.client.db.execute("INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
+        await self.bot.db.execute("INSERT INTO guilds(guild_id, prefix) VALUES ($1, $2) ON CONFLICT (guild_id) DO UPDATE SET prefix = $2",
                                      ctx.guild.id, None)
-        self.client.prefixes[ctx.guild.id] = self.client.PRE
+        self.bot.prefixes[ctx.guild.id] = self.bot.PRE
 
         return await ctx.send("Cleared prefixes!")
 
@@ -302,7 +302,7 @@ class Misc(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.member)
     async def verify(self, ctx: CustomContext) -> discord.Message:
-        record = await self.client.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
+        record = await self.bot.db.fetchrow("SELECT * FROM guilds WHERE guild_id = $1", ctx.guild.id)
 
         if not record['verify_role_id']:
             return await ctx.send(f"This server doesn't have a verify role. To set it do `{ctx.prefix}verifyrole set <role>`")
@@ -312,14 +312,14 @@ class Misc(commands.Cog):
         def check(m):
             return m.author.id == ctx.author.id and m.guild.id == ctx.guild.id and m.channel.id == ctx.channel.id
 
-        request = await self.client.session.get('https://api.dagpi.xyz/data/captcha', headers={'Authorization': yaml_data['DAGPI_TOKEN']})
+        request = await self.bot.session.get('https://api.dagpi.xyz/data/captcha', headers={'Authorization': yaml_data['DAGPI_TOKEN']})
         json = await request.json()
 
         embed = discord.Embed(title="Solve the captcha below to verify yourself!")
         embed.set_image(url=json['image'])
 
         msg = await ctx.send(embed=embed)
-        message = await self.client.wait_for("message", check=check)
+        message = await self.bot.wait_for("message", check=check)
 
         if discord.utils.remove_markdown(message.content.lower()) != json['answer']:
             with contextlib.suppress(discord.Forbidden, discord.HTTPException): await msg.delete()

@@ -522,7 +522,7 @@ def setup(client):
 class Help(commands.Cog):
     """The help command, how did you find this though..."""
     def __init__(self, client):
-        self.client = client
+        self.bot = client
         self.hidden = True
 
         self.select_emoji = "<:info:888768239889424444>"

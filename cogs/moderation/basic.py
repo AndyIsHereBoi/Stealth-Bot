@@ -44,6 +44,7 @@ class MemberID(commands.Converter):
             raise commands.BadArgument('You cannot do this action on this user due to role hierarchy.')
         return m
 
+
 class BannedMember(commands.Converter):
     async def convert(self, ctx: CustomContext, argument):
         await ctx.trigger_typing()
@@ -80,6 +81,16 @@ class BannedMember(commands.Converter):
         if entity is None:
             raise commands.BadArgument('This member has not been banned before.')
         return entity
+
+
+class Reason(commands.Converter):
+    async def convert(self, ctx, argument):
+        ret = f'{ctx.author} (ID: {ctx.author.id}): {argument}'
+
+        if len(ret) > 512:
+            reason_max = 512 - len(ret) + len(argument)
+            raise commands.BadArgument(f'Reason is too long ({len(argument)}/{reason_max})')
+        return ret
 
 
 class Basic(ModerationBase):
@@ -119,9 +130,9 @@ class Basic(ModerationBase):
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def softban(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User],
-                      delete_days: typing.Optional[int] = 1, *, reason: typing.Optional[str] = 1):
-        if reason is None or len(reason) > 500:
-            reason = "Reason was not provided or it exceeded the 500-character limit."
+                      delete_days: typing.Optional[int] = 1, *, reason: Reason):
+        if reason is None:
+            reason = f'Action done by {ctx.author} (ID: {ctx.author.id})'
 
         bot_can_execute_action(ctx, member)
 
@@ -141,9 +152,9 @@ class Basic(ModerationBase):
         brief="kick @Noob\nkick @Gamer Asked for it")
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, embed_links=True, kick_members=True)
-    async def kick(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, reason=None):
-        if reason is None or len(reason) > 500:
-            reason = "Reason was not provided or it exceeded the 500-character limit."
+    async def kick(self, ctx: CustomContext, member: typing.Union[discord.Member, discord.User], *, reason: Reason):
+        if reason is None:
+            reason = f'Action done by {ctx.author} (ID: {ctx.author.id})'
 
         bot_can_execute_action(ctx, member)
 

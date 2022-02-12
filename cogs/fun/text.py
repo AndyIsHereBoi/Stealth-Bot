@@ -6,17 +6,16 @@ import discord
 from ._base import FunBase
 from discord.ext import commands, owoify
 from helpers.context import CustomContext
-from discord.ext.commands.cooldowns import BucketType
+
+def text(text, *, style: list, normal: list = None):
+    normal = normal or ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+                        's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    sub = dict(zip(normal, style))
+    pattern = '|'.join(sorted(re.escape(k) for k in sub))
+
+    return re.sub(pattern, lambda m: sub.get(m.group(0)), text, flags=re.IGNORECASE)
 
 class Text(FunBase):
-
-    def text(text, *, style: list, normal: list = None):
-        normal = normal or ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-                            's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-        sub = dict(zip(normal, style))
-        pattern = '|'.join(sorted(re.escape(k) for k in sub))
-
-        return re.sub(pattern, lambda m: sub.get(m.group(0)), text, flags=re.IGNORECASE)
 
     @commands.command(
         help="Fancifies the given text 𝓵𝓲𝓴𝓮 𝓽𝓱𝓲𝓼.",
