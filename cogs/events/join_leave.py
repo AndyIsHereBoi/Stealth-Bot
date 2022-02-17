@@ -13,10 +13,16 @@ class JoinLeave(EventsBase):
             channels = [channel for channel in guild.text_channels if channel.permissions_for(guild.me).send_messages]
             channel = channels[0]
 
+        if len([m for m in guild.members if m.bot]) > len([m for m in guild.members if not m.bot]):
+            fuckoffEmbed = discord.Embed(title="Fuck off!", description=f"""
+I have detected that this server has a bot count higher than the human count.
+So I will kindly have to say, fuck off and leave.
+            """)
+
         welcomeEmbed = discord.Embed(title="Thank you for adding `Stealth Bot` to your server", description="""
-    We really appreciate you adding `Stealth Bot` to your server.
-    You can do `sb!help` to view a list of commands.
-    To add a prefix simply do `sb!prefix add <prefix>`.
+We really appreciate you adding `Stealth Bot` to your server.
+You can do `sb!help` to view a list of commands.
+To add a prefix simply do `sb!prefix add <prefix>`.
                             """, timestamp=discord.utils.utcnow(), color=0x2F3136)
         welcomeEmbed.set_thumbnail(url=self.bot.user.avatar.url)
 
@@ -42,20 +48,6 @@ class JoinLeave(EventsBase):
 
         channel = self.bot.get_channel(914145032406196245)
         await channel.send(embed=embed)
-
-        if len([m for m in guild.members if m.bot]) > 48:
-            embed = discord.Embed(title="Possible bot farm!", description=f"""
-{guild.name} ({guild.id}) could be a bot farm!
-
-{len(guild.members):,} members
-{len([m for m in guild.members if m.bot]):,} bots
-{len([m for m in guild.members if not m.bot]):,} humans
-                                    """, color=discord.Color.red())
-
-            if guild.icon:
-                embed.set_thumbnail(url=f"{guild.icon}")
-
-            await channel.send(embed=embed)
 
     @commands.Cog.listener("on_guild_remove")
     async def private_log_on_guild_remove(self, guild: discord.Guild):

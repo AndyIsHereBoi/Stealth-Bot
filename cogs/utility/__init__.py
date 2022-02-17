@@ -5,9 +5,10 @@ from .list import _List
 from .misc import Misc
 from .rtfm import RTFM
 from .todo import Todo
+from .wikipedia import Wikipedia
 
 
-class Utility(AFK, Bot, Info, _List, Misc, RTFM, Todo):
+class Utility(AFK, Bot, Info, _List, Misc, RTFM, Todo, Wikipedia):
     pass
 
 
