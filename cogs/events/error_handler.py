@@ -518,12 +518,12 @@ class ErrorHandler(EventsBase):
         elif isinstance(error, IndexError):
             name = "Python error"
             icon_url = None
-            message = error
+            message = error.__traceback__
 
         elif isinstance(error, KeyError):
             name = "Python error"
             icon_url = None
-            message = error
+            message = error.__traceback__
 
         else:
             name = None
