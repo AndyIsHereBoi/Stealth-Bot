@@ -31,8 +31,7 @@ class EventsBase(commands.Cog):
         traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
 
-        data = f"""
-Author: {ctx.author} ({ctx.author.id})
+        data = f"""Author: {ctx.author} ({ctx.author.id})
 Channel: {ctx.channel} ({ctx.channel.id})
 Guild: {ctx.guild} ({ctx.guild.id})
 Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
@@ -42,28 +41,14 @@ Role position: {ctx.me.top_role.position}
 
 Message: {ctx.message}"""
 
-        send = f"""
-```yaml
-{data}
-```
-```py
-Command {ctx.command} raised the following error:
-{traceback_string}
-```"""
+        send = f"```yaml\n{data}\n```\n```py\nCommand {ctx.command} raised the following error:\n{traceback_string}\n```"
 
         try:
             if len(send) < 2000:
                 await channel.send(send, view=PersistentExceptionView(ctx.bot))
 
             else:
-                await channel.send(f"""
-```yaml
-{data}
-```
-```py
-Command {ctx.command} raised the following error:
-```
-                """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"), view=PersistentExceptionView(ctx.bot))
+                await channel.send(f"```yaml\n{data}\n```\n```py\nCommand {ctx.command} raised the following error:\n```", file=discord.File(io.StringIO(traceback_string), filename="traceback.py"), view=PersistentExceptionView(ctx.bot))
 
         finally:
             print(f"{ctx.command} raised an unexpected error")
