@@ -32,14 +32,14 @@ class EventsBase(commands.Cog):
 
 
         data = f"""Author: {ctx.author} ({ctx.author.id})
-Channel: {ctx.channel} ({ctx.channel.id})
-Guild: {ctx.guild} ({ctx.guild.id})
-Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
-
-Bot admin?: {ctx.me.guild_permissions.administrator}
-Role position: {ctx.me.top_role.position}
-
-Message: {ctx.message}"""
+                Channel: {ctx.channel} ({ctx.channel.id})
+                Guild: {ctx.guild} ({ctx.guild.id})
+                Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
+                
+                Bot admin?: {ctx.me.guild_permissions.administrator}
+                Role position: {ctx.me.top_role.position}
+                
+                Message: {ctx.message.content}"""
 
         send = f"```yaml\n{data}\n```\n```py\nCommand {ctx.command} raised the following error:\n{traceback_string}\n```"
 
