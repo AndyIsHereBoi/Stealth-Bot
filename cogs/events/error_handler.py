@@ -534,20 +534,19 @@ class ErrorHandler(EventsBase):
 
             traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
-            embed = discord.Embed(
-                description=f"An unexpected error occurred. The developers have been notified about this and will fix it ASAP.")
+            embed = discord.Embed( description=f"An unexpected error occurred.\nThe developers have been notified about this and will fix it ASAP.")
             embed.set_author(name="Unexpected error occurred", icon_url='https://i.imgur.com/9gQ6A5Y.png')
 
             await ctx.send(embed=embed)
 
-            await self.send_unexpected_error(ctx, error)
+            return await self.send_unexpected_error(ctx, error)
 
         embed = discord.Embed(description=message)
         icon_urlL = icon_url or 'https://i.imgur.com/9gQ6A5Y.png'
         nameL = name or 'Error occurred'
         embed.set_author(name=nameL, icon_url=icon_urlL)
 
-        await ctx.send(embed=embed)
+        return await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
