@@ -540,47 +540,7 @@ class ErrorHandler(EventsBase):
 
             await ctx.send(embed=embed)
 
-            channel = self.bot.get_channel(914145662520659998)
-
-            data = f"""
-    Author: {ctx.author} ({ctx.author.id})
-    Channel: {ctx.channel} ({ctx.channel.id})
-    Guild: {ctx.guild} ({ctx.guild.id})
-    Owner: {ctx.guild.owner} ({ctx.guild.owner.id})
-
-    Bot admin?: {ctx.me.guild_permissions.administrator}
-    Role position: {ctx.me.top_role.position}
-
-    Message: {ctx.message}"""
-
-            send = f"""
-    ```yaml
-    {data}
-    ```
-    ```py
-    Command {ctx.command} raised the following error:
-    {traceback_string}
-    ```"""
-
-            try:
-                if len(send) < 2000:
-                    await channel.send(send, view=PersistentExceptionView(ctx.bot))
-
-                else:
-                    await channel.send(f"""
-    ```yaml
-    {data}
-    ```
-    ```py
-    Command {ctx.command} raised the following error:
-    ```
-                                """, file=discord.File(io.StringIO(traceback_string), filename="traceback.py"),
-                                       view=PersistentExceptionView(ctx.bot))
-
-            finally:
-                print(f"{ctx.command} raised an unexpected error")
-
-            return
+            await self.send_unexpected_error(ctx, error)
 
         embed = discord.Embed(description=message)
         icon_urlL = icon_url or 'https://i.imgur.com/9gQ6A5Y.png'
