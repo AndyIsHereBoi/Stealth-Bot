@@ -21,11 +21,12 @@ class Buttons(discord.ui.View):
 
     @discord.ui.button(label="Traceback", emoji=None, style=discord.ButtonStyle.blurple)
     async def view_traceback(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.send_message("hi", ephemeral=True)
+        return await interaction.response.send_message(self.traceback, ephemeral=True)
 
     @discord.ui.button(label="Delete", emoji=None, style=discord.ButtonStyle.blurple)
     async def delete_message(self, button: discord.ui.Button, interaction: discord.Interaction):
         await interaction.message.delete()
+        return await interaction.response.send_message("Message deleted.", ephemeral=True)
 
 
 class ErrorHandler(EventsBase):
