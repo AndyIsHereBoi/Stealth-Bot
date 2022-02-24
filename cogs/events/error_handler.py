@@ -21,7 +21,11 @@ class Buttons(discord.ui.View):
 
     @discord.ui.button(label="Traceback", emoji=None, style=discord.ButtonStyle.blurple)
     async def view_traceback(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.send_message(content=self.traceback, ephermal=True)
+        await interaction.response.send_message("hi")
+
+    @discord.ui.button(label="Delete", emoji=None, style=discord.ButtonStyle.blurple)
+    async def delete_message(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.message.delete()
 
 
 class ErrorHandler(EventsBase):
@@ -170,30 +174,22 @@ class ErrorHandler(EventsBase):
             pass
 
         else:
-            name = None
-            icon_url = None
-            message = None
-
-            channel = self.bot.get_channel(914145662520659998)
-
-            traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
-
+            # unknown error
+            embed = discord.Embed(title=f"<:error:888779034408927242> Command {ctx.command.name} raised an **unknown** error")
             embed = discord.Embed( description=f"An unexpected error occurred.\nThe developers have been notified about this and will fix it ASAP.")
-            embed.set_author(name="Unexpected error occurred", icon_url='https://i.imgur.com/9gQ6A5Y.png')
 
-            await ctx.send(embed=embed)
-
+            await ctx.send(embed=embed, footer=False, view=Buttons("".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__)), 180))
             return await self.send_unexpected_error(ctx, error)
 
-        traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
 
+        # known error
         embed = discord.Embed(title=f"<:error:888779034408927242> Command {ctx.command.name} raised an error", description=f"""
 ```prolog
 {error}
 ```
         """)
 
-        return await ctx.send(embed=embed, footer=False, view=Buttons(traceback_string, 180))
+        return await ctx.send(embed=embed, footer=False, view=Buttons("".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__)), 180))
 
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
