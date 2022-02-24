@@ -2,153 +2,85 @@ import discord
 from discord.ext import commands
 
 class UnknownError(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "An unknown error has occured."
+        super().__init__(message)
 
 class CommandDoesntExist(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The command you're trying to use doesn't exist."
+        super().__init__(message)
 
 class AuthorBlacklisted(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "You're blacklisted from using this bot."
+        super().__init__(message)
 
 class Forbidden(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "You don't have permission to use this command."
+        super().__init__(message)
 
 class BotMaintenance(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The bot is currently undergoing maintenance."
+        super().__init__(message)
 
 class NoBannedMembers(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "There are no banned members."
+        super().__init__(message)
 
 class TooLongPrefix(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The prefix you entered is too long."
+        super().__init__(message)
 
 class EmptyTodoList(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The todo list is empty."
+        super().__init__(message)
 
 class NoSpotifyStatus(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "There is no status set for Spotify."
+        super().__init__(message)
 
 class InvalidThread(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The thread you're trying to use is invalid."
+        super().__init__(message)
 
 class TooManyPrefixes(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "Too many prefixes."
+        super().__init__(message)
 
 class PrefixAlreadyExists(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "That prefix already exists."
+        super().__init__(message)
 
 class PrefixDoesntExist(commands.CheckFailure):
-    pass
-
-class KillYourself(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "That prefix doesn't exist."
+        super().__init__(message)
 
 class InvalidError(commands.CheckFailure):
-    pass
-
-class NotStartedEconomy(commands.CheckFailure):
-    pass
-
-########################################################################################################################
-##### MUSIC ERRORS #####
-########################################################################################################################
-
-class NoPlayer(commands.CheckFailure):
-    pass
-
-class FullVoiceChannel(commands.CheckFailure):
-    pass
-
-class NotAuthorized(commands.CheckFailure):
-    pass
-
-class IncorrectChannelError(commands.CheckFailure):
-    pass
-
-class IncorrectTextChannelError(commands.CheckFailure):
-    pass
-
-class AlreadyConnectedToChannel(commands.CheckFailure):
-    pass
-
-class NoVoiceChannel(commands.CheckFailure):
-    pass
-
-class QueueIsEmpty(commands.CheckFailure):
-    pass
-
-class NoCurrentTrack(commands.CheckFailure):
-    pass
-
-class PlayerIsAlreadyPaused(commands.CheckFailure):
-    pass
-
-class PlayerIsNotPaused(commands.CheckFailure):
-    pass
-
-class NoMoreTracks(commands.CheckFailure):
-    pass
-
-class InvalidTimeString(commands.CheckFailure):
-    pass
-
-class NoPerms(commands.CheckFailure):
-    pass
-
-class NoConnection(commands.CheckFailure):
-    pass
-
-class AfkChannel(commands.CheckFailure):
-    pass
-
-class NotAuthorized(commands.CheckFailure):
-    pass
-
-class InvalidTrack(commands.CheckFailure):
-    pass
-
-class InvalidPosition(commands.CheckFailure):
-    pass
-
-class InvalidVolume(commands.CheckFailure):
-    pass
-
-class InvalidSeek(commands.CheckFailure):
-    pass
-    
-class AlreadyVoted(commands.CheckFailure):
-    pass
-
-class NothingToShuffle(commands.CheckFailure):
-    pass
-
-class NoLyrics(commands.CheckFailure):
-    pass
-
-class ActiveVote(commands.CheckFailure):
-    pass
-
-class LoadFailed(commands.CheckFailure):
-    pass
-
-class NoMatches(commands.CheckFailure):
-    pass
-
-class InvalidInput(commands.CheckFailure):
-    pass
-
-class LoopDisabled(commands.CheckFailure):
-    pass
-
-class TrackFailed(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "Invalid error."
+        super().__init__(message)
 
 ########################################################################################################################
 ##### MUTE ROLE ERRORS #####
 ########################################################################################################################
 
 class MuteRoleNotFound(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The mute role doesn't exist."
+        super().__init__(message)
 
 class MuteRoleAlreadyExists(commands.CheckFailure):
-    pass
+    def __init__(self):
+        message = "The mute role already exists."
+        super().__init__(message)
