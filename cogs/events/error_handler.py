@@ -21,7 +21,7 @@ class Buttons(discord.ui.View):
 
     @discord.ui.button(label="Traceback", emoji=None, style=discord.ButtonStyle.blurple)
     async def view_traceback(self, button: discord.ui.Button, interaction: discord.Interaction):
-        return await interaction.response.send_message(f"```py\n{self.traceback}\n```", ephemeral=True)
+        return await interaction.response.send_message(f"Read the last line for proper info.\n```py\n{self.traceback}\n```", ephemeral=True)
 
     @discord.ui.button(label="Delete", emoji=None, style=discord.ButtonStyle.blurple)
     async def delete_message(self, button: discord.ui.Button, interaction: discord.Interaction):
