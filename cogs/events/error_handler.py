@@ -210,7 +210,7 @@ class ErrorHandler(EventsBase):
 
         embed = discord.Embed(title=f"<:error:888779034408927242> Command {ctx.command.name} raised an error", description=f"""
 ```prolog
-{traceback_string}
+{error}
 ```
         """)
 
