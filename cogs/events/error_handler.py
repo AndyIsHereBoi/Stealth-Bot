@@ -193,7 +193,7 @@ class ErrorHandler(EventsBase):
 ```
         """)
 
-        return await ctx.send(embed=embed, footer=False, view=Buttons(ctx, traceback_string))
+        return await ctx.send(embed=embed, footer=False, view=Buttons(traceback_string, 180))
 
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
