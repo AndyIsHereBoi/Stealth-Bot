@@ -95,6 +95,23 @@ class NewsCentre(discord.ui.View):
         color = random.choice(colors)
 
         embed = discord.Embed(title=f"Latest news", description=f"""
+__**<a:stealth_bot_pat:888354636258496522> BIG NEWS (<t:1645704000:R>)**__
+We are not re-writing the bot in hikari! We are going to re-write it in a new fork!
+And also, the bot will no longer be called **Stealth Bot**, it'll be called **Spooki!**
+Everything is going to be made from scratch, so please be patient.
+Each command will be unique and will just be a lot better.
+You cannot invite the bot yet, but we will announce it in every server the bot is in.
+This bot will no longer be maintained and may be offline at any time.
+Don't expect any updates, only minor bug fixes.
+
+__**<:scroll:904038785921187911> Logging system (<t:1645704000:R>)**__
+The logging system is now way better and uses webhooks!
+Do **{self.ctx.prefix}help log** for more.
+
+__**<a:music:888778105844563988> Music system REMOVED (<t:1645704000:R>)**__
+The logging system is now way better and uses webhooks!
+Do **{self.ctx.prefix}help log** for more.
+
 __**<:google_turtle:787675845371363338> Translate command fixed & improved (<t:1639819756:R>)**__ 
 The translate command has been fixed and improved! It's very fast!
 To try it out, do **{self.ctx.prefix}help translate**.
@@ -102,19 +119,10 @@ To try it out, do **{self.ctx.prefix}help translate**.
 __**:mute: Mute commands! (<t:1639338972:R>)**__
 New mute commands have been added! To manage your mute role, do **{self.ctx.prefix}help muterole**.
 To see the actual mute commands, do **{self.ctx.prefix}help mod** and go to the last page.
-    
-__**<a:music:888778105844563988> Music system improved (<t:1637504100:R>)**__
-The music system has been improved and is now way faster and smoother!
-Do **{self.ctx.prefix}help Music** to try it out!
 
 __**:wave: New welcoming system (<t:1637247577:R>)**__
 With this you can welcome new members that join your server!
 Do **{self.ctx.prefix}help welcome** for more info.
-
-__**<:scroll:904038785921187911> Logging system (<t:1637074743:R>)**__
-The logging system can log various actions in your server.
-For more info, do **{self.ctx.prefix}help log**.
-NOTE: This is in beta and some bugs may occur.
                               """, color=color)
 
         embed.set_footer(text=f"To continue browsing the help menu, press the \"Go back\" button.")
@@ -233,9 +241,7 @@ But you can only use **{self.usable_commands}** of those in this server.
         """, inline=False)
 
         embed.add_field(name=f"**Important news**", value=f"""
-The developers of this bot are currently taking a break.
-Don't expect many updates, only bug fixes.
-We will be back soon!
+CLICK THE NEWS BUTTON!!!
         """, inline=False)
 
         return embed
