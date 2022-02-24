@@ -14,38 +14,14 @@ from discord.ext import commands
 from helpers.context import CustomContext
 from helpers.paginator import PersistentExceptionView
 
-def join_literals(annotation: inspect.Parameter.annotation, return_list: bool = False):
-    if typing.get_origin(annotation) is typing.Literal:
-        arguments = annotation.__args__
+class Buttons(discord.ui.View):
+    def __init__(self, traceback_, timeout=180):
+        self.traceback = traceback_
+        super().__init__(timeout=timeout)
 
-        if return_list is False:
-            return '[' + '|'.join(arguments) + ']'
-
-        else:
-            return list(arguments)
-
-    return None
-
-
-def conv_n(tuple_acc):
-    returning = ""
-    op_list_v = []
-    op_list_n = list(tuple_acc)
-
-    for i in range(len(op_list_n)):
-        op_list_v.append(op_list_n[i].__name__.replace("Converter", ""))
-
-    for i in range(len(op_list_v)):
-        if i + 3 <= len(op_list_v):
-            returning += f"{op_list_v[i].lower()}, "
-
-        elif i + 2 <= len(op_list_v):
-            returning += f"{op_list_v[i].lower()} or "
-
-        else:
-            returning += f"{op_list_v[i].lower()}"
-
-    return returning
+    @discord.ui.button(label="Traceback", emoji=None, style=discord.ButtonStyle.blurple)
+    async def view_traceback(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message(content=self.traceback, ephermal=True)
 
 
 class ErrorHandler(EventsBase):
@@ -56,7 +32,10 @@ class ErrorHandler(EventsBase):
 
         error = getattr(error, "original", error)
 
-        if isinstance(error, errors.MuteRoleNotFound):
+        if isinstance(error, commands.CommandNotFound):
+            pass
+
+        elif isinstance(error, errors.MuteRoleNotFound):
             pass
 
         elif isinstance(error, errors.MuteRoleAlreadyExists):
@@ -214,7 +193,7 @@ class ErrorHandler(EventsBase):
 ```
         """)
 
-        return await ctx.send(embed=embed, footer=False)
+        return await ctx.send(embed=embed, footer=False, view=Buttons(ctx, traceback_string))
 
     @commands.Cog.listener()
     async def on_command(self, ctx: CustomContext):
