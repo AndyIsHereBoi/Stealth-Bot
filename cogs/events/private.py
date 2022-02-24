@@ -65,7 +65,7 @@ class Private(EventsBase):
 
     @commands.Cog.listener('on_message')
     async def on_mention_spam(self, message: discord.Message):
-        if not message.guild.id or message.author.bot:
+        if not message.guild or message.author.bot:
             return
 
         if message.guild.id == 799330949686231050 and len(message.mentions) > 3:
