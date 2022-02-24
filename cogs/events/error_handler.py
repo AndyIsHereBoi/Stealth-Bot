@@ -206,9 +206,11 @@ class ErrorHandler(EventsBase):
 
             return await self.send_unexpected_error(ctx, error)
 
-        embed = discord.Embed(title=f":error: Command {ctx.command.name} raised an error", description=f"""
+        traceback_string = "".join(traceback.format_exception(etype=None, value=error, tb=error.__traceback__))
+
+        embed = discord.Embed(title=f"<:error:888779034408927242> Command {ctx.command.name} raised an error", description=f"""
 ```prolog
-{error.__traceback__}
+{traceback_string}
 ```
         """)
 
