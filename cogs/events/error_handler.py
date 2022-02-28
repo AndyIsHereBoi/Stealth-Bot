@@ -46,8 +46,6 @@ class ErrorHandler(EventsBase):
         elif isinstance(error, errors.MuteRoleAlreadyExists):
             pass
 
-        #### NORMAL ERRORS ####
-
         elif isinstance(error, errors.Forbidden):
             pass
 
@@ -184,7 +182,7 @@ class ErrorHandler(EventsBase):
 
 
         # known error
-        embed = discord.Embed(title=f"<:error:888779034408927242> Command {ctx.command.name} raised an error", description=f"""
+        embed = discord.Embed(title=f"<:error:888779034408927242> {f'Command {ctx.command.name} raised an error' if ctx.command else 'Error'} ", description=f"""
 ```prolog
 {error}
 ```
