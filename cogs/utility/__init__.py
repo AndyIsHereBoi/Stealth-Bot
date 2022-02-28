@@ -9,6 +9,11 @@ from .wikipedia import Wikipedia
 
 
 class Utility(AFK, Bot, Info, _List, Misc, RTFM, Todo, Wikipedia):
+    """Useful commands."""
+
+    select_emoji = "ℹ️"
+    select_brief = "Useful commands."
+
     pass
 
 
