@@ -465,10 +465,10 @@ if __name__ == '__main__':
     bot.ipc.start()
 
     try:
-        webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
-        webhook.send(content=":white_check_mark: Stealth Bot is starting up...")
+        # webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
+        # webhook.send(content=":white_check_mark: Stealth Bot is starting up...")
         bot.run(yaml_data['TOKEN'], reconnect=True)
         
     finally:
-        webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
-        webhook.send(content=":x: Stealth Bot is shutting down...")
+        # webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
+        # webhook.send(content=":x: Stealth Bot is shutting down...")
