@@ -470,5 +470,6 @@ if __name__ == '__main__':
         bot.run(yaml_data['TOKEN'], reconnect=True)
         
     finally:
+        pass
         # webhook = discord.SyncWebhook.from_url(yaml_data['UPTIME_WEBHOOK'])
         # webhook.send(content=":x: Stealth Bot is shutting down...")
