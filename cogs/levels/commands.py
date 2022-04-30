@@ -64,6 +64,7 @@ class Commands(LevelsBase):
 
         for record in records:
             user = ctx.guild.get_member(record['user_id'])
+            if not user: continue
             users.append(f"{user.mention}")
             levels.append(f"{record['level']} ({record['xp']} XP)")
 
