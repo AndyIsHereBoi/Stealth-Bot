@@ -1,1 +1,1 @@
-This bot is not everbeing worked on.
+This bot is not ever being worked on.
